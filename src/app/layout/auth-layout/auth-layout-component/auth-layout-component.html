@@ -1,0 +1,41 @@
+<div
+    class="bg-[#0B0C15] text-slate-300 antialiased selection:bg-violet-500/30 selection:text-violet-200 h-screen w-full flex items-center justify-center overflow-hidden relative ">
+
+    <main class="w-full max-w-100 mx-4 relative z-10">
+        <!-- Logo Section -->
+        <div class="flex flex-col items-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-450">
+            <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 mb-4 ring-1 ring-white/10">
+                <span class="font-semibold text-lg tracking-tight">N</span>
+            </div>
+            <h1 class="text-xl font-semibold text-white tracking-tight">Bienvenido de nuevo</h1>
+            <p class="text-sm text-neutral-500 mt-2 text-center">Ingresa tus credenciales para acceder al sistema Nexus.
+            </p>
+        </div>
+
+
+
+        <router-outlet></router-outlet>
+
+
+        <p class="text-center mt-6 text-xs text-neutral-500 animate-in fade-in slide-in-from-bottom-4 duration-600">
+            ¿No tienes una cuenta?
+            <a href="#" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors ml-1">Contactar
+                Administrador</a>
+        </p>
+
+    </main>
+</div>
+
+
+<footer class="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <!-- Footer Links -->
+    <div class="absolute bottom-6 w-full text-center pointer-events-none">
+        <div class="flex items-center justify-center gap-6 text-[10px] text-neutral-600 pointer-events-auto">
+            <a href="#" class="hover:text-neutral-400 transition-colors">Privacidad</a>
+            <a href="#" class="hover:text-neutral-400 transition-colors">Términos</a>
+            <span class="opacity-50">Nexus.sys v2.4.0</span>
+        </div>
+    </div>
+
+</footer>

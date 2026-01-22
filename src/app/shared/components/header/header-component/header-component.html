@@ -1,0 +1,24 @@
+<!-- Top Header -->
+
+<header
+    class="sticky top-0 z-20 flex items-center justify-between px-8 py-5 bg-[#0B0C15]/80 backdrop-blur-md border-b border-white/5">
+    <div class="flex items-center gap-2 text-sm text-neutral-500">
+        <span class="cursor-pointer transition-colors hover:text-neutral-300">Escritorio</span>
+        <iconify-icon icon="lucide:chevron-right" width="14"></iconify-icon>
+        <span class="font-medium text-indigo-400">Resumen</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative group">
+            <input type="text" placeholder="Buscar..."
+                class="border rounded-full py-1.5 pl-9 pr-4 text-xs focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 w-48 transition-all placeholder-neutral-600 bg-white/5 border-white/5 text-neutral-300">
+            <iconify-icon icon="lucide:search"
+                class="absolute left-3 top-1.5 group-focus-within:text-indigo-400 text-neutral-600"
+                width="14"></iconify-icon>
+        </div>
+        <button
+            class="relative w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-white/5 text-neutral-400 hover:text-white">
+            <iconify-icon icon="lucide:bell" width="18" stroke-width="1.5"></iconify-icon>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full border-2 border-[#0B0C15]"></span>
+        </button>
+    </div>
+</header>
