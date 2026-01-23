@@ -1,48 +1,87 @@
 <!-- Sidebar Navigation -->
-    <aside class="w-64 border-r h-full flex flex-col bg-[#0B0C15]/80 backdrop-blur-xl hidden md:flex border-white/5">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-8">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center shadow-lg shadow-indigo-500/20 from-indigo-600 to-blue-600 text-white">
-                    <span class="font-semibold text-sm tracking-tight">N</span>
-                </div>
-                <span class="font-semibold tracking-tight text-neutral-100">Nexus<span class="text-indigo-500">.sys</span></span>
+<aside class="w-64 border-r h-full flex flex-col bg-[#0B0C15]/80 backdrop-blur-xl hidden md:flex border-white/5">
+    <div class="p-6">
+        <div class="flex items-center gap-3 mb-8">
+            <div
+                class="w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center shadow-lg shadow-indigo-500/20 from-indigo-600 to-blue-600 text-white">
+                <span class="font-semibold text-sm tracking-tight">N</span>
             </div>
-
-            <nav class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg border shadow-sm text-white bg-white/5 border-white/5">
-                    <iconify-icon icon="lucide:layout-dashboard" width="18" stroke-width="1.5" class="text-indigo-400"></iconify-icon>
-                    Inicio
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors group text-neutral-400 hover:text-neutral-100 hover:bg-white/5">
-                    <iconify-icon icon="lucide:check-square" width="18" stroke-width="1.5" class="group-hover:text-indigo-400 transition-colors"></iconify-icon>
-                    Mis Tareas
-                </a>
-                <a href="#" class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400">
-                    <iconify-icon icon="lucide:folder-kanban" width="18" stroke-width="1.5" class="group-hover:text-indigo-400 transition-colors"></iconify-icon>
-                    Proyectos
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors group text-neutral-400 hover:text-neutral-100 hover:bg-white/5">
-                    <iconify-icon icon="lucide:users" width="18" stroke-width="1.5" class="group-hover:text-indigo-400 transition-colors"></iconify-icon>
-                    Equipo
-                </a>
-                <a href="#" class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400">
-                    <iconify-icon icon="lucide:bar-chart-2" width="18" stroke-width="1.5" class="group-hover:text-indigo-400 transition-colors"></iconify-icon>
-                    Reportes
-                </a>
-            </nav>
+            <span class="font-semibold tracking-tight text-neutral-100">Nexus<span
+                    class="text-indigo-500">.sys</span></span>
         </div>
 
-        <div class="mt-auto p-6 border-t border-white/5">
-            <div class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors hover:bg-white/5">
-                <div class="relative">
-                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" class="w-8 h-8 rounded-full ring-2 ring-indigo-500/20 grayscale hover:grayscale-0 transition-all">
-                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-cyan-500 border-2 border-[#0B0C15] rounded-full"></div>
+        <nav class="space-y-1">
+            <a routerLink="/home/dashboard"
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors group text-neutral-400 hover:text-neutral-100 hover:bg-white/5"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:layout-dashboard" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors"
+                    routerLinkActive="text-indigo-400"></iconify-icon>
+                Inicio
+            </a>
+            <a routerLink="/home/tasks"
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors group text-neutral-400 hover:text-neutral-100 hover:bg-white/5"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:check-square" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors"
+                    routerLinkActive="text-indigo-400 "></iconify-icon>
+                Mis Tareas
+            </a>
+            <a routerLink="/home/projects"
+                class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:folder-kanban" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors"
+                    routerLinkActive="text-indigo-400"></iconify-icon>
+                Proyectos
+            </a>
+            <a routerLink="/home/team"
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors group text-neutral-400 hover:text-neutral-100 hover:bg-white/5"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:users" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors"
+                    routerLinkActive="text-indigo-400"></iconify-icon>
+                Equipo
+            </a>
+            <a routerLink="/home/clients"
+                class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:user-cog" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors" routerLinkActive="text-indigo-400">
+                </iconify-icon>
+                Clientes
+            </a>
+            <a routerLink="/home/reports"
+                class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:bar-chart-2" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors"
+                    routerLinkActive="text-indigo-400"></iconify-icon>
+                Reportes
+            </a>
+             
+        </nav>
+    </div>
+
+    <div class="mt-auto p-6 border-t border-white/5">
+        <div class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors hover:bg-white/5">
+            <div class="relative">
+                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User"
+                    class="w-8 h-8 rounded-full ring-2 ring-indigo-500/20 grayscale hover:grayscale-0 transition-all">
+                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-cyan-500 border-2 border-[#0B0C15] rounded-full">
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-xs font-medium text-neutral-200">Alex Morgan</span>
-                    <span class="text-[10px] text-neutral-500">Desarrollador Lead</span>
-                </div>
-                <iconify-icon icon="lucide:chevron-up" class="ml-auto text-neutral-500" width="16"></iconify-icon>
             </div>
+            <div class="flex flex-col">
+                <span class="text-xs font-medium text-neutral-200">Alex Morgan</span>
+                <span class="text-[10px] text-neutral-500">Desarrollador Lead</span>
+            </div>
+            <iconify-icon icon="lucide:chevron-up" class="ml-auto text-neutral-500" width="16"></iconify-icon>
         </div>
-    </aside>
+    </div>
+</aside>

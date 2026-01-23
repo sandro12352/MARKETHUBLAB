@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
           setTimeout(() => {
             this.isLoading.set(false);
             
-            this.router.navigate(['/home']);
+            this.router.navigate(['/home/dashboard']);
           }, 3000);
         },
         error: (err) => {
