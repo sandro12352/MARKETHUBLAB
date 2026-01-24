@@ -29,6 +29,15 @@
                     routerLinkActive="text-indigo-400 "></iconify-icon>
                 Mis Tareas
             </a>
+            <a routerLink="/home/clients"
+                class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:user-cog" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors" routerLinkActive="text-indigo-400">
+                </iconify-icon>
+                Clientes
+            </a>
             <a routerLink="/home/projects"
                 class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
                 routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
@@ -47,15 +56,7 @@
                     routerLinkActive="text-indigo-400"></iconify-icon>
                 Equipo
             </a>
-            <a routerLink="/home/clients"
-                class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
-                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
-                [routerLinkActiveOptions]="{exact:true}">
-                <iconify-icon icon="lucide:user-cog" width="18" stroke-width="1.5"
-                    class="group-hover:text-indigo-400 transition-colors" routerLinkActive="text-indigo-400">
-                </iconify-icon>
-                Clientes
-            </a>
+
             <a routerLink="/home/reports"
                 class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
                 routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
@@ -65,7 +66,7 @@
                     routerLinkActive="text-indigo-400"></iconify-icon>
                 Reportes
             </a>
-             
+
         </nav>
     </div>
 

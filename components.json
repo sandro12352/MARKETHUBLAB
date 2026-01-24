@@ -1,0 +1,4 @@
+{
+  "componentsPath": "src/app/spartanUi",
+  "importAlias": "@spartan/ui"
+}
