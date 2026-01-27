@@ -1,30 +1,16 @@
-import { Component, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
-import { BrnSelect } from '@spartan-ng/brain/select';
-import { HlmButton } from '@spartan/ui/button';
-import { HlmDropdownMenu, HlmDropdownMenuCheckboxIndicator } from '@spartan/ui/dropdown-menu';
-import { HlmIcon } from '@spartan/ui/icon';
-import { HlmInput } from '@spartan/ui/input';
-import { HlmSelect} from '@spartan/ui/select';
-import { HlmTable } from '@spartan/ui/table';
-import { HlmDropdownMenuTrigger } from '@spartan/ui/dropdown-menu';
-import {HlmCheckbox} from '@spartan/ui/checkbox';
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  createAngularTable,
-  flexRenderComponent,
-  FlexRenderDirective,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  type RowSelectionState,
-  type SortingState,
-  type VisibilityState,
-} from '@tanstack/angular-table';
+import { BrnSelectImports } from '@spartan-ng/brain/select';
+import { HlmButtonImports } from '@spartan/ui/button';
+import { HlmDropdownMenuImports } from '@spartan/ui/dropdown-menu';
+import { HlmIconImports } from '@spartan/ui/icon';
+import { HlmInputImports } from '@spartan/ui/input';
+import { HlmSelectImports } from '@spartan/ui/select';
+import { HlmTableImports } from '@spartan/ui/table';
+
 
 export type Payment = {
   id: string;
@@ -33,150 +19,182 @@ export type Payment = {
   email: string;
 };
 
+export type Task = {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  status: 'pending' | 'approved' | 'rejected';
+  completedDate?: string;
+  reviewer?: string;
+};
+
+export type Client = {
+  invoice: string;
+  paymentStatus: 'Paid' | 'Pending' | 'Unpaid';
+  totalAmount: string;
+  paymentMethod: string;
+  tasks?: Task[];
+};
+
 @Component({
   selector: 'app-clients-component',
   imports: [
+    CommonModule,
     FormsModule,
-    FlexRenderDirective,
-    HlmDropdownMenu,
-    HlmDropdownMenuTrigger,
-    HlmButton,
-    HlmIcon,
-    HlmInput,
-    FlexRenderDirective,
-    HlmTable,
-    HlmDropdownMenuCheckboxIndicator
-],
+    HlmDropdownMenuImports,
+    HlmButtonImports,
+    HlmIconImports,
+    HlmInputImports,
+    BrnSelectImports,
+    HlmSelectImports,
+    HlmTableImports,
+  ],
   providers: [provideIcons({ lucideChevronDown })],
   host: { class: 'w-full' },
   templateUrl: './clients-component.html',
   styleUrl: './clients-component.css',
+  schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ClientsComponent {
-
-
-
-
-  protected _filterChanged(event: Event) {
-    this._table.getColumn('email')?.setFilterValue((event.target as HTMLInputElement).value);
-  }
-
-
-
-
-  protected readonly _columns: ColumnDef<Payment>[] = [
+  protected _invoices: Client[] = [
     {
-      id: 'select',
-      enableSorting: false,
-      enableHiding: false,
+      invoice: 'Cliente1',
+      paymentStatus: 'Paid',
+      totalAmount: '$250.00',
+      paymentMethod: 'Credit Card',
+      tasks: [
+        {
+          id: 'T001',
+          title: 'Diseño de Banner',
+          description: 'Banner promocional para campaña navideña',
+          dueDate: '2025-01-20',
+          status: 'pending',
+          completedDate: '2025-01-19',
+        },
+        {
+          id: 'T002',
+          title: 'Copywriting para Email',
+          description: 'Redacción de email marketing',
+          dueDate: '2025-01-22',
+          status: 'approved',
+          completedDate: '2025-01-18',
+          reviewer: 'Carlos López',
+        },
+      ],
     },
     {
-      accessorKey: 'status',
-      id: 'status',
-      header: 'Status',
-      enableSorting: false,
-      cell: (info) => `<span class="capitalize">${info.getValue<string>()}</span>`,
+      invoice: 'Cliente2',
+      paymentStatus: 'Pending',
+      totalAmount: '$150.00',
+      paymentMethod: 'PayPal',
+      tasks: [
+        {
+          id: 'T003',
+          title: 'Análisis de Competencia',
+          description: 'Análisis competitivo del mercado',
+          dueDate: '2025-01-25',
+          status: 'rejected',
+          completedDate: '2025-01-19',
+          reviewer: 'María García',
+        },
+      ],
     },
     {
-      accessorKey: 'email',
-      id: 'email',
-      cell: (info) => `<div class="lowercase">${info.getValue<string>()}</div>`,
+      invoice: 'INV003',
+      paymentStatus: 'Unpaid',
+      totalAmount: '$350.00',
+      paymentMethod: 'Bank Transfer',
+      tasks: [
+        {
+          id: 'T004',
+          title: 'Estrategia Social Media',
+          description: 'Plan de contenido para redes sociales',
+          dueDate: '2025-01-28',
+          status: 'pending',
+        },
+      ],
     },
     {
-      accessorKey: 'amount',
-      id: 'amount',
-      header: '<div class="text-right">Amount</div>',
-      enableSorting: false,
-      cell: (info) => {
-        const amount = parseFloat(info.getValue<string>());
-        const formatted = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(amount);
-
-        return `<div class="text-right">${formatted}</div>`;
-      },
+      invoice: 'INV004',
+      paymentStatus: 'Paid',
+      totalAmount: '$450.00',
+      paymentMethod: 'Credit Card',
+      tasks: [],
     },
     {
-      id: 'actions',
-      enableHiding: false,
+      invoice: 'INV005',
+      paymentStatus: 'Paid',
+      totalAmount: '$550.00',
+      paymentMethod: 'PayPal',
+      tasks: [
+        {
+          id: 'T005',
+          title: 'Desarrollo Landing Page',
+          description: 'Página de destino responsive',
+          dueDate: '2025-01-30',
+          status: 'approved',
+          completedDate: '2025-01-15',
+          reviewer: 'Roberto Díaz',
+        },
+      ],
+    },
+    {
+      invoice: 'INV006',
+      paymentStatus: 'Pending',
+      totalAmount: '$200.00',
+      paymentMethod: 'Bank Transfer',
+      tasks: [],
+    },
+    {
+      invoice: 'INV007',
+      paymentStatus: 'Unpaid',
+      totalAmount: '$300.00',
+      paymentMethod: 'Credit Card',
+      tasks: [
+        {
+          id: 'T006',
+          title: 'Creación de Infografía',
+          description: 'Infografía de estadísticas del negocio',
+          dueDate: '2025-02-01',
+          status: 'pending',
+        },
+      ],
     },
   ];
 
-  private readonly _columnFilters = signal<ColumnFiltersState>([]);
-  private readonly _sorting = signal<SortingState>([]);
-  private readonly _rowSelection = signal<RowSelectionState>({});
-  private readonly _columnVisibility = signal<VisibilityState>({});
+  protected expandedRows: Set<string> = new Set();
 
-  protected readonly _table = createAngularTable<Payment>(() => ({
-    data: PAYMENT_DATA,
-    columns: this._columns,
-    onSortingChange: (updater) => {
-      updater instanceof Function ? this._sorting.update(updater) : this._sorting.set(updater);
-    },
-    onColumnFiltersChange: (updater) => {
-      updater instanceof Function ? this._columnFilters.update(updater) : this._columnFilters.set(updater);
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: (updater) => {
-      updater instanceof Function ? this._columnVisibility.update(updater) : this._columnVisibility.set(updater);
-    },
-    onRowSelectionChange: (updater) => {
-      updater instanceof Function ? this._rowSelection.update(updater) : this._rowSelection.set(updater);
-    },
-    state: {
-      sorting: this._sorting(),
-      columnFilters: this._columnFilters(),
-      columnVisibility: this._columnVisibility(),
-      rowSelection: this._rowSelection(),
-    },
-  }));
+  toggleRowExpand(invoiceId: string): void {
+    if (this.expandedRows.has(invoiceId)) {
+      this.expandedRows.delete(invoiceId);
+    } else {
+      this.expandedRows.add(invoiceId);
+    }
+  }
 
-  protected readonly _hidableColumns = this._table.getAllColumns().filter((column) => column.getCanHide());
+  isRowExpanded(invoiceId: string): boolean {
+    return this.expandedRows.has(invoiceId);
+  }
 
-  protected _filterChange(email: Event) {
-    const target = email.target as HTMLInputElement;
-    const typedValue = target.value;
-    this._table.setGlobalFilter(typedValue);
+  approveTask(taskId: string): void {
+    console.log('Tarea aprobada:', taskId);
+    // Aquí irá la lógica para aprobar la tarea
+  }
+
+  rejectTask(taskId: string): void {
+    console.log('Tarea rechazada:', taskId);
+    // Aquí irá la lógica para rechazar la tarea
+  }
+
+  getTaskStats(client: Client): { pending: number; approved: number; rejected: number } {
+    const tasks = client.tasks || [];
+    return {
+      pending: tasks.filter(t => t.status === 'pending').length,
+      approved: tasks.filter(t => t.status === 'approved').length,
+      rejected: tasks.filter(t => t.status === 'rejected').length,
+    };
   }
 
 
-
 }
-
-
-const PAYMENT_DATA: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-];

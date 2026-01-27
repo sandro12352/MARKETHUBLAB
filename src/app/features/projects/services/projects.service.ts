@@ -17,14 +17,14 @@ export class ProjectsService {
 
   projectsSignal = signal<Project[]>(this.projects);
 
-  constructor() {}
+  constructor() { }
 
-  getAllProjects():Observable<Project[]> {
-    return this.http.get<Project[]>(`${environment.apiUrl}/projects`);
+  getAllProjects(): Observable<Project[]> {
+    return this.http.get<Project[]>(`${environment.apiUrl}/api/projects`);
   }
 
   getProjectsByClient(clientName: string) {
-    
+
   }
 
   getProjectsCount() {

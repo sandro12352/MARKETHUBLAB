@@ -33,7 +33,7 @@ import { ProjectsService } from '../../services/projects.service';
   ],
   templateUrl: './projects-component.html',
   styleUrl: './projects-component.css',
-  schemas:[CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProjectsComponent implements OnInit {
   private projectsService = inject(ProjectsService);
@@ -46,19 +46,18 @@ export class ProjectsComponent implements OnInit {
   statusOptions = ['all', 'active', 'completed', 'on-hold', 'planning'];
 
   ngOnInit() {
-    this.projectsService.getAllProjects().subscribe((projects)=>{
+    this.projectsService.getAllProjects().subscribe((projects) => {
       this.projects = projects;
       this.filteredProjects = this.projects;
-      console.log(this.projects);
     });
   }
 
   filterProjects() {
     this.filteredProjects = this.projects.filter((project) => {
       const matchesSearch =
-        project.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        project.descripcion!.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        project.cliente.nombres.toLowerCase().includes(this.searchTerm.toLowerCase());
+        project.nombre?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        project.descripcion?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        project.cliente.nombres?.toLowerCase().includes(this.searchTerm.toLowerCase());
 
       const matchesStatus =
         this.statusFilter === 'all' || project.estado === this.statusFilter;
@@ -79,10 +78,10 @@ export class ProjectsComponent implements OnInit {
 
   getStatusIcon(status: Project['estado']): string {
     const icons: Record<Project['estado'], string> = {
-      active: 'lucideTrendingUp',
-      completed: 'lucideCheckCircle',
-      'on-hold': 'lucidePauseCircle',
-      planning: 'lucideClock',
+      activop: 'lucideTrendingUp',
+      completado: 'lucideCheckCircle',
+      en_progreso: 'lucidePauseCircle',
+      planificacion: 'lucideClock',
     };
     return icons[status];
   }
