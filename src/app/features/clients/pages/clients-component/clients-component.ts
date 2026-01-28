@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -10,6 +10,8 @@ import { HlmIconImports } from '@spartan/ui/icon';
 import { HlmInputImports } from '@spartan/ui/input';
 import { HlmSelectImports } from '@spartan/ui/select';
 import { HlmTableImports } from '@spartan/ui/table';
+import { ClientsService } from '../../services/clients.service';
+import { Client } from '../../interface/client.interface';
 
 
 export type Payment = {
@@ -29,13 +31,7 @@ export type Task = {
   reviewer?: string;
 };
 
-export type Client = {
-  invoice: string;
-  paymentStatus: 'Paid' | 'Pending' | 'Unpaid';
-  totalAmount: string;
-  paymentMethod: string;
-  tasks?: Task[];
-};
+
 
 @Component({
   selector: 'app-clients-component',
@@ -54,127 +50,44 @@ export type Client = {
   host: { class: 'w-full' },
   templateUrl: './clients-component.html',
   styleUrl: './clients-component.css',
-  schemas:[CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ClientsComponent {
-  protected _invoices: Client[] = [
-    {
-      invoice: 'Cliente1',
-      paymentStatus: 'Paid',
-      totalAmount: '$250.00',
-      paymentMethod: 'Credit Card',
-      tasks: [
-        {
-          id: 'T001',
-          title: 'Diseño de Banner',
-          description: 'Banner promocional para campaña navideña',
-          dueDate: '2025-01-20',
-          status: 'pending',
-          completedDate: '2025-01-19',
-        },
-        {
-          id: 'T002',
-          title: 'Copywriting para Email',
-          description: 'Redacción de email marketing',
-          dueDate: '2025-01-22',
-          status: 'approved',
-          completedDate: '2025-01-18',
-          reviewer: 'Carlos López',
-        },
-      ],
-    },
-    {
-      invoice: 'Cliente2',
-      paymentStatus: 'Pending',
-      totalAmount: '$150.00',
-      paymentMethod: 'PayPal',
-      tasks: [
-        {
-          id: 'T003',
-          title: 'Análisis de Competencia',
-          description: 'Análisis competitivo del mercado',
-          dueDate: '2025-01-25',
-          status: 'rejected',
-          completedDate: '2025-01-19',
-          reviewer: 'María García',
-        },
-      ],
-    },
-    {
-      invoice: 'INV003',
-      paymentStatus: 'Unpaid',
-      totalAmount: '$350.00',
-      paymentMethod: 'Bank Transfer',
-      tasks: [
-        {
-          id: 'T004',
-          title: 'Estrategia Social Media',
-          description: 'Plan de contenido para redes sociales',
-          dueDate: '2025-01-28',
-          status: 'pending',
-        },
-      ],
-    },
-    {
-      invoice: 'INV004',
-      paymentStatus: 'Paid',
-      totalAmount: '$450.00',
-      paymentMethod: 'Credit Card',
-      tasks: [],
-    },
-    {
-      invoice: 'INV005',
-      paymentStatus: 'Paid',
-      totalAmount: '$550.00',
-      paymentMethod: 'PayPal',
-      tasks: [
-        {
-          id: 'T005',
-          title: 'Desarrollo Landing Page',
-          description: 'Página de destino responsive',
-          dueDate: '2025-01-30',
-          status: 'approved',
-          completedDate: '2025-01-15',
-          reviewer: 'Roberto Díaz',
-        },
-      ],
-    },
-    {
-      invoice: 'INV006',
-      paymentStatus: 'Pending',
-      totalAmount: '$200.00',
-      paymentMethod: 'Bank Transfer',
-      tasks: [],
-    },
-    {
-      invoice: 'INV007',
-      paymentStatus: 'Unpaid',
-      totalAmount: '$300.00',
-      paymentMethod: 'Credit Card',
-      tasks: [
-        {
-          id: 'T006',
-          title: 'Creación de Infografía',
-          description: 'Infografía de estadísticas del negocio',
-          dueDate: '2025-02-01',
-          status: 'pending',
-        },
-      ],
-    },
-  ];
+export class ClientsComponent implements OnInit {
+  private clientService = inject(ClientsService);
 
-  protected expandedRows: Set<string> = new Set();
+  activeTab = 'tasks';
+  activeTab$ = signal('tasks');
 
-  toggleRowExpand(invoiceId: string): void {
-    if (this.expandedRows.has(invoiceId)) {
-      this.expandedRows.delete(invoiceId);
+  protected clients = signal<Client[]>([]);
+  protected clientWithTasks = signal<any>([]);
+
+
+  ngOnInit(): void {
+    this.clientService.getClients().subscribe({
+      next: (clients: Client[]) => {
+        this.clients.set(clients);
+      }
+    })
+
+    this.clientService.getClientWithTasks().subscribe({
+      next: (resp: any[]) => {
+        this.clientWithTasks.set(resp);
+        console.log(this.clientWithTasks());
+      }
+    })
+  }
+  protected expandedRows: Set<number> = new Set();
+
+  toggleRowExpand(cliente_id: number): void {
+    if (this.expandedRows.has(cliente_id)) {
+      this.expandedRows.delete(cliente_id);
     } else {
-      this.expandedRows.add(invoiceId);
+      this.expandedRows.add(cliente_id);
     }
   }
 
-  isRowExpanded(invoiceId: string): boolean {
-    return this.expandedRows.has(invoiceId);
+  isRowExpanded(cliente_id: number): boolean {
+    return this.expandedRows.has(cliente_id);
   }
 
   approveTask(taskId: string): void {

@@ -57,6 +57,17 @@
                 Equipo
             </a>
 
+
+            <a routerLink="/home/contracts"
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors group text-neutral-400 hover:text-neutral-100 hover:bg-white/5"
+                routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"
+                [routerLinkActiveOptions]="{exact:true}">
+                <iconify-icon icon="lucide:file-signature" width="18" stroke-width="1.5"
+                    class="group-hover:text-indigo-400 transition-colors"
+                    routerLinkActive="text-indigo-400"></iconify-icon>
+                Contratos
+            </a>
+
             <a routerLink="/home/reports"
                 class="flex items-center gap-3 transition-colors group text-sm font-medium rounded-lg pt-2 pr-3 pb-2 pl-3 hover:text-neutral-100 hover:bg-white/5 text-neutral-400"
                 routerLinkActive="border shadow-sm text-white bg-white/5 border-white/5"

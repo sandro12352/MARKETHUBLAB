@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -10,6 +10,7 @@ import {
   lucideUsers,
   lucideTrendingUp,
   lucideDollarSign,
+  lucideLoader
 } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan/ui/button';
 import { Project } from '../../interfaces/project.interface';
@@ -29,6 +30,7 @@ import { ProjectsService } from '../../services/projects.service';
       lucideUsers,
       lucideTrendingUp,
       lucideDollarSign,
+      lucideLoader,
     }),
   ],
   templateUrl: './projects-component.html',
@@ -38,60 +40,88 @@ import { ProjectsService } from '../../services/projects.service';
 export class ProjectsComponent implements OnInit {
   private projectsService = inject(ProjectsService);
 
-  projects: Project[] = [];
-  filteredProjects: Project[] = [];
-  searchTerm = '';
-  statusFilter = 'all';
-
+  projects = signal<Project[]>([]);
+  filteredProjects = signal<Project[]>([]);
+  searchTerm = signal('');
+  statusFilter = signal('all');
   statusOptions = ['all', 'active', 'completed', 'on-hold', 'planning'];
 
   ngOnInit() {
-    this.projectsService.getAllProjects().subscribe((projects) => {
-      this.projects = projects;
-      this.filteredProjects = this.projects;
+    this.projectsService.getAllProjects().subscribe({
+      next: (projects) => {
+        this.projects.set(projects);
+        // Calcula el progreso para cada proyecto
+        const projectsWithProgress = projects.map(project => ({
+          ...project,
+          progress: this.calculateProgress(project)
+        }));
+        this.projects.set(projectsWithProgress);
+        this.filterProjects();
+      },
+      error: (err) => {
+        console.error('Error fetching projects:', err);
+      }
     });
   }
 
   filterProjects() {
-    this.filteredProjects = this.projects.filter((project) => {
-      const matchesSearch =
-        project.nombre?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        project.descripcion?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        project.cliente.nombres?.toLowerCase().includes(this.searchTerm.toLowerCase());
+    const projects = this.projects();
+    const searchTerm = this.searchTerm();
+    const statusFilter = this.statusFilter();
 
-      const matchesStatus =
-        this.statusFilter === 'all' || project.estado === this.statusFilter;
+    this.filteredProjects.set(
+      projects.filter((project) => {
+        const matchesSearch =
+          project.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.descripcion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.cliente.nombres?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus =
+          statusFilter === 'all' || project.estado === statusFilter;
+
+        return matchesSearch && matchesStatus;
+      })
+    );
+  }
+
+
+  // Calcula el progreso basado en el estado
+  calculateProgress(project: Project): number {
+    const progressMap: Record<Project['estado'], number> = {
+      planificacion: 0,
+      en_progreso: 50,
+      activo: 75,
+      completado: 100,
+    };
+    return progressMap[project.estado] || 0;
   }
 
   onSearchChange(event: any) {
-    this.searchTerm = event.target.value;
+    this.searchTerm.set(event.target.value);
     this.filterProjects();
   }
 
   onStatusChange(event: any) {
-    this.statusFilter = event.target.value;
+    this.statusFilter.set(event.target.value);
     this.filterProjects();
   }
 
   getStatusIcon(status: Project['estado']): string {
-    const icons: Record<Project['estado'], string> = {
-      activop: 'lucideTrendingUp',
-      completado: 'lucideCheckCircle',
-      en_progreso: 'lucidePauseCircle',
-      planificacion: 'lucideClock',
-    };
-    return icons[status];
-  }
+  const icons: Record<Project['estado'], string> = {
+    activo: 'lucidePlay',           // En ejecución
+    completado: 'lucideCheckCircle', // Completado
+    en_progreso: 'lucideLoader',     // Cargando/En progreso
+    planificacion: 'lucideCalendar', // Calendario/Planificación
+  };
+  return icons[status];
+}
 
   getStatusLabel(status: Project['estado']): string {
     const labels: Record<Project['estado'], string> = {
-      active: 'Activo',
-      completed: 'Completado',
-      'on-hold': 'En pausa',
-      planning: 'Planificación',
+      activo: 'Activo',
+      completado: 'Completado',
+      en_progreso: 'En Progreso',
+      planificacion: 'Planificación',
     };
     return labels[status];
   }
@@ -102,18 +132,18 @@ export class ProjectsComponent implements OnInit {
 
   getPriorityColor(priority: Project['prioridad']): string {
     const colors: Record<Project['prioridad'], string> = {
-      high: 'bg-red-500/20 text-red-300 border-red-500/30',
-      medium: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-      low: 'bg-green-500/20 text-green-300 border-green-500/30',
+      alta: 'bg-red-500/20 text-red-300 border-red-500/30',
+      media: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+      baja: 'bg-green-500/20 text-green-300 border-green-500/30',
     };
     return colors[priority];
   }
 
   getPriorityLabel(priority: Project['prioridad']): string {
     const labels: Record<Project['prioridad'], string> = {
-      high: 'Alta',
-      medium: 'Media',
-      low: 'Baja',
+      alta: 'Alta',
+      media: 'Media',
+      baja: 'Baja',
     };
     return labels[priority];
   }

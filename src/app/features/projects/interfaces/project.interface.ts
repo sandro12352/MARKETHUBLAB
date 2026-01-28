@@ -1,4 +1,4 @@
-import { Cliente } from "../../clients/interface/client.interface";
+import { Client } from "../../clients/interface/client.interface";
 
 export interface Project {
     id_proyecto:    number;
@@ -11,7 +11,7 @@ export interface Project {
     progress:       number;
     fecha_registro: Date;
     fecha_termino:  Date;
-    cliente:        Cliente;
+    cliente:        Client;
 }
 
 

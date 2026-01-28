@@ -31,10 +31,10 @@
         <select (change)="onStatusChange($event)"
           class="w-full px-4 py-2 text-sm bg-white/5 border border-white/5 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none cursor-pointer hover:border-white/10">
           <option value="all">Todos los estados</option>
-          <option value="active">Activos</option>
-          <option value="planning">Planificación</option>
-          <option value="on-hold">En pausa</option>
-          <option value="completed">Completados</option>
+          <option value="activo">Activos</option>
+          <option value="planificacion">Planificación</option>
+          <option value="en_progreso">En progreso</option>
+          <option value="completado">Completados</option>
         </select>
       </div>
     </div>
@@ -52,7 +52,7 @@
             </svg>
           </div>
         </div>
-        <div class="text-2xl font-semibold tracking-tight text-white">{{ projects.length }}</div>
+        <div class="text-2xl font-semibold tracking-tight text-white">{{ projects().length }}</div>
         <div class="text-xs text-neutral-500 mt-1">Total de Proyectos</div>
       </div>
 
@@ -67,7 +67,7 @@
           </div>
           <span class="text-xs font-medium bg-green-500/10 px-2 py-0.5 rounded-full text-green-400">Activo</span>
         </div>
-        <div class="text-2xl font-semibold tracking-tight text-white"></div>
+        <div class="text-2xl font-semibold tracking-tight text-white">23</div>
         <div class="text-xs text-neutral-500 mt-1">Proyectos en ejecución</div>
       </div>
 
@@ -83,7 +83,7 @@
           </div>
           <span class="text-xs font-medium bg-purple-500/10 px-2 py-0.5 rounded-full text-purple-400">Planeación</span>
         </div>
-        <div class="text-2xl font-semibold tracking-tight text-white"></div>
+        <div class="text-2xl font-semibold tracking-tight text-white">31</div>
         <div class="text-xs text-neutral-500 mt-1">En fase de planeación</div>
       </div>
 
@@ -99,14 +99,14 @@
           </div>
           <span class="text-xs font-medium bg-blue-500/10 px-2 py-0.5 rounded-full text-blue-400">Completado</span>
         </div>
-        <div class="text-2xl font-semibold tracking-tight text-white"></div>
+        <div class="text-2xl font-semibold tracking-tight text-white">41</div>
         <div class="text-xs text-neutral-500 mt-1">Proyectos finalizados</div>
       </div>
     </div>
 
     <!-- Projects Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (project of filteredProjects; track project.id_proyecto) {
+      @for (project of filteredProjects(); track project.id_proyecto) {
       <div
         class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 group">
         <!-- Card Header -->
@@ -117,6 +117,7 @@
               <ng-icon [name]="getStatusIcon(project.estado)" class="w-4 h-4 text-white" />
             </div>
           </div>
+          <span class="text-sm">{{project.descripcion || "Proyecto sin descripción"}}</span>
         </div>
 
         <!-- Card Body -->
@@ -127,7 +128,7 @@
               <path
                 d="M10.5 1.5H3.75A2.25 2.25 0 001.5 3.75v12.5A2.25 2.25 0 003.75 18.5h12.5a2.25 2.25 0 002.25-2.25V9.5M18.5 1.5h-5M18.5 1.5v5M18.5 1.5L10 10" />
             </svg>
-            <p class="text-xs text-neutral-300">{{ project.id_cliente }}</p>
+            <p class="text-xs text-neutral-300">{{ project.cliente.nombres }} {{ project.cliente.apellidos }}</p>
           </div>
 
           <!-- Status and Priority -->

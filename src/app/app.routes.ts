@@ -8,6 +8,7 @@ import { TEAM_ROUTES } from './features/team/team.route';
 import { CLIENTS_ROUTES } from './features/clients/client.route';
 import { PROJECTS_ROUTES } from './features/projects/projects.route';
 import { REPORTS_ROUTES } from './features/reports/reports.route';
+import { CONTRACTS_ROUTES } from './features/contracts/contracts.route';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,7 @@ export const routes: Routes = [
       ...CLIENTS_ROUTES,
       ...PROJECTS_ROUTES,
       ...REPORTS_ROUTES,
+      ...CONTRACTS_ROUTES,
     ]
   },
   {
