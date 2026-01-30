@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Client } from '../interface/client.interface';
 import { environment } from '../../../../environments/environment';
+import { ClientFile } from '../interface/client-file.inteface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,8 @@ export class ClientsService {
   }
 
 
-  getClientWithTasks(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/client-file`);
+  getClientWithTasks(): Observable<ClientFile[]> {
+    return this.http.get<ClientFile[]>(`${environment.apiUrl}/api/client-file`);
   }
 
   /**

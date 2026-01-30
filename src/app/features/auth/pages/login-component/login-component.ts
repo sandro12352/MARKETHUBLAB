@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
         next: (resp) => {
           setTimeout(() => {
             this.isLoading.set(false);
-            
+            this.authService.setToken(resp.token)
             this.router.navigate(['/home/dashboard']);
           }, 3000);
         },

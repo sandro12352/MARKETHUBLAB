@@ -39,6 +39,9 @@
       ],
       "@spartan/ui/checkbox": [
         "./src/app/spartanUi/checkbox/src/index.ts"
+      ],
+      "@spartan/ui/alert-dialog": [
+        "./src/app/spartanUi/alert-dialog/src/index.ts"
       ]
     }
   },
