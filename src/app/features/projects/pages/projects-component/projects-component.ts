@@ -15,11 +15,12 @@ import {
 import { HlmButton } from '@spartan/ui/button';
 import { Project } from '../../interfaces/project.interface';
 import { ProjectsService } from '../../services/projects.service';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-projects-component',
   standalone: true,
-  imports: [CommonModule, NgIcon, HlmButton],
+  imports: [CommonModule, NgIcon, HlmButton, RouterLink],
   providers: [
     provideIcons({
       lucideCheckCircle,
