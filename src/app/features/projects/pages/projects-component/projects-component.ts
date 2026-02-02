@@ -1,6 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { HlmIcon } from '@spartan/ui/icon';
 import {
   lucideCheckCircle,
   lucideClock,
@@ -10,7 +11,8 @@ import {
   lucideUsers,
   lucideTrendingUp,
   lucideDollarSign,
-  lucideLoader
+  lucideLoader,
+  lucideFileTerminal
 } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan/ui/button';
 import { Project } from '../../interfaces/project.interface';
@@ -20,7 +22,7 @@ import { RouterLink } from "@angular/router";
 @Component({
   selector: 'app-projects-component',
   standalone: true,
-  imports: [CommonModule, NgIcon, HlmButton, RouterLink],
+  imports: [CommonModule, NgIcon, HlmButton, RouterLink,HlmIcon],
   providers: [
     provideIcons({
       lucideCheckCircle,
@@ -32,6 +34,7 @@ import { RouterLink } from "@angular/router";
       lucideTrendingUp,
       lucideDollarSign,
       lucideLoader,
+      lucideFileTerminal
     }),
   ],
   templateUrl: './projects-component.html',

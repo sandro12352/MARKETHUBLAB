@@ -12,6 +12,7 @@ export interface Project {
     fecha_registro: Date;
     fecha_termino:  Date;
     cliente:        Client;
+    plan_grabacion_url?:string
 }
 
 

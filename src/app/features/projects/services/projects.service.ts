@@ -20,7 +20,10 @@ export class ProjectsService {
   getProjectsByClient(clientName: string) {
 
   }
-
+  geProjectByIdProject(id_proyecto: number): Observable<Project> {
+    return this.http.get<Project>(`${environment.apiUrl}/api/projects/${id_proyecto}`);
+  }
+  
   getStatusColor(status: Project['estado']): string {
     const colors: Record<Project['estado'], string> = {
       activo: 'bg-green-500/20 text-green-300 border-green-500/30',

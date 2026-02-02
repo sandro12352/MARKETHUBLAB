@@ -124,11 +124,10 @@
         <div class="p-4 space-y-3">
           <!-- Client -->
           <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-neutral-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                d="M10.5 1.5H3.75A2.25 2.25 0 001.5 3.75v12.5A2.25 2.25 0 003.75 18.5h12.5a2.25 2.25 0 002.25-2.25V9.5M18.5 1.5h-5M18.5 1.5v5M18.5 1.5L10 10" />
-            </svg>
-            <p class="text-xs text-neutral-300">{{ project.cliente.nombres }} {{ project.cliente.apellidos }}</p>
+            <a class="hover:cursor-pointer" target="_blank" [href]="project.plan_grabacion_url">
+              <ng-icon hlm  name="lucideFileTerminal" class="text-green-700"/>
+            </a>
+            <p class="text-xs text-neutral-300">{{project.plan_grabacion_url || "Plan de grabación en curso"}}</p>
           </div>
 
           <!-- Status and Priority -->
@@ -193,14 +192,14 @@
           @if (project.presupuesto) {
           <div class="pt-2 border-t border-white/10 flex items-center justify-between">
             <span class="text-xs text-neutral-400">Presupuesto</span>
-            <span class="font-bold text-green-400 text-sm">${{ project.presupuesto }}</span>
+            <span class="font-bold text-green-400 text-sm">{{ project.presupuesto | currency:'S/.' }}</span>
           </div>
           }
         </div>
 
         <!-- Card Footer -->
         <div class="px-4 py-3 bg-white/5 border-t border-white/10 flex gap-2">
-          <button [routerLink]="['algo',project.id_proyecto]" hlmBtn variant="outline" class="flex-1 text-xs h-8 hover:bg-white/10 hover:cursor-pointer">
+          <button [routerLink]="[project.id_proyecto]" hlmBtn variant="outline" class="flex-1 text-xs h-8 hover:bg-white/10 hover:cursor-pointer">
             Ver
           </button>
           <button hlmBtn class="flex-1 text-xs h-8">
