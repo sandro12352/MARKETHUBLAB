@@ -42,6 +42,18 @@
       ],
       "@spartan/ui/alert-dialog": [
         "./src/app/spartanUi/alert-dialog/src/index.ts"
+      ],
+      "@spartan/ui/textarea": [
+        "./src/app/spartanUi/textarea/src/index.ts"
+      ],
+      "@spartan/ui/label": [
+        "./src/app/spartanUi/label/src/index.ts"
+      ],
+      "@spartan/ui/calendar": [
+        "./src/app/spartanUi/calendar/src/index.ts"
+      ],
+      "@spartan/ui/sonner": [
+        "./src/app/spartanUi/sonner/src/index.ts"
       ]
     }
   },

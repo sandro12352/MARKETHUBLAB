@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Project } from '../interfaces/project.interface';
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,10 +20,11 @@ export class ProjectsService {
   getProjectsByClient(clientName: string) {
 
   }
+
   geProjectByIdProject(id_proyecto: number): Observable<Project> {
     return this.http.get<Project>(`${environment.apiUrl}/api/projects/${id_proyecto}`);
   }
-  
+
   getStatusColor(status: Project['estado']): string {
     const colors: Record<Project['estado'], string> = {
       activo: 'bg-green-500/20 text-green-300 border-green-500/30',
@@ -33,5 +34,23 @@ export class ProjectsService {
     };
     return colors[status];
   }
+
+
+  createProject(project: Project, plan_grabacion: File): Observable<Project> {
+    const formData = new FormData();
+    
+    Object.keys(project).forEach(key => {
+      const value = project[key as keyof Project];
+      
+      // Importante: FormData solo acepta strings o Blobs
+      if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
+    });
+    formData.append('plan_grabacion', plan_grabacion);
+
+    return this.http.post<Project>(`${environment.apiUrl}/api/projects`, formData);
+  }
+  
 
 }

@@ -1,17 +1,17 @@
 import { Client } from "../../clients/interface/client.interface";
 
 export interface Project {
-    id_proyecto:    number;
+    id_cliente?:     number;
+    id_proyecto?:    number;
     nombre:         string;
-    id_cliente:     number;
     estado:         string;
     prioridad:      string;
-    descripcion?:   string;
-    presupuesto:    string;
-    progress:       number;
-    fecha_registro: Date;
+    descripcion?:   string | null;
+    cantidad_material:    number;
+    progress?:       number;
+    fecha_registro?: Date;
     fecha_termino:  Date;
-    cliente:        Client;
+    cliente?:        Client;
     plan_grabacion_url?:string
 }
 

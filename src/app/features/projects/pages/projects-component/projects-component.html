@@ -6,11 +6,141 @@
         <h1 class="text-3xl font-semibold tracking-tight mb-2 text-white">Proyectos</h1>
         <p class="text-sm text-neutral-400">Gestiona y monitorea todos los proyectos de tus clientes</p>
       </div>
-      <button
-        class="px-4 py-2 text-xs font-medium hover:bg-indigo-500 border border-transparent rounded-lg shadow-lg transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-indigo-900/20 w-full md:w-auto justify-center md:justify-start hover:shadow-indigo-900/30 hover:cursor-pointer">
-        <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
-        Nuevo Proyecto
-      </button>
+
+      <hlm-alert-dialog>
+        <button
+          class="px-4 py-2 text-xs font-medium hover:bg-indigo-500 border border-transparent rounded-lg shadow-lg transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-indigo-900/20 w-full md:w-auto justify-center md:justify-start hover:shadow-indigo-900/30 hover:cursor-pointer"
+          hlmAlertDialogTrigger variant="outline">
+          <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+          Nuevo Proyecto
+        </button>
+
+        <form [formGroup]="projectForm">
+          <hlm-alert-dialog-content class="sm:max-w-[600px]" *brnAlertDialogContent="let ctx">
+            <hlm-alert-dialog-header>
+              <h2 hlmAlertDialogTitle>Registrar Nuevo Proyecto</h2>
+              <p hlmAlertDialogDescription>
+                Ingrese la información necesaria para dar de alta un nuevo proyecto audiovisual.
+              </p>
+            </hlm-alert-dialog-header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 max-h-[70vh] overflow-y-auto px-1">
+              <hlm-toaster />
+
+              <div class="flex flex-col gap-2 md:col-span-2">
+                <label hlmLabel for="nombre">Nombre del Proyecto</label>
+                <input hlmInput formControlName="nombre" id="nombre" type="text"
+                  placeholder="Ej. Videoclip Musical - Artista X" />
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label hlmLabel for="cliente">Cliente</label>
+                <brn-select formControlName="id_cliente" class="inline-block" placeholder="Seleccione un cliente">
+                  <hlm-select-trigger class="w-56">
+                    <hlm-select-value />
+                  </hlm-select-trigger>
+                  <hlm-select-content>
+                    @for (client of clients(); track $index) {
+                    <hlm-option [value]="client.id_cliente">{{client.nombres}} {{client.apellidos}}</hlm-option>
+                    }
+                  </hlm-select-content>
+                </brn-select>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label hlmLabel for="presupuesto">Cantidad de Contenido</label>
+                <input hlmInput formControlName="cantidad_contenido" id="presupuesto" class="w-55" type="text"
+                  placeholder="Ejm:10" />
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label hlmLabel for="estado">Estado</label>
+                <brn-select formControlName="estado" class="inline-block" placeholder="Estado">
+                  <hlm-select-trigger class="w-56">
+                    <hlm-select-value />
+                  </hlm-select-trigger>
+                  <hlm-select-content>
+                    <hlm-option value="planificacion">Planificación</hlm-option>
+                    <hlm-option value="en_progreso">En Progreso</hlm-option>
+                    <hlm-option value="activo">Activo</hlm-option>
+                    <hlm-option value="completado">Completado</hlm-option>
+                  </hlm-select-content>
+                </brn-select>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label hlmLabel for="prioridad">Prioridad</label>
+                <brn-select formControlName="prioridad" class="inline-block" placeholder="Prioridad">
+                  <hlm-select-trigger class="w-56">
+                    <hlm-select-value />
+                  </hlm-select-trigger>
+                  <hlm-select-content>
+                    <hlm-option value="baja">Baja</hlm-option>
+                    <hlm-option value="media">Media</hlm-option>
+                    <hlm-option value="alta">Alta</hlm-option>
+                  </hlm-select-content>
+                </brn-select>
+
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label hlmLabel for="fecha_registro">Fecha Inicio</label>
+                <input hlmInput formControlName="fecha_inicio" id="fecha_registro" class="w-55" type="date" />
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label hlmLabel for="fecha_termino">Fecha Término</label>
+                <input hlmInput formControlName="fecha_termino" id="fecha_termino" class="w-55" type="date" />
+              </div>
+
+              <div class="flex flex-col gap-2 md:col-span-2">
+                <label hlmLabel for="plan_archivo">Plan de Grabación (Archivo)</label>
+
+                <div class="flex items-center justify-center max-w-118"
+                  (dragover)="$event.preventDefault(); $event.stopPropagation(); isDragging = true"
+                  (dragleave)="isDragging = false" (drop)="onFileDropped($event)">
+                  <label for="plan_archivo" [class.border-indigo-500]="isDragging" [class.bg-indigo-50]="isDragging"
+                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 border-border hover:bg-muted transition-all">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                      <iconify-icon [icon]="isDragging ? 'lucide:file-plus' : 'lucide:upload-cloud'" width="24"
+                        [class.text-indigo-500]="isDragging" class="text-muted-foreground mb-2"></iconify-icon>
+
+                      <p class="mb-2 text-sm text-muted-foreground px-4">
+                        <span class="font-semibold">Haga clic</span> o arrastre el archivo aquí
+                      </p>
+                    </div>
+
+                    <input lmInput id="plan_archivo" type="file" class="hidden" (change)="onFileSelected($event)" />
+                  </label>
+                </div>
+
+
+                @if (fileName) {
+                <div class="flex items-center gap-2 p-2 mt-1 bg-indigo-50 border border-indigo-100 rounded-md">
+                  <iconify-icon icon="lucide:file-check" class="text-indigo-600"></iconify-icon>
+                  <span class="text-xs font-medium text-indigo-700 truncate flex-1">{{ fileName }}</span>
+                  <button (click)="fileName = ''; fileToUpload = null" class="text-indigo-400 hover:text-red-500">
+                    <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+                  </button>
+                </div>
+                }
+              </div>
+
+              <div class="flex flex-col gap-2 md:col-span-2">
+                <label hlmLabel for="descripcion">Descripción</label>
+                <textarea formControlName="descripcion" hlmTextarea id="descripcion" placeholder="Detalles adicionales..."
+                  class="min-h-[80px]"></textarea>
+              </div>
+            </div>
+
+            <hlm-alert-dialog-footer>
+              <button hlmBtn variant="ghost" (click)="ctx.close()">Cancelar</button>
+              <button hlmBtn type="submit" (click)="onSubmmit(ctx)">Guardar Proyecto</button>
+            </hlm-alert-dialog-footer>
+          </hlm-alert-dialog-content>
+
+        </form>
+      </hlm-alert-dialog>
     </div>
 
     <!-- Filters -->
@@ -125,9 +255,9 @@
           <!-- Client -->
           <div class="flex items-center gap-2">
             <a class="hover:cursor-pointer" target="_blank" [href]="project.plan_grabacion_url">
-              <ng-icon hlm  name="lucideFileTerminal" class="text-green-700"/>
+              <ng-icon hlm name="lucideFileTerminal" class="text-green-700" />
             </a>
-            <p class="text-xs text-neutral-300">{{project.plan_grabacion_url || "Plan de grabación en curso"}}</p>
+            <p class="text-xs text-neutral-300">Plan de grabación</p>
           </div>
 
           <!-- Status and Priority -->
@@ -157,7 +287,7 @@
           <div class="grid grid-cols-2 gap-2 text-xs">
             <div>
               <p class="text-neutral-500 mb-0.5">Inicio</p>
-              <p class="text-white font-medium">{{ formatDate(project.fecha_registro) }}</p>
+              <p class="text-white font-medium">{{ formatDate(project.fecha_registro!) }}</p>
             </div>
             @if (project.fecha_termino) {
             <div>
@@ -189,23 +319,33 @@
           </div> -->
 
           <!-- Budget -->
-          @if (project.presupuesto) {
+          @if (project.cantidad_material) {
           <div class="pt-2 border-t border-white/10 flex items-center justify-between">
-            <span class="text-xs text-neutral-400">Presupuesto</span>
-            <span class="font-bold text-green-400 text-sm">{{ project.presupuesto | currency:'S/.' }}</span>
+            <span class="text-xs text-neutral-400">Cantidad de Contenido</span>
+            <span class="font-bold text-green-400 text-sm">#{{project.cantidad_material}}</span>
           </div>
           }
         </div>
 
         <!-- Card Footer -->
-        <div class="px-4 py-3 bg-white/5 border-t border-white/10 flex gap-2">
-          <button [routerLink]="[project.id_proyecto]" hlmBtn variant="outline" class="flex-1 text-xs h-8 hover:bg-white/10 hover:cursor-pointer">
+        <div class="px-4 py-3 bg-white/5 border-t border-white/10 flex gap-2 items-center">
+          <button [routerLink]="[project.id_proyecto]" hlmBtn variant="outline"
+            class="flex-1 text-xs h-8 hover:bg-white/10 hover:cursor-pointer">
             Ver
           </button>
+
           <button hlmBtn class="flex-1 text-xs h-8">
             Editar
           </button>
+
+          <!-- Eliminar -->
+          <button hlmBtn variant="outline"
+            class="h-8 w-8 flex items-center justify-center text-red-500 hover:bg-red-500/10 hover:text-red-400"
+            (click)="deleteProject(project.id_proyecto!)">
+            <iconify-icon icon="si:bin-duotone" width="1.2em" height="1.2em"></iconify-icon>
+          </button>
         </div>
+
       </div>
       } @empty {
       <!-- Empty State -->
@@ -221,3 +361,5 @@
     </div>
   </div>
 </div>
+
+<hlm-toaster />

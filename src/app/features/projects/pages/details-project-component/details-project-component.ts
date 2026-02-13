@@ -94,8 +94,8 @@ export class DetailsProjectComponent {
   getProgressColor(): string {
     if (!this.proyect) return 'bg-indigo-500';
     const progress = this.proyect()!.progress;
-    if (progress < 33) return 'bg-red-500';
-    if (progress < 66) return 'bg-yellow-500';
+    if (progress! < 33) return 'bg-red-500';
+    if (progress! < 66) return 'bg-yellow-500';
     return 'bg-green-500';
   }
 
