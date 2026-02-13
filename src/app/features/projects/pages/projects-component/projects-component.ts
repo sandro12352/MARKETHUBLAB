@@ -138,10 +138,10 @@ export class ProjectsComponent implements OnInit {
 
   getProjects() {
     this.projectsService.getAllProjects().subscribe({
-      next: (projects) => {
-        this.projects.set(projects);
+      next: (data) => {
+        this.projects.set(data.projects);
         // Calcula el progreso para cada proyecto
-        const projectsWithProgress = projects.map(project => ({
+        const projectsWithProgress = data.projects.map(project => ({
           ...project,
           progress: this.calculateProgress(project)
         }));

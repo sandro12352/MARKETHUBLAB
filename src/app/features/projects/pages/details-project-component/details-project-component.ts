@@ -5,6 +5,15 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Project } from '../../interfaces/project.interface';
 import { HlmButtonImports } from '@spartan/ui/button';
 import { HlmDropdownMenuImports } from '@spartan/ui/dropdown-menu';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { BrnAlertDialogImports } from '@spartan-ng/brain/alert-dialog';
+import { HlmAlertDialogImports } from '@spartan/ui/alert-dialog';
+import { HlmInputImports } from '@spartan/ui/input';
+import { HlmLabelImports } from '@spartan/ui/label';
+import { HlmTextareaImports } from '@spartan/ui/textarea';
+import { toast } from 'ngx-sonner';
+import { HlmToasterImports } from '@spartan/ui/sonner';
+import { Folder } from '../../interfaces/folder.interface';
 
 interface ProjectFolder {
   id: number;
@@ -17,79 +26,108 @@ interface ProjectFolder {
 
 @Component({
   selector: 'app-details-project-component',
+  standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
+    CommonModule,
+    RouterModule,
     HlmButtonImports,
     HlmDropdownMenuImports,
+    ReactiveFormsModule,
+    BrnAlertDialogImports,
+    HlmAlertDialogImports,
+    HlmInputImports,
+    HlmLabelImports,
+    HlmTextareaImports,
+    HlmToasterImports
   ],
   templateUrl: './details-project-component.html',
   styleUrl: './details-project-component.css',
-  schemas:[CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class DetailsProjectComponent {
+export class DetailsProjectComponent implements OnInit {
   protected projectService = inject(ProjectsService);
+  private fb = inject(FormBuilder);
   route: ActivatedRoute = inject(ActivatedRoute);
   proyect = signal<Project | null>(null);
-  
+
+  folderForm = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    descripcion: [''],
+    icono: ['lucide:folder']
+  });
+
+  projectFolders = signal<Folder[]>([]);
+
   ngOnInit(): void {
     const id_proyecto = this.route.snapshot.params['id_proyecto'];
     this.projectService.geProjectByIdProject(id_proyecto).subscribe(proyect => {
-       this.proyect.set(proyect)
-       console.log(proyect)
+      this.proyect.set(proyect)
+    });
+    this.getProjectFolders(Number(id_proyecto));
+
+
+  }
+
+  selectedFolder = signal<Folder | null>(null);
+
+  onSubmitFolder(ctx: any) {
+    if (this.folderForm.invalid) {
+      this.folderForm.markAllAsTouched();
+      return;
+    }
+
+    const folderData: Partial<Folder> = {
+      id_proyecto: this.proyect()?.id_proyecto!,
+      nombre: this.folderForm.value.nombre!,
+      descripcion: this.folderForm.value.descripcion!,
+      icono: this.folderForm.value.icono || 'lucide:folder'
+    };
+
+    if (this.selectedFolder()) {
+      // Update
+      this.projectService.updateFolder(this.selectedFolder()?.id_carpeta_material!, folderData as Folder).subscribe(updatedFolder => {
+        this.projectFolders.update(folders =>
+          folders.map(f => f.id_carpeta_material === updatedFolder.id_carpeta_material ? updatedFolder : f)
+        );
+        toast.success('¡Carpeta actualizada con éxito!');
+        this.resetFolderForm();
+        ctx.close();
+      });
+    } else {
+      // Create
+      this.projectService.createFolder(folderData as Folder).subscribe(folder => {
+        this.projectFolders.update(folders => [...folders, folder]);
+        toast.success('¡Carpeta creada con éxito!');
+        this.resetFolderForm();
+        ctx.close();
+      });
+    }
+  }
+
+  editFolder(folder: Folder) {
+    this.selectedFolder.set(folder);
+    this.folderForm.patchValue({
+      nombre: folder.nombre,
+      icono: folder.icono
     });
   }
 
-  projectFolders: ProjectFolder[] = [
-    {
-      id: 1,
-      nombre: 'Documentación',
-      descripcion: 'Documentos del proyecto',
-      archivos: 12,
-      fecha_creacion: new Date('2024-01-15'),
-      icono: 'lucide:file-text'
-    },
-    {
-      id: 2,
-      nombre: 'Diseños',
-      descripcion: 'Diseños y mockups',
-      archivos: 8,
-      fecha_creacion: new Date('2024-01-16'),
-      icono: 'lucide:palette'
-    },
-    {
-      id: 3,
-      nombre: 'Código',
-      descripcion: 'Código fuente del proyecto',
-      archivos: 45,
-      fecha_creacion: new Date('2024-01-17'),
-      icono: 'lucide:code'
-    },
-    {
-      id: 4,
-      nombre: 'Recursos',
-      descripcion: 'Imágenes y recursos multimedia',
-      archivos: 23,
-      fecha_creacion: new Date('2024-01-18'),
-      icono: 'lucide:image'
-    },
-    {
-      id: 5,
-      nombre: 'Pruebas',
-      descripcion: 'Reportes de pruebas y QA',
-      archivos: 15,
-      fecha_creacion: new Date('2024-01-19'),
-      icono: 'lucide:check-circle'
-    },
-    {
-      id: 6,
-      nombre: 'Entregas',
-      descripcion: 'Archivos de entrega final',
-      archivos: 5,
-      fecha_creacion: new Date('2024-01-20'),
-      icono: 'lucide:package'
+  deleteFolder(id_carpeta: number) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta carpeta?')) {
+      this.projectService.deleteFolder(id_carpeta).subscribe({
+        next: () => {
+          this.projectFolders.update(folders => folders.filter(f => f.id_carpeta_material !== id_carpeta));
+          toast.success('Carpeta eliminada con éxito');
+        },
+        error: () => toast.error('Error al eliminar la carpeta')
+      });
     }
-  ];
+  }
+
+  resetFolderForm() {
+    this.selectedFolder.set(null);
+    this.folderForm.reset({ icono: 'lucide:folder' });
+  }
 
   getProgressColor(): string {
     if (!this.proyect) return 'bg-indigo-500';
@@ -127,6 +165,13 @@ export class DetailsProjectComponent {
       default:
         return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
     }
+  }
+
+
+  getProjectFolders(id_proyecto: number) {
+    this.projectService.getFoldersByProject(id_proyecto).subscribe(folders => {
+      this.projectFolders.set(folders);
+    });
   }
 
 }

@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Project } from '../interfaces/project.interface';
 import { from, Observable } from 'rxjs';
+import { ProjectResponse } from '../interfaces/projects-response.interface';
+import { Folder } from '../interfaces/folder.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +15,8 @@ export class ProjectsService {
   private http = inject(HttpClient);
   constructor() { }
 
-  getAllProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(`${environment.apiUrl}/api/projects`);
+  getAllProjects(): Observable<ProjectResponse> {
+    return this.http.get<ProjectResponse>(`${environment.apiUrl}/api/projects`);
   }
 
   getProjectsByClient(clientName: string) {
@@ -38,10 +40,10 @@ export class ProjectsService {
 
   createProject(project: Project, plan_grabacion: File): Observable<Project> {
     const formData = new FormData();
-    
+
     Object.keys(project).forEach(key => {
       const value = project[key as keyof Project];
-      
+
       // Importante: FormData solo acepta strings o Blobs
       if (value !== null && value !== undefined) {
         formData.append(key, value.toString());
@@ -51,6 +53,22 @@ export class ProjectsService {
 
     return this.http.post<Project>(`${environment.apiUrl}/api/projects`, formData);
   }
-  
+
+
+  getFoldersByProject(id_proyecto: number): Observable<Folder[]> {
+    return this.http.get<Folder[]>(`${environment.apiUrl}/api/projects/${id_proyecto}/folders`);
+  }
+
+  createFolder(folder: Folder): Observable<Folder> {
+    return this.http.post<Folder>(`${environment.apiUrl}/api/folder-material`, folder);
+  }
+
+  updateFolder(id_carpeta_material: number, folder: Partial<Folder>): Observable<Folder> {
+    return this.http.put<Folder>(`${environment.apiUrl}/api/folder-material/${id_carpeta_material}`, folder);
+  }
+
+  deleteFolder(id_carpeta_material: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/api/folder-material/${id_carpeta_material}`);
+  }
 
 }
