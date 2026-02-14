@@ -10,8 +10,8 @@ import { HlmIconImports } from '@spartan/ui/icon';
 import { HlmInputImports } from '@spartan/ui/input';
 import { HlmSelectImports } from '@spartan/ui/select';
 import { HlmTableImports } from '@spartan/ui/table';
-import {HlmAlertDialogImports} from '@spartan/ui/alert-dialog';
-import {BrnAlertDialogImports} from '@spartan-ng/brain/alert-dialog';
+import { HlmAlertDialogImports } from '@spartan/ui/alert-dialog';
+import { BrnAlertDialogImports } from '@spartan-ng/brain/alert-dialog';
 import { ClientsService } from '../../services/clients.service';
 import { Task } from '../../../tasks/interface/task.interface';
 import { ClientFile } from '../../interface/client-file.inteface';
@@ -30,8 +30,8 @@ import { AuthService } from '../../../auth/services/auth-service';
     BrnSelectImports,
     HlmSelectImports,
     HlmTableImports,
-    BrnAlertDialogImports, 
-    HlmAlertDialogImports, 
+    BrnAlertDialogImports,
+    HlmAlertDialogImports,
   ],
   providers: [provideIcons({ lucideChevronDown })],
   host: { class: 'w-full' },
@@ -48,7 +48,7 @@ export class ClientsComponent implements OnInit {
   protected isLoadingTask = signal<number | null>(null); // ID de tarea en procesamiento
   protected taskUpdated = signal(false); // Signal para trigger actualizaciones
 
-  get token(){
+  get token() {
     return this.authService.getToken();
   }
 
@@ -56,16 +56,16 @@ export class ClientsComponent implements OnInit {
     this.getClientsWithTasks();
   }
   protected expandedRows: Set<number> = new Set();
-  
-  
-  getClientsWithTasks(){
+
+
+  getClientsWithTasks() {
     this.clientService.getClientWithTasks().subscribe({
       next: (resp) => {
         this.clientWithTasks.set(resp);
         console.log(this.clientWithTasks());
       }
     })
-    
+
   }
 
   toggleRowExpand(cliente_id: number): void {
@@ -81,10 +81,10 @@ export class ClientsComponent implements OnInit {
   }
 
   approveTask(id_cliente_tarea: number): void {
-    if(!this.token) return;
-    
+    if (!this.token) return;
+
     this.isLoadingTask.set(id_cliente_tarea);
-    
+
     this.taskService.updateTaskStatus(id_cliente_tarea, 'aprobado', this.token!).subscribe({
       next: (resp) => {
         console.log('Tarea aprobada:', resp);
@@ -100,10 +100,10 @@ export class ClientsComponent implements OnInit {
   }
 
   rejectTask(id_cliente_tarea: number): void {
-    if(!this.token) return;
-    
+    if (!this.token) return;
+
     this.isLoadingTask.set(id_cliente_tarea);
-    
+
     this.taskService.updateTaskStatus(id_cliente_tarea, 'rechazado', this.token!).subscribe({
       next: (resp) => {
         console.log('Tarea rechazada:', resp);
@@ -126,5 +126,16 @@ export class ClientsComponent implements OnInit {
     };
   }
 
+  getTotalTasks(): number {
+    return this.clientWithTasks().reduce((acc, item) => acc + item.tareas.length, 0);
+  }
+
+  getTotalApproved(): number {
+    return this.clientWithTasks().reduce((acc, item) => acc + item.tareas.filter(t => t.estado === 'aprobado').length, 0);
+  }
+
+  getTotalPending(): number {
+    return this.clientWithTasks().reduce((acc, item) => acc + item.tareas.filter(t => t.estado === 'pendiente').length, 0);
+  }
 
 }

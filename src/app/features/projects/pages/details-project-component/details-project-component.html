@@ -1,5 +1,11 @@
+<button hlmBtn variant="ghost" routerLink="/home/projects"
+    class="px-3 py-2 text-sm font-medium hover:bg-white/10 border border-white/10 rounded-lg transition-all flex items-center gap-2 text-neutral-400 hover:text-white absolute">
+    <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+    Volver
+</button>
 @if (proyect()) {
 <div class="max-w-6xl mr-auto ml-auto pt-8 pr-8 pb-8 pl-8 space-y-8">
+
     <!-- Breadcrumb & Header -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-2 text-sm">
@@ -43,14 +49,14 @@
                         <p class="text-xs text-neutral-400 uppercase tracking-wide mb-2">Estado</p>
                         <span [ngClass]="getStatusColor()"
                             class="inline-block px-3 py-1.5 rounded-lg border text-sm font-medium">
-                            {{ proyect()!.estado }}
+                            {{ proyect()!.estado | titlecase}}
                         </span>
                     </div>
                     <div>
                         <p class="text-xs text-neutral-400 uppercase tracking-wide mb-2">Prioridad</p>
                         <span [ngClass]="getPriorityColor()"
                             class="inline-block px-3 py-1.5 rounded-lg border text-sm font-medium">
-                            {{ proyect()!.prioridad }}
+                            {{ proyect()!.prioridad | titlecase}}
                         </span>
                     </div>
                 </div>
@@ -69,34 +75,54 @@
             </div>
 
             <!-- Right: Progress & Budget -->
-            <div class="space-y-6 mt-12">
-                <!-- Budget Card -->
+            <div class="space-y-4">
+                <!-- Material Card -->
                 <div
-                    class="p-6 rounded-xl bg-linear-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
-                    <p class="text-xs text-neutral-400 uppercase tracking-wide mb-2">Cantidad de Material</p>
-                    <p class="text-3xl font-bold text-white mb-1">{{ proyect()!.cantidad_material| currency:'S/.'}}</p>
-                    <p class="text-xs text-neutral-400">Inversión total del proyecto</p>
+                    class="p-5 rounded-xl bg-linear-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
+                    <div class="flex items-center gap-2 mb-3">
+                        <iconify-icon icon="lucide:package" width="18" class="text-indigo-400"></iconify-icon>
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide">Material</p>
+                    </div>
+                    <p class="text-2xl font-bold text-white">{{ proyect()!.cantidad_material }}</p>
                 </div>
 
-                <!-- Quick Stats -->
-                <div class="space-y-3">
-                    <div class="p-4 rounded-lg bg-white/5 border border-white/5">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-2">
-                                <iconify-icon icon="lucide:users" width="18" class="text-blue-400"></iconify-icon>
-                                <span class="text-sm text-neutral-400">Equipo</span>
-                            </div>
-                            <span class="text-white font-medium">5 personas</span>
+                <!-- Recording Plan Card -->
+                <div
+                    class="p-5 rounded-xl bg-linear-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="lucide:video" width="18" class="text-purple-400"></iconify-icon>
+                            <p class="text-xs text-neutral-400 uppercase tracking-wide">Plan de Grabación</p>
                         </div>
+                        @if(proyect()!.plan_grabacion_url) {
+                        <a [href]="proyect()!.plan_grabacion_url" target="_blank"
+                            class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                            <iconify-icon icon="lucide:external-link" width="14"></iconify-icon>
+                        </a>
+                        }
+                    </div>
+                    @if(proyect()!.plan_grabacion_url) {
+                    <a [href]="proyect()!.plan_grabacion_url" target="_blank"
+                        class="text-sm font-medium text-indigo-300 hover:text-indigo-200 transition-colors flex items-center gap-1">
+                        Ver documento
+                        <iconify-icon icon="lucide:arrow-up-right" width="12"></iconify-icon>
+                    </a>
+                    } @else {
+                    <p class="text-sm text-neutral-500">No definido</p>
+                    }
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-4 rounded-lg bg-white/5 border border-white/5">
+                        <iconify-icon icon="lucide:calendar-clock" width="16" class="text-blue-400 mb-2"></iconify-icon>
+                        <p class="text-xs text-neutral-500 mb-1">Duración</p>
+                        <p class="text-sm font-semibold text-white">{{ calculateDuration() }} días</p>
                     </div>
                     <div class="p-4 rounded-lg bg-white/5 border border-white/5">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-2">
-                                <iconify-icon icon="lucide:tasks" width="18" class="text-purple-400"></iconify-icon>
-                                <span class="text-sm text-neutral-400">Tareas</span>
-                            </div>
-                            <span class="text-white font-medium">24 activas</span>
-                        </div>
+                        <iconify-icon icon="lucide:folder" width="16" class="text-purple-400 mb-2"></iconify-icon>
+                        <p class="text-xs text-neutral-500 mb-1">Carpetas</p>
+                        <p class="text-sm font-semibold text-white">{{ projectFolders().length }}</p>
                     </div>
                 </div>
             </div>
@@ -281,66 +307,7 @@
         </div>
         <hlm-toaster />
 
-        <!-- Additional Info Tabs -->
-        <div class="rounded-xl bg-linear-to-br from-white/5 to-white/2 border border-white/10 p-8">
-            <div class="space-y-6">
-                <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                    <iconify-icon icon="lucide:info" width="24" class="text-indigo-400"></iconify-icon>
-                    Información Adicional
-                </h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Timeline -->
-                    <div>
-                        <h3 class="text-white font-semibold mb-4">Cronograma</h3>
-                        <div class="space-y-3">
-                            <div class="p-4 rounded-lg bg-white/5 border border-white/5">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm text-neutral-400">Fase de Análisis</span>
-                                    <span
-                                        class="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded">Completado</span>
-                                </div>
-                                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div class="w-full h-full bg-green-500 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div class="p-4 rounded-lg bg-white/5 border border-white/5">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm text-neutral-400">Desarrollo</span>
-                                    <span class="text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded">En
-                                        progreso</span>
-                                </div>
-                                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div class="w-3/4 h-full bg-yellow-500 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div class="p-4 rounded-lg bg-white/5 border border-white/5">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm text-neutral-400">Pruebas</span>
-                                    <span
-                                        class="text-xs text-neutral-400 bg-neutral-500/10 px-2 py-1 rounded">Próximo</span>
-                                </div>
-                                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div class="w-0 h-full bg-blue-500 rounded-full"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Team & Notes -->
-                    <div>
-                        <h3 class="text-white font-semibold mb-4">Notas del Proyecto</h3>
-                        <div class="p-4 rounded-lg bg-white/5 border border-white/5 h-48">
-                            <p class="text-neutral-400 text-sm leading-relaxed">
-                                Proyecto estratégico para el cliente. Requiere atención especial en la integración
-                                con sistemas legados.
-                                Se espera que el equipo de QA realice pruebas exhaustivas antes de la entrega final.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
     </div>
 

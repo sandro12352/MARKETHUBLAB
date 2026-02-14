@@ -1,4 +1,4 @@
-<div class="max-w-6xl mr-auto ml-auto pt-8 pr-8 pb-8 pl-8 space-y-8">
+<div class="max-w-7xl mx-auto p-6 space-y-8 animate-in fade-in duration-700">
 	<!-- Header Section -->
 	<div class="flex flex-col md:flex-row md:items-end gap-x-4 gap-y-4 justify-between">
 		<div>
@@ -19,298 +19,240 @@
 		</div>
 	</div>
 
-	<!-- Table Section -->
-	<div
-		class="rounded-xl overflow-hidden border border-white/5 bg-linear-to-br from-white/3 to-white/1 backdrop-blur-sm">
-		<!-- Table Header -->
-		<div class="px-6 py-4 border-b border-white/5 bg-white/2">
-			<h2 class="text-sm font-semibold text-neutral-300 flex items-center gap-2">
-				<iconify-icon icon="lucide:users" width="16" class="text-indigo-400"></iconify-icon>
-				Lista de Socios
-			</h2>
+	<!-- Stats Summary -->
+	<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+		<div class="p-5 rounded-xl bg-linear-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
+			<div class="flex items-center gap-2 mb-3">
+				<iconify-icon icon="lucide:users" width="18" class="text-indigo-400"></iconify-icon>
+				<span class="text-xs text-neutral-400 uppercase tracking-wide">Total Socios</span>
+			</div>
+			<p class="text-2xl font-bold text-white">{{ clientWithTasks().length }}</p>
 		</div>
+		<div class="p-5 rounded-xl bg-linear-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+			<div class="flex items-center gap-2 mb-3">
+				<iconify-icon icon="lucide:list-checks" width="18" class="text-blue-400"></iconify-icon>
+				<span class="text-xs text-neutral-400 uppercase tracking-wide">Total Tareas</span>
+			</div>
+			<p class="text-2xl font-bold text-white">{{ getTotalTasks() }}</p>
+		</div>
+		<div class="p-5 rounded-xl bg-linear-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20">
+			<div class="flex items-center gap-2 mb-3">
+				<iconify-icon icon="lucide:check-circle" width="18" class="text-green-400"></iconify-icon>
+				<span class="text-xs text-neutral-400 uppercase tracking-wide">Aprobadas</span>
+			</div>
+			<p class="text-2xl font-bold text-white">{{ getTotalApproved() }}</p>
+		</div>
+		<div class="p-5 rounded-xl bg-linear-to-br from-yellow-500/10 to-amber-500/10 border border-yellow-500/20">
+			<div class="flex items-center gap-2 mb-3">
+				<iconify-icon icon="lucide:clock" width="18" class="text-yellow-400"></iconify-icon>
+				<span class="text-xs text-neutral-400 uppercase tracking-wide">Pendientes</span>
+			</div>
+			<p class="text-2xl font-bold text-white">{{ getTotalPending() }}</p>
+		</div>
+	</div>
 
-		<!-- Table Content -->
-		<div hlmTableContainer class="overflow-auto">
-			<table hlmTable class="w-full min-w-max">
-				<thead hlmTHead>
-					<tr hlmTr class="border-b border-white/5 hover:bg-white/2 transition-colors">
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Nombre</th>
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Dni</th>
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Contacto</th>
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Fecha Registro</th>
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Fecha Nacimiento</th>
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Aniversario</th>
-						<th hlmTh
-							class="text-left px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Redes</th>
-						<th hlmTh
-							class="text-right w-12 px-6 py-4 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-							Acciones
-						</th>
-					</tr>
-				</thead>
-				<tbody hlmTBody>
-					@for (item of clientWithTasks(); track item.cliente.id_cliente) {
-					<!-- Fila principal del cliente -->
-					<tr hlmTr class="border-b border-white/5 hover:bg-white/2 transition-colors group">
-						<td hlmTd class="px-6 py-4">
-							<div class="flex items-center gap-3">
-								<div
-									class="w-8 h-8 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
-									{{ item.cliente.nombres.charAt(0) }}
-								</div>
-								<div>
-									<p class="text-sm font-medium text-white">{{ item.cliente.nombres }} {{
-										item.cliente.apellidos
-										}}</p>
-									<p class="text-xs text-neutral-500">{{item.cliente.nombre_empresa || "Empresa"}}</p>
-								</div>
-							</div>
-						</td>
+	<!-- Cards Grid - Compact Design -->
+	<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+		@for (item of clientWithTasks(); track item.cliente.id_cliente) {
+		<div
+			class="group self-start rounded-xl bg-gradient-to-br from-white/5 to-white/2 border border-white/10 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-[0_0_20px_-8px_rgba(99,102,241,0.3)] overflow-hidden">
 
-						<td hlmTd class="px-6 py-4">
-							<p class="text-sm font-medium text-white">{{ item.cliente.dni || 'Sin DNI' }}</p>
-						</td>
-						<td hlmTd class="px-6 py-4">
-							<p class="text-sm text-neutral-300">{{ item.cliente.telefono}}</p>
-						</td>
-						<td hlmTd class="px-6 py-4">
-							<p class="text-sm font-medium text-white">{{ item.cliente.fecha_registro |
-								date:'dd/MM/yyyy':'UTC'
-								}}</p>
-						</td>
-						<td hlmTd class="px-6 py-4">
-							<p class="text-sm font-medium text-white">{{ item.cliente.fecha_nacimiento |
-								date:'dd/MM/yyyy':'UTC' }}</p>
-						</td>
-						<td hlmTd class="px-6 py-4">
-							<p class="text-sm font-medium text-white">{{ item.cliente.fecha_aniversario |
-								date:'dd/MM/yyyy':'UTC' }}</p>
-						</td>
-						<td hlmTd class="px-6 py-4">
-							<div class="flex items-center gap-2">
-								<a [href]="item.cliente.tiktok" target="_blank"><iconify-icon icon="lucide:music-2"
-										width="16" class="text-blue-300"></iconify-icon></a>
-								<a [href]="item.cliente.instagram" target="_blank"><iconify-icon icon="lucide:instagram"
-										width="16" class="text-pink-400"></iconify-icon></a>
-							</div>
-						</td>
-						<td hlmTd class="px-6 py-4 text-right">
-							<div class="flex items-center justify-end gap-2">
-								<!-- Indicador de tareas -->
-								@if ((item.tareas.length || 0) > 0) {
-								<div
-									class="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20">
-									<iconify-icon icon="lucide:tasks" width="14" class="text-blue-400"></iconify-icon>
-									<span class="text-xs font-medium text-blue-400">{{ item.tareas.length }}</span>
+			<!-- Compact Header -->
+			<div class="p-4">
+				<div class="flex items-start gap-3 mb-3">
+					<!-- Avatar -->
+					<div
+						class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-indigo-500/20 shrink-0">
+						{{ item.cliente.nombres.charAt(0) }}{{ item.cliente.apellidos.charAt(0) }}
+					</div>
+
+					<!-- Name & Company -->
+					<div class="flex-1 min-w-0">
+						<h3
+							class="text-sm font-semibold text-white truncate group-hover:text-indigo-300 transition-colors">
+							{{ item.cliente.nombres }} {{ item.cliente.apellidos }}
+						</h3>
+						<p class="text-xs text-neutral-500 truncate">{{ item.cliente.nombre_empresa || 'Sin empresa' }}
+						</p>
+					</div>
+
+					<!-- Social Icons -->
+					<div class="flex gap-1.5 shrink-0">
+						@if(item.cliente.tiktok) {
+						<a [href]="item.cliente.tiktok" target="_blank"
+							class="w-7 h-7 rounded-md bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+							<iconify-icon icon="lucide:music-2" width="13" class="text-blue-300"></iconify-icon>
+						</a>
+						}
+						@if(item.cliente.instagram) {
+						<a [href]="item.cliente.instagram" target="_blank"
+							class="w-7 h-7 rounded-md bg-white/5 hover:bg-pink-500/15 flex items-center justify-center transition-colors">
+							<iconify-icon icon="lucide:instagram" width="13" class="text-pink-400"></iconify-icon>
+						</a>
+						}
+					</div>
+				</div>
+
+				<!-- Compact Info Chips -->
+				<div class="flex flex-wrap gap-1.5 mb-3">
+					<div class="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 text-xs">
+						<iconify-icon icon="lucide:phone" width="12" class="text-neutral-500"></iconify-icon>
+						<span class="text-neutral-300">{{ item.cliente.telefono }}</span>
+					</div>
+					@if(item.cliente.dni) {
+					<div class="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 text-xs">
+						<iconify-icon icon="lucide:id-card" width="12" class="text-neutral-500"></iconify-icon>
+						<span class="text-neutral-300">{{ item.cliente.dni }}</span>
+					</div>
+					}
+					<div class="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 text-xs">
+						<iconify-icon icon="lucide:calendar" width="12" class="text-neutral-500"></iconify-icon>
+						<span class="text-neutral-300">{{ item.cliente.fecha_registro | date:'dd/MM/yy':'UTC' }}</span>
+					</div>
+				</div>
+
+				<!-- Compact Task Stats -->
+				<div class="grid grid-cols-3 gap-2">
+					<div class="p-2 rounded-lg bg-yellow-500/8 border border-yellow-500/10 text-center">
+						<p class="text-base font-bold text-yellow-400">{{ getTaskStats(item.tareas).pendiente }}</p>
+						<p class="text-[10px] text-neutral-500 mt-0.5">Pendientes</p>
+					</div>
+					<div class="p-2 rounded-lg bg-green-500/8 border border-green-500/10 text-center">
+						<p class="text-base font-bold text-green-400">{{ getTaskStats(item.tareas).aprobado }}</p>
+						<p class="text-[10px] text-neutral-500 mt-0.5">Aprobadas</p>
+					</div>
+					<div class="p-2 rounded-lg bg-red-500/8 border border-red-500/10 text-center">
+						<p class="text-base font-bold text-red-400">{{ getTaskStats(item.tareas).rechazado }}</p>
+						<p class="text-[10px] text-neutral-500 mt-0.5">Rechazadas</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Compact Expand Toggle -->
+			<button (click)="toggleRowExpand(item.cliente.id_cliente)"
+				class="w-full px-4 py-2 border-t border-white/5 bg-white/2 hover:bg-white/5 transition-all flex items-center justify-between hover:cursor-pointer">
+				<div class="flex items-center gap-2">
+					<iconify-icon icon="lucide:list-checks" width="14" class="text-indigo-400"></iconify-icon>
+					<span class="text-xs font-medium text-neutral-300">{{ item.tareas.length }} tareas</span>
+				</div>
+				<iconify-icon icon="lucide:chevron-down" width="14"
+					class="text-neutral-500 transition-transform duration-300"
+					[class.rotate-180]="isRowExpanded(item.cliente.id_cliente)"></iconify-icon>
+			</button>
+
+			<!-- Expanded Tasks Panel - Compact -->
+			<div class="overflow-hidden transition-all duration-300 ease-in-out" [ngClass]="{
+			'max-h-0 opacity-0': !isRowExpanded(item.cliente.id_cliente),
+			'max-h-[600px] opacity-100': isRowExpanded(item.cliente.id_cliente)
+		}">
+				<div class="p-4 space-y-2.5 bg-white/2 border-t border-white/5 max-h-[400px] overflow-y-auto">
+					<h4 class="text-xs font-semibold text-neutral-300 flex items-center gap-2 mb-2">
+						<iconify-icon icon="lucide:checklist" width="14" class="text-indigo-400"></iconify-icon>
+						Tareas del Socio
+					</h4>
+
+					@for (task of item.tareas; track task.id_tarea) {
+					<div class="p-3 rounded-lg bg-white/3 border border-white/5 hover:border-white/10 transition-all">
+						<div class="flex items-start justify-between gap-3">
+							<div class="flex-1 min-w-0">
+								<!-- Task header - compact -->
+								<div class="flex items-center gap-2 mb-1.5 flex-wrap">
+									<p class="text-xs font-semibold text-white">{{ task.nombre }}</p>
+									<span
+										class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold"
+										[ngClass]="{
+										'bg-blue-500/10 text-blue-400 border border-blue-500/20': task.estado === 'subido',
+										'bg-green-500/10 text-green-400 border border-green-500/20': task.estado === 'aprobado',
+										'bg-red-500/10 text-red-400 border border-red-500/20': task.estado === 'rechazado',
+										'bg-gray-500/10 text-gray-400 border border-gray-500/20': !['subido', 'aprobado', 'rechazado'].includes(task.estado)
+									}">
+										{{ task.estado === 'subido' ? 'Subido' :
+										task.estado === 'aprobado' ? 'Aprobada' :
+										task.estado === 'rechazado' ? 'Rechazada' : 'Pendiente' }}
+									</span>
+								</div>
+
+								<!-- Description - truncated -->
+								<p class="text-[11px] text-neutral-400 mb-2 line-clamp-2 leading-relaxed">{{
+									task.descripcion }}</p>
+
+								<!-- Files - compact -->
+								@if (task.archivos && task.archivos.length > 0) {
+								<div class="flex flex-wrap gap-1.5 mb-2">
+									@for (archivo of task.archivos; track archivo.id_archivo_cliente) {
+									<a [href]="archivo.ruta" target="_blank"
+										class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/5 hover:border-indigo-500/30 text-[10px] text-neutral-300 hover:text-indigo-300 transition-all">
+										<iconify-icon icon="lucide:file" width="11"></iconify-icon>
+										Archivo
+									</a>
+									}
 								</div>
 								}
-								<!-- Botón expandir -->
-								<button (click)="toggleRowExpand(item.cliente.id_cliente)"
-									class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-400 hover:bg-white/5 hover:text-neutral-300 transition-all hover:cursor-pointer"
-									[class.rotate-180]="isRowExpanded(item.cliente.id_cliente)">
-									<iconify-icon icon="lucide:chevron-down" width="16"></iconify-icon>
-								</button>
-							</div>
-						</td>
-					</tr>
 
-					<!-- Fila expandida con tareas -->
-					<tr hlmTr class="border-b border-white/10 bg-white/1">
-						<td hlmTd [attr.colSpan]="9" class="p-0">
-							<div class="overflow-hidden transition-all duration-300 ease-in-out" [ngClass]="{
-        'max-h-0 opacity-0': !isRowExpanded(item.cliente.id_cliente),
-        'max-h-200 opacity-100': isRowExpanded(item.cliente.id_cliente)
-      }">
-								<div class="px-6 py-4 space-y-4">
-									<!-- Título de tareas -->
-									<h3 class="text-sm font-semibold text-neutral-300 flex items-center gap-2">
-										<iconify-icon icon="lucide:checklist" width="16"
+								<!-- Meta info - compact -->
+								<div class="flex flex-wrap gap-2 text-[10px] text-neutral-500">
+									@if (task.trabajador) {
+									<span class="flex items-center gap-1">
+										<iconify-icon icon="lucide:user-check" width="11"
 											class="text-indigo-400"></iconify-icon>
-										Tareas del Cliente
-									</h3>
-
-									<!-- Lista de tareas -->
-									<div class="space-y-3 max-h-96 overflow-y-auto pr-2">
-										@for (task of item.tareas; track task.id_tarea) {
-										<div
-											class="p-4 rounded-lg bg-white/2 border border-white/5 hover:border-white/10 transition-all">
-											<div class="flex items-start justify-between gap-4">
-												<div class="flex-1 min-w-0">
-													<div class="flex items-center gap-2 mb-2 flex-wrap">
-														<div>
-															<p class="text-sm font-medium text-white">{{ task.nombre }}
-															</p>
-
-														</div>
-														<span
-															class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold transition-all whitespace-nowrap"
-															[ngClass]="{
-        'bg-blue-500/10 text-blue-400 border border-blue-500/20': task.estado === 'subido',
-        'bg-green-500/10 text-green-400 border border-green-500/20': task.estado === 'aprobado',
-        'bg-red-500/10 text-red-400 border border-red-500/20': task.estado === 'rechazado',
-        'bg-gray-500/10 text-gray-400 border border-gray-500/20': !['subido', 'aprobado', 'rechazado'].includes(task.estado)
-      }">
-
-															{{
-															task.estado === 'subido' ? 'Subido' :
-															task.estado === 'aprobado' ? 'Aprobada' :
-															task.estado === 'rechazado' ? 'Rechazada' : 'Pendiente'
-															}}
-														</span>
-													</div>
-													<p class="text-xs text-neutral-400 mb-3">{{ task.descripcion }}</p>
-
-													<!-- Mostrar archivos -->
-													@if (task.archivos && task.archivos.length > 0) {
-													<div class="files-section">
-														<h4>Archivo adjunto:</h4>
-														@for (archivo of task.archivos; track
-														archivo.id_archivo_cliente) {
-														<div class="flex items-center content-center gap-4 mt-4">
-															<a [href]="archivo.ruta" target="_blank"
-																class="file-link hover:text-indigo-400 shadow-sm border border-white/5 rounded-lg px-3 py-2 bg-white/5 flex items-center gap-2 text-xs text-white mb-2 inline-block">
-																📄 Ver archivo
-															</a>
-															<small>Subido: {{ archivo.fecha_subida|
-																date:'dd/MM/yyyy':'UTC' }}</small>
-
-														</div>
-														}
-													</div>
-													}
-
-													<div class="flex flex-wrap gap-3 text-xs text-neutral-500">
-														@if (task.estado === 'aprobado' ) {
-														<span class="flex items-center gap-1">
-															<iconify-icon icon="lucide:check-circle-2" width="12"
-																class="text-green-400"></iconify-icon>
-															Completada: {{ task.estado | titlecase}}
-														</span>
-														}
-														@if (task.trabajador) {
-														<span class="flex items-center gap-1">
-															<iconify-icon icon="lucide:user-check" width="12"
-																class="text-indigo-400"></iconify-icon>
-															Revisado por: {{ task.trabajador.nombres }}
-															{{task.trabajador.apellidos}}
-														</span>
-														}
-													</div>
-												</div>
-
-												<!-- Acciones -->
-												@if (task.estado === 'subido') {
-												<div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-													<hlm-alert-dialog>
-														<button hlmAlertDialogTrigger hlmBtn
-															class="px-3 py-2 text-xs font-medium rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-all flex items-center gap-1 whitespace-nowrap hover:cursor-pointer">
-															<iconify-icon icon="lucide:check" width="14"></iconify-icon>
-															Aprobar
-														</button>
-														<hlm-alert-dialog-content *brnAlertDialogContent="let ctx"
-															class="border border-indigo-500/20 bg-linear-to-br from-indigo-650/30 to-purple-900/30 shadow-lg shadow-indigo-650/20">
-															<hlm-alert-dialog-header>
-																<h2 hlmAlertDialogTitle
-																	class="text-white text-lg font-semibold">¿Aprobar
-																	esta tarea?</h2>
-																<p hlmAlertDialogDescription
-																	class="text-neutral-400 text-sm">
-																	Confirma que deseas aprobar esta tarea. Una vez
-																	confirmada, el estado será permanente.
-																</p>
-															</hlm-alert-dialog-header>
-															<hlm-alert-dialog-footer class="flex gap-3">
-																<button hlmAlertDialogAction (click)="ctx.close()"
-																	(click)="approveTask(task.id_cliente_tarea)"
-																	class="px-4 py-2 text-xs font-medium rounded-lg bg-indigo-600/25 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/35 hover:border-indigo-500/40 shadow-lg shadow-indigo-600/10 transition-all flex items-center gap-2 hover:cursor-pointer">
-																	<iconify-icon icon="lucide:check"
-																		width="14"></iconify-icon>
-																	Confirmar
-																</button>
-																<button hlmAlertDialogCancel (click)="ctx.close()"
-																	class="px-4 py-2 text-xs font-medium rounded-lg bg-white/5 text-neutral-400 border border-white/10 hover:bg-indigo-600/15 hover:border-indigo-500/20 hover:text-neutral-300 transition-all">
-																	Cancelar
-																</button>
-
-															</hlm-alert-dialog-footer>
-														</hlm-alert-dialog-content>
-
-													</hlm-alert-dialog>
-													<button (click)="rejectTask(task.id_cliente_tarea)"
-														class="px-3 py-2 text-xs font-medium rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all flex items-center gap-1 whitespace-nowrap hover:cursor-pointer">
-														<iconify-icon icon="lucide:x" width="14"></iconify-icon>
-														Rechazar
-													</button>
-												</div>
-												}
-												@if (task.estado !== 'subido' && task.estado !== 'pendiente') {
-												<div class="text-right shrink-0">
-													<p class="text-xs text-neutral-500">{{ task.estado === 'aprobado' ?
-														'Aprobada' : 'Rechazada' }}</p>
-												</div>
-												}
-											</div>
-										</div>
-										}
-									</div>
-
-									<!-- Resumen de tareas -->
-									<div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-white/5">
-										<div class="p-3 rounded-lg bg-yellow-500/5 text-center">
-											<p class="text-xs text-neutral-400 mb-1">Pendientes</p>
-											<p class="text-sm font-semibold text-yellow-400">{{
-												getTaskStats(item.tareas).pendiente }}</p>
-										</div>
-										<div class="p-3 rounded-lg bg-green-500/5 text-center">
-											<p class="text-xs text-neutral-400 mb-1">Aprobadas</p>
-											<p class="text-sm font-semibold text-green-400">{{
-												getTaskStats(item.tareas).aprobado }}</p>
-										</div>
-										<div class="p-3 rounded-lg bg-red-500/5 text-center">
-											<p class="text-xs text-neutral-400 mb-1">Rechazadas</p>
-											<p class="text-sm font-semibold text-red-400">{{
-												getTaskStats(item.tareas).rechazado
-												}}</p>
-										</div>
-									</div>
+										{{ task.trabajador.nombres }} {{task.trabajador.apellidos}}
+									</span>
+									}
 								</div>
 							</div>
-						</td>
-					</tr>
-					}
-				</tbody>
-			</table>
-		</div>
 
-		<!-- Table Footer -->
-		<div class="px-6 py-4 border-t border-white/5 bg-white/1 flex items-center justify-between">
-			<p class="text-xs text-neutral-500">Mostrando <span class="font-semibold text-neutral-400">{{
-					clientWithTasks().length }}</span> socios</p>
-			<div class="flex items-center gap-2">
-				<button
-					class="p-2 rounded-lg text-neutral-400 hover:bg-white/5 hover:text-neutral-300 transition-all disabled:opacity-50">
-					<iconify-icon icon="lucide:chevron-left" width="16"></iconify-icon>
-				</button>
-				<span class="text-xs text-neutral-500">Página <span class="font-semibold text-neutral-400">1</span> de
-					<span class="font-semibold text-neutral-400">5</span></span>
-				<button class="p-2 rounded-lg text-neutral-400 hover:bg-white/5 hover:text-neutral-300 transition-all">
-					<iconify-icon icon="lucide:chevron-right" width="16"></iconify-icon>
-				</button>
+							<!-- Actions - compact -->
+							@if (task.estado === 'subido') {
+							<div class="flex flex-col gap-1.5 shrink-0">
+								<hlm-alert-dialog>
+									<button hlmAlertDialogTrigger hlmBtn
+										class="px-2 py-1.5 text-[10px] font-medium rounded-md bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-all flex items-center gap-1 whitespace-nowrap hover:cursor-pointer">
+										<iconify-icon icon="lucide:check" width="12"></iconify-icon>
+										Aprobar
+									</button>
+									<hlm-alert-dialog-content *brnAlertDialogContent="let ctx"
+										class="border border-indigo-500/20 bg-gradient-to-br from-indigo-950/30 to-purple-900/30 shadow-lg shadow-indigo-950/20">
+										<hlm-alert-dialog-header>
+											<h2 hlmAlertDialogTitle class="text-white text-lg font-semibold">
+												¿Aprobar esta tarea?</h2>
+											<p hlmAlertDialogDescription class="text-neutral-400 text-sm">
+												Confirma que deseas aprobar esta tarea. Una vez
+												confirmada, el estado será permanente.
+											</p>
+										</hlm-alert-dialog-header>
+										<hlm-alert-dialog-footer class="flex gap-3">
+											<button hlmAlertDialogAction (click)="ctx.close()"
+												(click)="approveTask(task.id_cliente_tarea)"
+												class="px-4 py-2 text-xs font-medium rounded-lg bg-indigo-600/25 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/35 hover:border-indigo-500/40 shadow-lg shadow-indigo-600/10 transition-all flex items-center gap-2 hover:cursor-pointer">
+												<iconify-icon icon="lucide:check" width="14"></iconify-icon>
+												Confirmar
+											</button>
+											<button hlmAlertDialogCancel (click)="ctx.close()"
+												class="px-4 py-2 text-xs font-medium rounded-lg bg-white/5 text-neutral-400 border border-white/10 hover:bg-indigo-600/15 hover:border-indigo-500/20 hover:text-neutral-300 transition-all">
+												Cancelar
+											</button>
+										</hlm-alert-dialog-footer>
+									</hlm-alert-dialog-content>
+								</hlm-alert-dialog>
+								<button (click)="rejectTask(task.id_cliente_tarea)"
+									class="px-2 py-1.5 text-[10px] font-medium rounded-md bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all flex items-center gap-1 whitespace-nowrap hover:cursor-pointer">
+									<iconify-icon icon="lucide:x" width="12"></iconify-icon>
+									Rechazar
+								</button>
+							</div>
+							}
+						</div>
+					</div>
+					}
+				</div>
 			</div>
 		</div>
+		}
+	</div>
+
+	<!-- Footer -->
+	<div class="flex items-center justify-center py-2">
+		<p class="text-xs text-neutral-500">Mostrando <span class="font-semibold text-neutral-400">{{
+				clientWithTasks().length }}</span> socios</p>
 	</div>
 </div>

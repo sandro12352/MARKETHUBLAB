@@ -174,4 +174,13 @@ export class DetailsProjectComponent implements OnInit {
     });
   }
 
+  calculateDuration(): number {
+    if (!this.proyect() || !this.proyect()!.fecha_registro || !this.proyect()!.fecha_termino) return 0;
+    const start = new Date(this.proyect()!.fecha_registro!);
+    const end = new Date(this.proyect()!.fecha_termino!);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
 }
