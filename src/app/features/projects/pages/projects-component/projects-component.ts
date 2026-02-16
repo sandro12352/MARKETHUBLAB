@@ -249,6 +249,11 @@ export class ProjectsComponent implements OnInit {
     this.filterProjects();
   }
 
+  onStatusFilterChange(value: string) {
+    this.statusFilter.set(value);
+    this.filterProjects();
+  }
+
   getStatusIcon(status: Project['estado']): string {
     const icons: Record<Project['estado'], string> = {
       activo: 'lucidePlay',           // En ejecución

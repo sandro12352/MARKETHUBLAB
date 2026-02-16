@@ -1,0 +1,619 @@
+<button hlmBtn variant="ghost" routerLink="/home/campaigns"
+    class="px-3 py-2 text-sm font-medium hover:bg-white/10 border border-white/10 rounded-lg transition-all flex items-center gap-2 text-neutral-400 hover:text-white absolute">
+    <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+    Volver
+</button>
+
+@if (campaign()) {
+<div class="max-w-6xl mx-auto pt-8 px-8 pb-8 space-y-8">
+
+    <!-- Campaign Header Card -->
+    <div class="rounded-2xl bg-linear-to-br from-white/5 to-white/2 border border-white/10 p-8 shadow-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left: Campaign Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-linear-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
+                        <iconify-icon [icon]="getPlatformIcon(campaign()!.plataforma)" width="28"
+                            class="text-indigo-400"></iconify-icon>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white mb-1">{{ campaign()!.name }}</h1>
+                        <p class="text-neutral-400 text-sm capitalize">{{ campaign()!.plataforma }} · {{
+                            campaign()!.objective }}</p>
+                    </div>
+                </div>
+
+                <!-- Status & Info -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div>
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide mb-2">Estado</p>
+                        <span [ngClass]="getStatusColor(campaign()!.status)"
+                            class="inline-block px-3 py-1.5 rounded-lg border text-sm font-medium capitalize">
+                            {{ getStatusLabel(campaign()!.status) }}
+                        </span>
+                    </div>
+                    <div class="p-4 rounded-lg bg-white/5 border border-white/5">
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide mb-1">Inicio</p>
+                        <p class="text-white font-medium text-sm">{{ campaign()!.fecha_inicio | date: 'dd/MM/yyyy' }}
+                        </p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-white/5 border border-white/5">
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide mb-1">Fin</p>
+                        <p class="text-white font-medium text-sm">{{ campaign()!.fecha_fin | date: 'dd/MM/yyyy' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Budget & Stats -->
+            <div class="space-y-4">
+                <div
+                    class="p-5 rounded-xl bg-linear-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
+                    <div class="flex items-center gap-2 mb-3">
+                        <iconify-icon icon="lucide:wallet" width="18" class="text-indigo-400"></iconify-icon>
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide">Presupuesto Total</p>
+                    </div>
+                    <p class="text-2xl font-bold text-white">${{ campaign()!.presupuesto_total | number:'1.2-2' }}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-4 rounded-lg bg-white/5 border border-white/5">
+                        <iconify-icon icon="lucide:layers" width="16" class="text-purple-400 mb-2"></iconify-icon>
+                        <p class="text-xs text-neutral-500 mb-1">Conjuntos</p>
+                        <p class="text-sm font-semibold text-white">{{ adSets().length }}</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-white/5 border border-white/5">
+                        <iconify-icon icon="lucide:image" width="16" class="text-blue-400 mb-2"></iconify-icon>
+                        <p class="text-xs text-neutral-500 mb-1">Objetivo</p>
+                        <p class="text-sm font-semibold text-white capitalize">{{ campaign()!.objective }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Sets Section -->
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <iconify-icon icon="lucide:layers" width="28" class="text-indigo-400"></iconify-icon>
+                    Conjuntos de Anuncios
+                </h2>
+                <p class="text-neutral-400 text-sm mt-1">Segmenta tu audiencia y define el presupuesto por conjunto.
+                </p>
+            </div>
+
+            <hlm-alert-dialog>
+                <button hlmBtn hlmAlertDialogTrigger (click)="resetAdSetForm()"
+                    class="px-4 py-2 text-xs font-medium hover:bg-indigo-500 border border-transparent rounded-lg shadow-lg transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-indigo-900/20 hover:shadow-indigo-900/30 hover:cursor-pointer">
+                    <iconify-icon icon="lucide:plus" width="16"></iconify-icon>
+                    Nuevo Conjunto
+                </button>
+
+                <!-- AdSet Dialog -->
+                <hlm-alert-dialog-content class="sm:max-w-[600px]" *brnAlertDialogContent="let ctx">
+                    <hlm-alert-dialog-header>
+                        <h3 hlmAlertDialogTitle class="text-white text-xl font-bold">
+                            {{ selectedAdSet() ? 'Editar Conjunto' : 'Crear Conjunto de Anuncios' }}
+                        </h3>
+                        <p hlmAlertDialogDescription class="text-neutral-400">
+                            {{ selectedAdSet() ? 'Actualiza la segmentación y presupuesto.' : 'Define la audiencia y
+                            presupuesto para este grupo de anuncios.' }}
+                        </p>
+                    </hlm-alert-dialog-header>
+
+                    <form [formGroup]="adSetForm" (ngSubmit)="onSubmitAdSet(ctx)" class="space-y-5 py-4">
+                        <div class="space-y-2">
+                            <label hlmLabel class="text-neutral-300">Nombre del conjunto</label>
+                            <input hlmInput formControlName="nombre" type="text"
+                                placeholder="Ej: Audiencia joven 18-25, Remarketing..."
+                                class="w-full bg-white/5 border-white/10" />
+                            @if (adSetForm.get('nombre')?.touched && adSetForm.get('nombre')?.invalid) {
+                            <p class="text-red-400 text-xs italic">El nombre es requerido (mínimo 3 caracteres).</p>
+                            }
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label hlmLabel class="text-neutral-300">Segmentación</label>
+                                <brn-select formControlName="segmentacion" placeholder="Tipo de segmentación">
+                                    <hlm-select-trigger
+                                        class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                        <hlm-select-value />
+                                    </hlm-select-trigger>
+                                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                                        <hlm-option value="intereses"
+                                            class="text-neutral-300 focus:bg-white/10">Intereses</hlm-option>
+                                        <hlm-option value="demografica"
+                                            class="text-neutral-300 focus:bg-white/10">Demográfica</hlm-option>
+                                        <hlm-option value="comportamiento"
+                                            class="text-neutral-300 focus:bg-white/10">Comportamiento</hlm-option>
+                                        <hlm-option value="lookalike"
+                                            class="text-neutral-300 focus:bg-white/10">Lookalike</hlm-option>
+                                        <hlm-option value="remarketing"
+                                            class="text-neutral-300 focus:bg-white/10">Remarketing</hlm-option>
+                                        <hlm-option value="personalizada"
+                                            class="text-neutral-300 focus:bg-white/10">Personalizada</hlm-option>
+                                    </hlm-select-content>
+                                </brn-select>
+                            </div>
+                            <div class="space-y-2">
+                                <label hlmLabel class="text-neutral-300">Presupuesto Diario (USD)</label>
+                                <input hlmInput formControlName="presupuesto_diario" type="number" placeholder="0.00"
+                                    class="w-full bg-white/5 border-white/10" />
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label hlmLabel class="text-neutral-300">Ubicación</label>
+                            <input hlmInput formControlName="ubicacion" type="text"
+                                placeholder="Ej: Lima, Perú; LATAM..." class="w-full bg-white/5 border-white/10" />
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="space-y-2">
+                                <label hlmLabel class="text-neutral-300">Edad Mín.</label>
+                                <input hlmInput formControlName="edad_min" type="number"
+                                    class="w-full bg-white/5 border-white/10" />
+                            </div>
+                            <div class="space-y-2">
+                                <label hlmLabel class="text-neutral-300">Edad Máx.</label>
+                                <input hlmInput formControlName="edad_max" type="number"
+                                    class="w-full bg-white/5 border-white/10" />
+                            </div>
+                            <div class="space-y-2">
+                                <label hlmLabel class="text-neutral-300">Género</label>
+                                <brn-select formControlName="genero" placeholder="Seleccionar">
+                                    <hlm-select-trigger
+                                        class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                        <hlm-select-value />
+                                    </hlm-select-trigger>
+                                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                                        <hlm-option value="todos"
+                                            class="text-neutral-300 focus:bg-white/10">Todos</hlm-option>
+                                        <hlm-option value="masculino"
+                                            class="text-neutral-300 focus:bg-white/10">Masculino</hlm-option>
+                                        <hlm-option value="femenino"
+                                            class="text-neutral-300 focus:bg-white/10">Femenino</hlm-option>
+                                    </hlm-select-content>
+                                </brn-select>
+                            </div>
+                        </div>
+                    </form>
+
+                    <hlm-alert-dialog-footer>
+                        <button hlmBtn variant="ghost" (click)="ctx.close(); resetAdSetForm()"
+                            class="text-neutral-400 hover:text-white">Cancelar</button>
+                        <button hlmBtn (click)="onSubmitAdSet(ctx)" [disabled]="adSetForm.invalid"
+                            class="bg-indigo-600 hover:bg-indigo-500 text-white border-none shadow-lg shadow-indigo-500/20">
+                            {{ selectedAdSet() ? 'Guardar Cambios' : 'Crear Conjunto' }}
+                        </button>
+                    </hlm-alert-dialog-footer>
+                </hlm-alert-dialog-content>
+            </hlm-alert-dialog>
+        </div>
+
+        <!-- Ad Sets List -->
+        <div class="space-y-4">
+            @for (adSet of adSets(); track adSet.id_conjunto) {
+            <div class="rounded-2xl bg-linear-to-br from-white/5 to-white/2 border border-white/10 overflow-hidden transition-all duration-300 hover:border-indigo-500/30"
+                [ngClass]="{'border-indigo-500/40 shadow-[0_0_20px_-5px_rgba(99,102,241,0.2)]': expandedAdSet() === adSet.id_conjunto}">
+
+                <!-- Ad Set Header -->
+                <div class="p-6 cursor-pointer" (click)="toggleAdSet(adSet.id_conjunto!)">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-linear-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center shrink-0">
+                                <iconify-icon icon="lucide:target" width="22" class="text-purple-400"></iconify-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-bold text-lg">{{ adSet.nombre }}</h3>
+                                <p class="text-neutral-400 text-sm flex items-center gap-2">
+                                    <span class="capitalize">{{ adSet.segmentacion }}</span>
+                                    <span class="text-neutral-600">·</span>
+                                    @if(adSet.ubicacion) {
+                                    <span>{{ adSet.ubicacion }}</span>
+                                    <span class="text-neutral-600">·</span>
+                                    }
+                                    <span>{{ adSet.edad_min }}-{{ adSet.edad_max }} años</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <span [ngClass]="getStatusColor(adSet.estado)"
+                                class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold uppercase tracking-wider">
+                                {{ getStatusLabel(adSet.estado) }}
+                            </span>
+                            <div class="p-3 rounded-lg bg-white/5 text-center hidden sm:block">
+                                <p class="text-[10px] text-neutral-500 uppercase">Diario</p>
+                                <p class="text-sm font-semibold text-white">${{ adSet.presupuesto_diario |
+                                    number:'1.2-2' }}</p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-white/5 text-center hidden sm:block">
+                                <p class="text-[10px] text-neutral-500 uppercase">Anuncios</p>
+                                <p class="text-sm font-semibold text-white">{{ getAdsForSet(adSet.id_conjunto!).length
+                                    }}</p>
+                            </div>
+
+                            <!-- Menu -->
+                            <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
+                                <button hlmBtn variant="ghost" size="sm"
+                                    class="h-8 w-8 p-0 rounded-full hover:bg-white/10"
+                                    [hlmDropdownMenuTrigger]="adSetMenu">
+                                    <iconify-icon icon="lucide:more-vertical" width="18"
+                                        class="text-neutral-400"></iconify-icon>
+                                </button>
+                                <ng-template #adSetMenu>
+                                    <hlm-dropdown-menu class="w-48 bg-neutral-950 border-white/10">
+                                        <hlm-alert-dialog>
+                                            <button hlmDropdownMenuItem hlmAlertDialogTrigger (click)="editAdSet(adSet)"
+                                                class="w-full hover:bg-white/5 cursor-pointer">
+                                                <iconify-icon icon="lucide:edit-2" width="14"
+                                                    class="mr-2 text-amber-400"></iconify-icon>
+                                                <span class="text-neutral-300">Editar</span>
+                                            </button>
+                                            <hlm-alert-dialog-content class="sm:max-w-[600px]"
+                                                *brnAlertDialogContent="let ctx">
+                                                <hlm-alert-dialog-header>
+                                                    <h3 hlmAlertDialogTitle class="text-white text-xl font-bold">
+                                                        Editar Conjunto</h3>
+                                                    <p hlmAlertDialogDescription class="text-neutral-400">Actualiza
+                                                        la segmentación del conjunto.</p>
+                                                </hlm-alert-dialog-header>
+                                                <form [formGroup]="adSetForm" class="space-y-5 py-4">
+                                                    <div class="space-y-2">
+                                                        <label hlmLabel class="text-neutral-300">Nombre</label>
+                                                        <input hlmInput formControlName="nombre" type="text"
+                                                            class="w-full bg-white/5 border-white/10" />
+                                                    </div>
+                                                    <div class="grid grid-cols-2 gap-4">
+                                                        <div class="space-y-2">
+                                                            <label hlmLabel class="text-neutral-300">Presupuesto</label>
+                                                            <input hlmInput formControlName="presupuesto_diario"
+                                                                type="number"
+                                                                class="w-full bg-white/5 border-white/10" />
+                                                        </div>
+                                                        <div class="space-y-2">
+                                                            <label hlmLabel class="text-neutral-300">Ubicación</label>
+                                                            <input hlmInput formControlName="ubicacion" type="text"
+                                                                class="w-full bg-white/5 border-white/10" />
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <hlm-alert-dialog-footer>
+                                                    <button hlmBtn variant="ghost"
+                                                        (click)="ctx.close(); resetAdSetForm()"
+                                                        class="text-neutral-400 hover:text-white">Cancelar</button>
+                                                    <button hlmBtn (click)="onSubmitAdSet(ctx)"
+                                                        [disabled]="adSetForm.invalid"
+                                                        class="bg-indigo-600 hover:bg-indigo-500 text-white border-none">
+                                                        Guardar</button>
+                                                </hlm-alert-dialog-footer>
+                                            </hlm-alert-dialog-content>
+                                        </hlm-alert-dialog>
+                                        <hlm-dropdown-menu-separator class="bg-white/5"></hlm-dropdown-menu-separator>
+                                        <button hlmDropdownMenuItem (click)="deleteAdSet(adSet.id_conjunto!)"
+                                            class="text-red-400 hover:bg-red-500/10 cursor-pointer">
+                                            <iconify-icon icon="lucide:trash-2" width="14" class="mr-2"></iconify-icon>
+                                            <span>Eliminar</span>
+                                        </button>
+                                    </hlm-dropdown-menu>
+                                </ng-template>
+                            </div>
+
+                            <!-- Expand Chevron -->
+                            <iconify-icon icon="lucide:chevron-down" width="20"
+                                class="text-neutral-400 transition-transform duration-300"
+                                [ngClass]="{'rotate-180': expandedAdSet() === adSet.id_conjunto}">
+                            </iconify-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expanded: Ads Section -->
+                @if (expandedAdSet() === adSet.id_conjunto) {
+                <div class="border-t border-white/5 bg-white/2">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h4 class="text-white font-semibold flex items-center gap-2">
+                                <iconify-icon icon="lucide:image" width="18" class="text-blue-400"></iconify-icon>
+                                Anuncios
+                                <span class="text-xs text-neutral-500 bg-white/5 px-2 py-0.5 rounded-full">{{
+                                    getAdsForSet(adSet.id_conjunto!).length }}</span>
+                            </h4>
+
+                            <hlm-alert-dialog>
+                                <button hlmBtn hlmAlertDialogTrigger size="sm"
+                                    (click)="openAdDialog(adSet.id_conjunto!)"
+                                    class="px-3 py-1.5 text-xs font-medium hover:bg-indigo-500 border border-transparent rounded-lg transition-all flex items-center gap-2 text-white bg-indigo-600 hover:cursor-pointer">
+                                    <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+                                    Nuevo Anuncio
+                                </button>
+
+                                <!-- Ad Dialog -->
+                                <hlm-alert-dialog-content class="sm:max-w-[600px]" *brnAlertDialogContent="let ctx">
+                                    <hlm-alert-dialog-header>
+                                        <h3 hlmAlertDialogTitle class="text-white text-xl font-bold">
+                                            {{ selectedAd() ? 'Editar Anuncio' : 'Crear Nuevo Anuncio' }}
+                                        </h3>
+                                        <p hlmAlertDialogDescription class="text-neutral-400">
+                                            {{ selectedAd() ? 'Actualiza el contenido del anuncio.' : 'Diseña el
+                                            contenido creativo de tu anuncio.' }}
+                                        </p>
+                                    </hlm-alert-dialog-header>
+
+                                    <form [formGroup]="adForm" (ngSubmit)="onSubmitAd(ctx)" class="space-y-5 py-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label hlmLabel class="text-neutral-300">Nombre del
+                                                    anuncio</label>
+                                                <input hlmInput formControlName="nombre" type="text"
+                                                    placeholder="Ej: Anuncio Principal v1..."
+                                                    class="w-full bg-white/5 border-white/10" />
+                                                @if (adForm.get('nombre')?.touched &&
+                                                adForm.get('nombre')?.invalid) {
+                                                <p class="text-red-400 text-xs italic">El nombre es
+                                                    requerido.</p>
+                                                }
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label hlmLabel class="text-neutral-300">Tipo de
+                                                    anuncio</label>
+                                                <brn-select formControlName="tipo" placeholder="Tipo">
+                                                    <hlm-select-trigger
+                                                        class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                                        <hlm-select-value />
+                                                    </hlm-select-trigger>
+                                                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                                                        <hlm-option value="imagen"
+                                                            class="text-neutral-300 focus:bg-white/10">
+                                                            Imagen</hlm-option>
+                                                        <hlm-option value="video"
+                                                            class="text-neutral-300 focus:bg-white/10">
+                                                            Video</hlm-option>
+                                                        <hlm-option value="carrusel"
+                                                            class="text-neutral-300 focus:bg-white/10">
+                                                            Carrusel</hlm-option>
+                                                        <hlm-option value="historia"
+                                                            class="text-neutral-300 focus:bg-white/10">
+                                                            Historia</hlm-option>
+                                                    </hlm-select-content>
+                                                </brn-select>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-2">
+                                            <label hlmLabel class="text-neutral-300">Título del
+                                                anuncio</label>
+                                            <input hlmInput formControlName="titulo" type="text"
+                                                placeholder="Título que verá tu audiencia..."
+                                                class="w-full bg-white/5 border-white/10" />
+                                        </div>
+
+                                        <div class="space-y-2">
+                                            <label hlmLabel class="text-neutral-300">Texto
+                                                principal</label>
+                                            <textarea hlmTextarea formControlName="texto_principal"
+                                                placeholder="El copy principal de tu anuncio..."
+                                                class="w-full bg-white/5 border-white/10 min-h-[80px]"></textarea>
+                                        </div>
+
+                                        <div class="space-y-2">
+                                            <label hlmLabel class="text-neutral-300">Descripción
+                                                (opcional)</label>
+                                            <input hlmInput formControlName="descripcion" type="text"
+                                                placeholder="Descripción adicional..."
+                                                class="w-full bg-white/5 border-white/10" />
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label hlmLabel class="text-neutral-300">URL de
+                                                    destino</label>
+                                                <input hlmInput formControlName="url_destino" type="url"
+                                                    placeholder="https://..."
+                                                    class="w-full bg-white/5 border-white/10" />
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label hlmLabel class="text-neutral-300">Call to
+                                                    Action</label>
+                                                <brn-select formControlName="call_to_action"
+                                                    placeholder="Seleccionar CTA">
+                                                    <hlm-select-trigger
+                                                        class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                                        <hlm-select-value />
+                                                    </hlm-select-trigger>
+                                                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                                                        <hlm-option value="mas_informacion"
+                                                            class="text-neutral-300 focus:bg-white/10">Más
+                                                            Información</hlm-option>
+                                                        <hlm-option value="comprar"
+                                                            class="text-neutral-300 focus:bg-white/10">Comprar
+                                                            Ahora</hlm-option>
+                                                        <hlm-option value="registrarse"
+                                                            class="text-neutral-300 focus:bg-white/10">Registrarse</hlm-option>
+                                                        <hlm-option value="descargar"
+                                                            class="text-neutral-300 focus:bg-white/10">Descargar</hlm-option>
+                                                        <hlm-option value="contactar"
+                                                            class="text-neutral-300 focus:bg-white/10">Contactar</hlm-option>
+                                                        <hlm-option value="reservar"
+                                                            class="text-neutral-300 focus:bg-white/10">Reservar</hlm-option>
+                                                    </hlm-select-content>
+                                                </brn-select>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <hlm-alert-dialog-footer>
+                                        <button hlmBtn variant="ghost" (click)="ctx.close(); resetAdForm()"
+                                            class="text-neutral-400 hover:text-white">Cancelar</button>
+                                        <button hlmBtn (click)="onSubmitAd(ctx)" [disabled]="adForm.invalid"
+                                            class="bg-indigo-600 hover:bg-indigo-500 text-white border-none shadow-lg shadow-indigo-500/20">
+                                            {{ selectedAd() ? 'Guardar Cambios' : 'Crear Anuncio' }}
+                                        </button>
+                                    </hlm-alert-dialog-footer>
+                                </hlm-alert-dialog-content>
+                            </hlm-alert-dialog>
+                        </div>
+
+                        <!-- Ads Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            @for (ad of getAdsForSet(adSet.id_conjunto!); track ad.id_anuncio) {
+                            <div
+                                class="group/ad rounded-xl bg-linear-to-br from-white/5 to-white/2 border border-white/8 p-5 hover:border-blue-500/40 transition-all duration-300">
+
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-linear-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/20 flex items-center justify-center shrink-0">
+                                            <iconify-icon [icon]="getAdTypeIcon(ad.tipo)" width="18"
+                                                class="text-blue-400"></iconify-icon>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-white font-semibold text-sm line-clamp-1">
+                                                {{ ad.nombre }}</h5>
+                                            <p class="text-neutral-500 text-xs capitalize">{{ ad.tipo
+                                                }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="opacity-0 group-hover/ad:opacity-100 transition-opacity">
+                                        <button hlmBtn variant="ghost" size="sm"
+                                            class="h-7 w-7 p-0 rounded-full hover:bg-white/10"
+                                            [hlmDropdownMenuTrigger]="adMenu">
+                                            <iconify-icon icon="lucide:more-vertical" width="14"
+                                                class="text-neutral-400"></iconify-icon>
+                                        </button>
+                                        <ng-template #adMenu>
+                                            <hlm-dropdown-menu class="w-40 bg-neutral-950 border-white/10">
+                                                <hlm-alert-dialog>
+                                                    <button hlmDropdownMenuItem hlmAlertDialogTrigger
+                                                        (click)="editAd(ad, adSet.id_conjunto!)"
+                                                        class="w-full hover:bg-white/5 cursor-pointer">
+                                                        <iconify-icon icon="lucide:edit-2" width="14"
+                                                            class="mr-2 text-amber-400"></iconify-icon>
+                                                        <span class="text-neutral-300">Editar</span>
+                                                    </button>
+                                                    <hlm-alert-dialog-content class="sm:max-w-[600px]"
+                                                        *brnAlertDialogContent="let ctx">
+                                                        <hlm-alert-dialog-header>
+                                                            <h3 hlmAlertDialogTitle
+                                                                class="text-white text-xl font-bold">
+                                                                Editar Anuncio</h3>
+                                                            <p hlmAlertDialogDescription class="text-neutral-400">
+                                                                Actualiza
+                                                                el contenido del anuncio.</p>
+                                                        </hlm-alert-dialog-header>
+                                                        <form [formGroup]="adForm" class="space-y-4 py-4">
+                                                            <div class="space-y-2">
+                                                                <label hlmLabel class="text-neutral-300">Nombre</label>
+                                                                <input hlmInput formControlName="nombre" type="text"
+                                                                    class="w-full bg-white/5 border-white/10" />
+                                                            </div>
+                                                            <div class="space-y-2">
+                                                                <label hlmLabel class="text-neutral-300">Título</label>
+                                                                <input hlmInput formControlName="titulo" type="text"
+                                                                    class="w-full bg-white/5 border-white/10" />
+                                                            </div>
+                                                            <div class="space-y-2">
+                                                                <label hlmLabel class="text-neutral-300">Texto</label>
+                                                                <textarea hlmTextarea formControlName="texto_principal"
+                                                                    class="w-full bg-white/5 border-white/10 min-h-[60px]"></textarea>
+                                                            </div>
+                                                        </form>
+                                                        <hlm-alert-dialog-footer>
+                                                            <button hlmBtn variant="ghost"
+                                                                (click)="ctx.close(); resetAdForm()"
+                                                                class="text-neutral-400 hover:text-white">Cancelar</button>
+                                                            <button hlmBtn (click)="onSubmitAd(ctx)"
+                                                                [disabled]="adForm.invalid"
+                                                                class="bg-indigo-600 hover:bg-indigo-500 text-white border-none">Guardar</button>
+                                                        </hlm-alert-dialog-footer>
+                                                    </hlm-alert-dialog-content>
+                                                </hlm-alert-dialog>
+                                                <hlm-dropdown-menu-separator
+                                                    class="bg-white/5"></hlm-dropdown-menu-separator>
+                                                <button hlmDropdownMenuItem
+                                                    (click)="deleteAd(ad.id_anuncio!, adSet.id_conjunto!)"
+                                                    class="text-red-400 hover:bg-red-500/10 cursor-pointer">
+                                                    <iconify-icon icon="lucide:trash-2" width="14"
+                                                        class="mr-2"></iconify-icon>
+                                                    <span>Eliminar</span>
+                                                </button>
+                                            </hlm-dropdown-menu>
+                                        </ng-template>
+                                    </div>
+                                </div>
+
+                                <span [ngClass]="getStatusColor(ad.estado)"
+                                    class="inline-block px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wider mb-3">
+                                    {{ getStatusLabel(ad.estado) }}
+                                </span>
+
+                                <p class="text-white text-sm font-medium mb-1 line-clamp-1">{{ ad.titulo }}</p>
+                                @if(ad.texto_principal) {
+                                <p class="text-neutral-500 text-xs line-clamp-2 mb-3">{{
+                                    ad.texto_principal }}</p>
+                                }
+
+                                <div class="flex items-center justify-between pt-3 border-t border-white/5">
+                                    @if(ad.call_to_action) {
+                                    <span
+                                        class="text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md font-medium">
+                                        {{ getCtaLabel(ad.call_to_action) }}
+                                    </span>
+                                    }
+                                    @if(ad.url_destino) {
+                                    <a [href]="ad.url_destino" target="_blank"
+                                        class="text-neutral-500 hover:text-indigo-400 transition-colors">
+                                        <iconify-icon icon="lucide:external-link" width="14"></iconify-icon>
+                                    </a>
+                                    }
+                                </div>
+                            </div>
+                            } @empty {
+                            <div
+                                class="col-span-full flex flex-col items-center justify-center py-12 px-4 rounded-xl bg-white/2 border border-dashed border-white/10">
+                                <iconify-icon icon="lucide:image-plus" width="32"
+                                    class="text-neutral-600 mb-3"></iconify-icon>
+                                <p class="text-neutral-500 text-sm text-center">Aún no hay
+                                    anuncios en este conjunto.</p>
+                                <p class="text-neutral-600 text-xs text-center mt-1">Crea tu
+                                    primer anuncio para comenzar a publicitar.</p>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+            } @empty {
+            <div
+                class="flex flex-col items-center justify-center py-20 px-4 rounded-3xl bg-white/2 border border-dashed border-white/10">
+                <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                    <iconify-icon icon="lucide:layers" width="40" class="text-neutral-600"></iconify-icon>
+                </div>
+                <h3 class="text-white font-bold text-xl mb-2 text-center">No hay conjuntos de anuncios</h3>
+                <p class="text-neutral-500 text-sm text-center max-w-sm leading-relaxed">
+                    Crea tu primer conjunto de anuncios para definir la segmentación y presupuesto de tu audiencia.
+                </p>
+            </div>
+            }
+        </div>
+    </div>
+
+</div>
+} @else {
+<div class="flex items-center justify-center min-h-screen">
+    <div class="text-center space-y-4">
+        <div class="w-12 h-12 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin mx-auto">
+        </div>
+        <p class="text-neutral-400">Cargando campaña...</p>
+    </div>
+</div>
+}
+
+<hlm-toaster />

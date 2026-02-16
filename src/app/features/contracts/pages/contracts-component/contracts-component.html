@@ -34,14 +34,19 @@
                         <label
                             class="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Seleccionar
                             Cliente</label>
-                        <select [(ngModel)]="selectedClientId"
-                            class="w-full bg-neutral-950 border border-white/10 rounded-2xl px-4 py-3 text-sm text-neutral-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all outline-none">
-                            <option [ngValue]="null" disabled selected>Elige un cliente...</option>
-                            @for (cliente of clientes(); track cliente.id_cliente) {
-                            <option [ngValue]="cliente.id_cliente">{{ cliente.nombres }} {{ cliente.apellidos }}
-                            </option>
-                            }
-                        </select>
+                        <brn-select class="inline-block w-full" placeholder="Elige un cliente..."
+                            (valueChange)="onClientSelect($event)">
+                            <hlm-select-trigger
+                                class="w-full bg-neutral-950 border-white/10 rounded-2xl text-sm text-neutral-300 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all">
+                                <hlm-select-value />
+                            </hlm-select-trigger>
+                            <hlm-select-content class="border-white/10">
+                                @for (cliente of clientes(); track cliente.id_cliente) {
+                                <hlm-option [value]="cliente.id_cliente">{{ cliente.nombres }} {{ cliente.apellidos }}
+                                </hlm-option>
+                                }
+                            </hlm-select-content>
+                        </brn-select>
                     </div>
 
                     <!-- Contract PDF -->

@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { BrnSelectImports } from '@spartan-ng/brain/select';
+import { HlmSelectImports } from '@spartan/ui/select';
 import { ContractService } from '../../services/contract.service';
 import { ClientsService } from '../../../clients/services/clients.service';
 import { AuthService } from '../../../auth/services/auth-service';
@@ -13,7 +15,7 @@ import { HlmToasterImports } from '@spartan/ui/sonner';
 @Component({
   selector: 'app-contracts-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, HlmToasterImports],
+  imports: [CommonModule, FormsModule, HlmToasterImports, BrnSelectImports, HlmSelectImports],
   templateUrl: './contracts-component.html',
   styleUrl: './contracts-component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -108,6 +110,10 @@ export class ContractsComponent implements OnInit {
           toast.error('Error al subir los documentos.');
         }
       });
+  }
+
+  onClientSelect(value: any) {
+    this.selectedClientId.set(Number(value));
   }
 
   resetForm() {
