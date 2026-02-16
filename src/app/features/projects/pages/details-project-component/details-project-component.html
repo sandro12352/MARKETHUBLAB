@@ -199,7 +199,7 @@
                 <div class="flex items-start justify-between mb-6">
                     <div class="flex items-center gap-4">
                         <div
-                            class="w-14 h-14 rounded-2xl bg-linear-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center group-hover:from-indigo-500/30 group-hover:to-purple-500/30 transition-all duration-500 shadow-inner shrink-0">
+                            class="w-14 h-14 rounded-lg bg-linear-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center group-hover:from-indigo-500/30 group-hover:to-purple-500/30 transition-all duration-500 shadow-inner shrink-0">
                             <iconify-icon [icon]="folder.icono || 'lucide:folder'" width="28"
                                 class="text-indigo-400 group-hover:scale-110 transition-transform"></iconify-icon>
                         </div>
@@ -284,6 +284,7 @@
                     </div>
 
                     <button hlmBtn variant="outline"
+                        [routerLink]="'/home/projects/' + proyect()!.id_proyecto + '/folder/' + folder.id_carpeta_material"
                         class="w-full border-white/10 text-indigo-300 hover:text-white hover:bg-indigo-600 hover:border-transparent transition-all duration-300 group/btn rounded-xl py-2 h-10 text-sm">
                         <span>Ver Contenido</span>
                         <iconify-icon icon="lucide:arrow-right" width="14"

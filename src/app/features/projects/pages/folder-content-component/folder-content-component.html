@@ -1,0 +1,472 @@
+<!-- Back Navigation -->
+<button hlmBtn variant="ghost" [routerLink]="'/home/projects/' + id_proyecto"
+    class="px-3 py-2 text-sm font-medium hover:bg-white/10 border border-white/10 rounded-lg transition-all flex items-center gap-2 text-neutral-400 hover:text-white absolute z-10">
+    <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+    Volver a Carpetas
+</button>
+
+@if (folder()) {
+<div class="max-w-6xl mr-auto ml-auto pt-8 pr-8 pb-8 pl-8 space-y-8">
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-2">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-16 h-16 rounded-2xl bg-linear-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center shadow-lg shadow-indigo-500/10">
+                <iconify-icon [icon]="folder()!.icono || 'lucide:folder'" width="32"
+                    class="text-indigo-400"></iconify-icon>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 text-sm text-neutral-500 mb-1">
+                    <iconify-icon icon="lucide:folder" width="14"></iconify-icon>
+                    <span>Carpeta</span>
+                </div>
+                <h1 class="text-3xl font-bold tracking-tight text-white">{{ folder()!.nombre }}</h1>
+                @if (folder()!.descripcion) {
+                <p class="text-neutral-400 text-sm mt-1">{{ folder()!.descripcion }}</p>
+                }
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Toggle View -->
+            <button hlmBtn variant="ghost" (click)="toggleViewMode()"
+                class="px-3 py-2 text-sm font-medium hover:bg-white/10 border border-white/10 rounded-lg transition-all flex items-center gap-2 text-neutral-400 hover:text-white">
+                <iconify-icon [icon]="viewMode() === 'grid' ? 'lucide:list' : 'lucide:grid-3x3'"
+                    width="16"></iconify-icon>
+                {{ viewMode() === 'grid' ? 'Lista' : 'Grilla' }}
+            </button>
+
+            <!-- Upload Button -->
+            <hlm-alert-dialog>
+                <button hlmBtn hlmAlertDialogTrigger (click)="resetContentForm()"
+                    class="px-4 py-2 text-xs font-medium hover:bg-indigo-500 border border-transparent rounded-lg shadow-lg transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-indigo-900/20 hover:shadow-indigo-900/30 hover:cursor-pointer">
+                    <iconify-icon icon="lucide:upload" width="16"></iconify-icon>
+                    Subir Contenido
+                </button>
+
+                <!-- Upload Dialog -->
+                <hlm-alert-dialog-content class="sm:max-w-[560px]" *brnAlertDialogContent="let ctx">
+                    <hlm-alert-dialog-header>
+                        <h3 hlmAlertDialogTitle class="text-white text-xl font-bold">
+                            Subir Nuevo Contenido
+                        </h3>
+                        <p hlmAlertDialogDescription class="text-neutral-400">
+                            Sube imágenes, videos, documentos u otros archivos a esta carpeta.
+                        </p>
+                    </hlm-alert-dialog-header>
+
+                    <form [formGroup]="contentForm" class="space-y-5 py-4">
+
+                        <!-- Drag & Drop Zone -->
+                        <div class="relative" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+                            (drop)="onDrop($event)">
+
+                            @if (!selectedFile()) {
+                            <label for="file-upload"
+                                class="flex flex-col items-center justify-center py-10 px-6 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer"
+                                [ngClass]="isDragging() ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 bg-white/3 hover:border-indigo-500/50 hover:bg-white/5'">
+                                <div
+                                    class="w-16 h-16 rounded-full bg-linear-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center mb-4">
+                                    <iconify-icon icon="lucide:cloud-upload" width="32"
+                                        [ngClass]="isDragging() ? 'text-indigo-400' : 'text-neutral-500'"></iconify-icon>
+                                </div>
+                                <p class="text-white font-semibold text-base mb-1">
+                                    {{ isDragging() ? '¡Suelta tu archivo aquí!' : 'Arrastra y suelta tu archivo' }}
+                                </p>
+                                <p class="text-neutral-500 text-sm">
+                                    o <span class="text-indigo-400 underline underline-offset-2">haz clic para
+                                        buscar</span>
+                                </p>
+                                <p class="text-neutral-600 text-xs mt-3">
+                                    Soporta: Imágenes, Videos, PDFs, Documentos
+                                </p>
+                                <input id="file-upload" type="file" class="hidden" (change)="onFileSelected($event)"
+                                    accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+                            </label>
+                            } @else {
+                            <!-- File Preview -->
+                            <div class="rounded-2xl border border-white/10 bg-white/3 p-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 rounded-xl bg-linear-to-br flex items-center justify-center"
+                                            [ngClass]="getFileBgColor(getSelectedFileType())">
+                                            <iconify-icon [icon]="getFileIcon(getSelectedFileType())" width="24"
+                                                [ngClass]="getFileIconColor(getSelectedFileType())"></iconify-icon>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-medium text-sm truncate max-w-[280px]">{{
+                                                selectedFile()!.name }}</p>
+                                            <p class="text-neutral-500 text-xs">{{ formatFileSize(selectedFile()!.size)
+                                                }}</p>
+                                        </div>
+                                    </div>
+                                    <button hlmBtn variant="ghost" (click)="resetContentForm()"
+                                        class="h-8 w-8 p-0 rounded-full hover:bg-red-500/10">
+                                        <iconify-icon icon="lucide:x" width="16" class="text-red-400"></iconify-icon>
+                                    </button>
+                                </div>
+
+                                <!-- Image/Video preview -->
+                                @if (previewUrl()) {
+                                <div class="rounded-xl overflow-hidden border border-white/5">
+                                    @if (getSelectedFileType() === 'imagen') {
+                                    <img [src]="previewUrl()" alt="Preview" class="w-full h-40 object-cover" />
+                                    } @else if (getSelectedFileType() === 'video') {
+                                    <video [src]="previewUrl()" class="w-full h-40 object-cover" controls></video>
+                                    }
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+
+                        <!-- Name -->
+                        <div class="space-y-2">
+                            <label hlmLabel for="content-name" class="text-neutral-300">Nombre del contenido</label>
+                            <input hlmInput id="content-name" formControlName="nombre" type="text"
+                                placeholder="Ej: Logo principal, Video intro..."
+                                class="w-full bg-white/5 border-white/10" />
+                            @if (contentForm.get('nombre')?.touched && contentForm.get('nombre')?.invalid) {
+                            <p class="text-red-400 text-xs italic">El nombre es requerido (mínimo 2 caracteres).</p>
+                            }
+                        </div>
+
+                        <!-- Description -->
+                        <div class="space-y-2">
+                            <label hlmLabel for="content-desc" class="text-neutral-300">Descripción (Opcional)</label>
+                            <textarea hlmTextarea id="content-desc" formControlName="descripcion"
+                                placeholder="Breve descripción del contenido..."
+                                class="w-full bg-white/5 border-white/10 min-h-[80px]"></textarea>
+                        </div>
+                    </form>
+
+                    <hlm-alert-dialog-footer>
+                        <button hlmBtn variant="ghost" (click)="ctx.close(); resetContentForm()"
+                            class="text-neutral-400 hover:text-white">Cancelar</button>
+                        <button hlmBtn (click)="onSubmitContent(ctx)"
+                            [disabled]="contentForm.invalid || !selectedFile() || isUploading()"
+                            class="bg-indigo-600 hover:bg-indigo-500 text-white border-none shadow-lg shadow-indigo-500/20 flex items-center gap-2">
+                            @if (isUploading()) {
+                            <div class="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin">
+                            </div>
+                            <span>Subiendo...</span>
+                            } @else {
+                            <iconify-icon icon="lucide:upload" width="14"></iconify-icon>
+                            <span>Subir Contenido</span>
+                            }
+                        </button>
+                    </hlm-alert-dialog-footer>
+                </hlm-alert-dialog-content>
+            </hlm-alert-dialog>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-2 mb-2">
+                <iconify-icon icon="lucide:files" width="16" class="text-indigo-400"></iconify-icon>
+                <span class="text-xs text-neutral-500 uppercase tracking-wider">Total</span>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ folderContents().length }}</p>
+        </div>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-2 mb-2">
+                <iconify-icon icon="lucide:image" width="16" class="text-emerald-400"></iconify-icon>
+                <span class="text-xs text-neutral-500 uppercase tracking-wider">Imágenes</span>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ imageCount() }}</p>
+        </div>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-2 mb-2">
+                <iconify-icon icon="lucide:video" width="16" class="text-purple-400"></iconify-icon>
+                <span class="text-xs text-neutral-500 uppercase tracking-wider">Videos</span>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ videoCount() }}</p>
+        </div>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-2 mb-2">
+                <iconify-icon icon="lucide:file-text" width="16" class="text-blue-400"></iconify-icon>
+                <span class="text-xs text-neutral-500 uppercase tracking-wider">Documentos</span>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ docCount() }}</p>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    @if (isLoading()) {
+    <!-- Loading State -->
+    <div class="flex items-center justify-center py-20">
+        <div class="text-center space-y-4">
+            <div class="w-12 h-12 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin mx-auto">
+            </div>
+            <p class="text-neutral-400">Cargando contenido...</p>
+        </div>
+    </div>
+    } @else if (folderContents().length === 0) {
+    <!-- Empty State -->
+    <div
+        class="flex flex-col items-center justify-center py-24 px-4 rounded-3xl bg-linear-to-br from-white/3 to-white/1 border border-dashed border-white/10 relative overflow-hidden">
+
+        <!-- Decorative background circles -->
+        <div class="absolute w-72 h-72 rounded-full bg-indigo-500/5 -top-20 -right-20 blur-2xl"></div>
+        <div class="absolute w-56 h-56 rounded-full bg-purple-500/5 -bottom-16 -left-16 blur-2xl"></div>
+
+        <!-- Icon stack -->
+        <div class="relative mb-8">
+            <div
+                class="w-24 h-24 rounded-3xl bg-linear-to-br from-white/5 to-white/2 border border-white/10 flex items-center justify-center shadow-2xl">
+                <iconify-icon icon="lucide:folder-open" width="48" class="text-neutral-600"></iconify-icon>
+            </div>
+            <!-- Floating mini icons -->
+            <div class="absolute -top-3 -right-3 w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center animate-bounce"
+                style="animation-delay: 0.2s; animation-duration: 3s">
+                <iconify-icon icon="lucide:image" width="18" class="text-emerald-400"></iconify-icon>
+            </div>
+            <div class="absolute -bottom-2 -right-4 w-9 h-9 rounded-xl bg-linear-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center animate-bounce"
+                style="animation-delay: 0.6s; animation-duration: 3.5s">
+                <iconify-icon icon="lucide:video" width="16" class="text-purple-400"></iconify-icon>
+            </div>
+            <div class="absolute -top-2 -left-4 w-9 h-9 rounded-xl bg-linear-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 flex items-center justify-center animate-bounce"
+                style="animation-delay: 1s; animation-duration: 4s">
+                <iconify-icon icon="lucide:file-text" width="16" class="text-blue-400"></iconify-icon>
+            </div>
+        </div>
+
+        <h3 class="text-white font-bold text-2xl mb-3 text-center relative">Esta carpeta está vacía</h3>
+        <p class="text-neutral-500 text-sm text-center max-w-md leading-relaxed mb-8 relative">
+            Aún no hay contenido en esta carpeta. Sube imágenes, videos, documentos
+            u otros archivos para comenzar a organizar el material de tu proyecto.
+        </p>
+
+        <!-- Quick action cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg relative">
+            <div
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/3 border border-white/5 hover:border-emerald-500/30 transition-all duration-300 group">
+                <div
+                    class="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-500/10 to-teal-500/10 flex items-center justify-center group-hover:from-emerald-500/20 group-hover:to-teal-500/20 transition-all">
+                    <iconify-icon icon="lucide:image" width="22" class="text-emerald-400"></iconify-icon>
+                </div>
+                <span class="text-neutral-400 text-xs font-medium">Imágenes</span>
+                <span class="text-neutral-600 text-[10px]">JPG, PNG, WEBP</span>
+            </div>
+            <div
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/3 border border-white/5 hover:border-purple-500/30 transition-all duration-300 group">
+                <div
+                    class="w-12 h-12 rounded-xl bg-linear-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center group-hover:from-purple-500/20 group-hover:to-pink-500/20 transition-all">
+                    <iconify-icon icon="lucide:video" width="22" class="text-purple-400"></iconify-icon>
+                </div>
+                <span class="text-neutral-400 text-xs font-medium">Videos</span>
+                <span class="text-neutral-600 text-[10px]">MP4, MOV, AVI</span>
+            </div>
+            <div
+                class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/3 border border-white/5 hover:border-blue-500/30 transition-all duration-300 group">
+                <div
+                    class="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500/10 to-cyan-500/10 flex items-center justify-center group-hover:from-blue-500/20 group-hover:to-cyan-500/20 transition-all">
+                    <iconify-icon icon="lucide:file-text" width="22" class="text-blue-400"></iconify-icon>
+                </div>
+                <span class="text-neutral-400 text-xs font-medium">Documentos</span>
+                <span class="text-neutral-600 text-[10px]">PDF, DOC, XLS</span>
+            </div>
+        </div>
+
+        <p class="text-neutral-600 text-xs mt-6 flex items-center gap-1.5 relative">
+            <iconify-icon icon="lucide:info" width="14"></iconify-icon>
+            Usa el botón "Subir Contenido" para agregar archivos
+        </p>
+    </div>
+    } @else {
+    <!-- Content Grid View -->
+    @if (viewMode() === 'grid') {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        @for (content of folderContents(); track content.id_proyecto_material) {
+        <div
+            class="group relative rounded-2xl bg-linear-to-br from-white/8 to-white/2 border border-white/10 overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(99,102,241,0.3)] hover:-translate-y-1">
+
+            <!-- Thumbnail / Preview Area (clickeable) -->
+            <div class="relative h-44 bg-white/3 overflow-hidden cursor-pointer" (click)="openPreview(content)">
+                @if (isImage(content)) {
+                <img [src]="content.ruta" [alt]="content.nombre"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                } @else if (isVideo(content)) {
+                <video [src]="content.ruta" class="w-full h-full object-cover" muted></video>
+                <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/25 transition-all">
+                        <iconify-icon icon="lucide:play" width="20" class="text-white ml-0.5"></iconify-icon>
+                    </div>
+                </div>
+                } @else {
+                <div class="w-full h-full flex items-center justify-center">
+                    <div class="w-20 h-20 rounded-2xl bg-linear-to-br flex items-center justify-center"
+                        [ngClass]="getFileBgColor(content.tipo)">
+                        <iconify-icon [icon]="getFileIcon(content.tipo)" width="36"
+                            [ngClass]="getFileIconColor(content.tipo)"></iconify-icon>
+                    </div>
+                </div>
+                }
+
+                <!-- Type Badge -->
+                <div class="absolute top-3 left-3">
+                    <span
+                        class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-bold backdrop-blur-sm border"
+                        [ngClass]="{
+                            'bg-emerald-500/20 text-emerald-300 border-emerald-500/30': content.tipo === 'imagen',
+                            'bg-purple-500/20 text-purple-300 border-purple-500/30': content.tipo === 'video',
+                            'bg-blue-500/20 text-blue-300 border-blue-500/30': content.tipo === 'documento',
+                            'bg-neutral-500/20 text-neutral-300 border-neutral-500/30': content.tipo === 'otro'
+                        }">
+                        {{ content.tipo }}
+                    </span>
+                </div>
+
+                <!-- Hover overlay hint -->
+                <div
+                    class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                        <iconify-icon icon="lucide:eye" width="18" class="text-white"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="p-4 space-y-2">
+                <div class="flex items-center justify-between">
+                    <h4
+                        class="text-white font-semibold text-sm line-clamp-1 group-hover:text-indigo-300 transition-colors flex-1">
+                        {{ content.nombre }}
+                    </h4>
+                    <button hlmBtn variant="ghost"
+                        (click)="deleteContent(content.id_proyecto_material!); $event.stopPropagation()"
+                        class="h-7 w-7 p-0 rounded-lg hover:bg-red-500/10 shrink-0 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <iconify-icon icon="lucide:trash-2" width="14" class="text-red-400"></iconify-icon>
+                    </button>
+                </div>
+                @if (content.descripcion) {
+                <p class="text-neutral-500 text-xs line-clamp-2">{{ content.descripcion }}</p>
+                }
+                <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamano) }}</span>
+                    @if (content.fecha_subida) {
+                    <span class="text-neutral-600 text-xs">{{ content.fecha_subida | date: 'dd/MM/yy' }}</span>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    } @else {
+    <!-- Content List View -->
+    <div class="rounded-2xl bg-white/3 border border-white/10 overflow-hidden">
+        @for (content of folderContents(); track content.id_proyecto_material; let i = $index) {
+        <div class="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors"
+            [ngClass]="{ 'border-t border-white/5': i > 0 }">
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-xl bg-linear-to-br flex items-center justify-center shrink-0"
+                [ngClass]="getFileBgColor(content.tipo)">
+                <iconify-icon [icon]="getFileIcon(content.tipo)" width="22"
+                    [ngClass]="getFileIconColor(content.tipo)"></iconify-icon>
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+                <h4 class="text-white font-medium text-sm truncate">{{ content.nombre }}</h4>
+                <div class="flex items-center gap-3">
+                    <span class="px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold border" [ngClass]="{
+                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': content.tipo === 'imagen',
+                            'bg-purple-500/10 text-purple-400 border-purple-500/20': content.tipo === 'video',
+                            'bg-blue-500/10 text-blue-400 border-blue-500/20': content.tipo === 'documento',
+                            'bg-neutral-500/10 text-neutral-400 border-neutral-500/20': content.tipo === 'otro'
+                        }">
+                        {{ content.tipo }}
+                    </span>
+                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamano) }}</span>
+                    @if (content.fecha_subida) {
+                    <span class="text-neutral-600 text-xs">{{ content.fecha_subida | date: 'dd/MM/yyyy' }}</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2 shrink-0">
+                <button hlmBtn variant="ghost" (click)="openPreview(content)"
+                    class="h-9 w-9 p-0 rounded-lg hover:bg-white/10">
+                    <iconify-icon icon="lucide:eye" width="16" class="text-neutral-400"></iconify-icon>
+                </button>
+                <button hlmBtn variant="ghost" (click)="deleteContent(content.id_proyecto_material!)"
+                    class="h-9 w-9 p-0 rounded-lg hover:bg-red-500/10">
+                    <iconify-icon icon="lucide:trash-2" width="16" class="text-red-400"></iconify-icon>
+                </button>
+            </div>
+        </div>
+        }
+    </div>
+    }
+    }
+
+    <hlm-toaster />
+</div>
+
+<!-- Preview Modal -->
+@if (previewContent()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" (click)="closePreview()">
+
+    <!-- Modal Container -->
+    <div class="relative bg-neutral-900 rounded-2xl border border-white/10 shadow-2xl max-w-4xl w-full mx-4 overflow-hidden"
+        (click)="$event.stopPropagation()">
+
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-5 py-3 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-linear-to-br flex items-center justify-center"
+                    [ngClass]="getFileBgColor(previewContent()!.tipo)">
+                    <iconify-icon [icon]="getFileIcon(previewContent()!.tipo)" width="16"
+                        [ngClass]="getFileIconColor(previewContent()!.tipo)"></iconify-icon>
+                </div>
+                <h4 class="text-white font-semibold text-sm truncate max-w-[300px]">{{ previewContent()!.nombre }}</h4>
+            </div>
+            <div class="flex items-center gap-2">
+                <button hlmBtn variant="ghost" (click)="downloadFile(previewContent()!)"
+                    class="h-8 px-3 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white text-xs flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:download" width="14"></iconify-icon>
+                    Descargar
+                </button>
+                <button hlmBtn variant="ghost" (click)="closePreview()"
+                    class="h-8 w-8 p-0 rounded-lg hover:bg-white/10">
+                    <iconify-icon icon="lucide:x" width="16" class="text-neutral-400"></iconify-icon>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="flex items-center justify-center p-4 bg-black/40 max-h-[80vh]">
+            @if (isImage(previewContent()!)) {
+            <img [src]="previewContent()!.ruta" [alt]="previewContent()!.nombre"
+                class="max-w-full max-h-[75vh] object-contain rounded-lg" />
+            } @else if (isVideo(previewContent()!)) {
+            <video [src]="previewContent()!.ruta" controls autoplay class="max-w-full max-h-[75vh] rounded-lg"></video>
+            } @else {
+            <div class="flex flex-col items-center gap-4 py-12">
+                <div class="w-20 h-20 rounded-2xl bg-linear-to-br flex items-center justify-center"
+                    [ngClass]="getFileBgColor(previewContent()!.tipo)">
+                    <iconify-icon [icon]="getFileIcon(previewContent()!.tipo)" width="40"
+                        [ngClass]="getFileIconColor(previewContent()!.tipo)"></iconify-icon>
+                </div>
+                <p class="text-neutral-500 text-sm">Vista previa no disponible</p>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+}
+} @else {
+<div class="flex items-center justify-center min-h-screen">
+    <div class="text-center space-y-4">
+        <div class="w-12 h-12 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin mx-auto">
+        </div>
+        <p class="text-neutral-400">Cargando carpeta...</p>
+    </div>
+</div>
+}

@@ -5,6 +5,8 @@ import { Project } from '../interfaces/project.interface';
 import { from, Observable } from 'rxjs';
 import { ProjectResponse } from '../interfaces/projects-response.interface';
 import { Folder } from '../interfaces/folder.interface';
+import { FolderContent } from '../interfaces/folder-content.interface';
+import { AuthService } from '../../auth/services/auth-service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +15,16 @@ export class ProjectsService {
 
 
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  private autToken = this.authService.getToken();
   constructor() { }
 
   getAllProjects(): Observable<ProjectResponse> {
-    return this.http.get<ProjectResponse>(`${environment.apiUrl}/api/projects`);
+    return this.http.get<ProjectResponse>(`${environment.apiUrl}/api/projects`, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
   }
 
   getProjectsByClient(clientName: string) {
@@ -24,7 +32,11 @@ export class ProjectsService {
   }
 
   geProjectByIdProject(id_proyecto: number): Observable<Project> {
-    return this.http.get<Project>(`${environment.apiUrl}/api/projects/${id_proyecto}`);
+    return this.http.get<Project>(`${environment.apiUrl}/api/projects/${id_proyecto}`, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
   }
 
   getStatusColor(status: Project['estado']): string {
@@ -56,7 +68,13 @@ export class ProjectsService {
 
 
   getFoldersByProject(id_proyecto: number): Observable<Folder[]> {
-    return this.http.get<Folder[]>(`${environment.apiUrl}/api/projects/${id_proyecto}/folders`);
+    return this.http.get<Folder[]>(`${environment.apiUrl}/api/projects/${id_proyecto}/folders`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
   }
 
   createFolder(folder: Folder): Observable<Folder> {
@@ -69,6 +87,44 @@ export class ProjectsService {
 
   deleteFolder(id_carpeta_material: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/api/folder-material/${id_carpeta_material}`);
+  }
+
+  // ── Folder Content (Material) ──────────────────────────────────
+
+  getContentByFolder(id_carpeta_material: number): Observable<FolderContent[]> {
+    return this.http.get<FolderContent[]>(`${environment.apiUrl}/api/project-material/folder-material/${id_carpeta_material}/content`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
+  }
+
+  uploadContent(id_carpeta_material: number, id_trabajador: number, file: File, nombre: string, descripcion: string): Observable<FolderContent> {
+    const formData = new FormData();
+    formData.append('id_carpeta_material', id_carpeta_material.toString());
+    formData.append('id_trabajador', id_trabajador.toString());
+    formData.append('ruta', file);
+    formData.append('nombre', nombre);
+    formData.append('descripcion', descripcion);
+    return this.http.post<FolderContent>(`${environment.apiUrl}/api/project-material/`, formData,
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
+  }
+
+  deleteContent(id_proyecto_material: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/api/project-material/${id_proyecto_material}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
   }
 
 }
