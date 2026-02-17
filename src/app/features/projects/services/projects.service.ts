@@ -63,7 +63,11 @@ export class ProjectsService {
     });
     formData.append('plan_grabacion', plan_grabacion);
 
-    return this.http.post<Project>(`${environment.apiUrl}/api/projects`, formData);
+    return this.http.post<Project>(`${environment.apiUrl}/api/projects`, formData, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
   }
 
 

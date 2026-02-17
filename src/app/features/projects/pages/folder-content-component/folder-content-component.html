@@ -97,8 +97,7 @@
                                         <div>
                                             <p class="text-white font-medium text-sm truncate max-w-[280px]">{{
                                                 selectedFile()!.name }}</p>
-                                            <p class="text-neutral-500 text-xs">{{ formatFileSize(selectedFile()!.size)
-                                                }}</p>
+                                            <p class="text-neutral-500 text-xs">{{ (selectedFile()!.size) + "MB"}}</p>
                                         </div>
                                     </div>
                                     <button hlmBtn variant="ghost" (click)="resetContentForm()"
@@ -205,7 +204,6 @@
         </div>
     </div>
     } @else if (folderContents().length === 0) {
-    <!-- Empty State -->
     <div
         class="flex flex-col items-center justify-center py-24 px-4 rounded-3xl bg-linear-to-br from-white/3 to-white/1 border border-dashed border-white/10 relative overflow-hidden">
 
@@ -276,6 +274,7 @@
             Usa el botón "Subir Contenido" para agregar archivos
         </p>
     </div>
+    <!-- Empty State -->
     } @else {
     <!-- Content Grid View -->
     @if (viewMode() === 'grid') {
@@ -312,10 +311,10 @@
                     <span
                         class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-bold backdrop-blur-sm border"
                         [ngClass]="{
-                            'bg-emerald-500/20 text-emerald-300 border-emerald-500/30': content.tipo === 'imagen',
+                            'bg-emerald-500/20 text-emerald-300 border-emerald-500/30': content.tipo === 'image',
                             'bg-purple-500/20 text-purple-300 border-purple-500/30': content.tipo === 'video',
-                            'bg-blue-500/20 text-blue-300 border-blue-500/30': content.tipo === 'documento',
-                            'bg-neutral-500/20 text-neutral-300 border-neutral-500/30': content.tipo === 'otro'
+                            'bg-blue-500/20 text-blue-300 border-blue-500/30': content.tipo === 'application',
+                            'bg-neutral-500/20 text-neutral-300 border-neutral-500/30': content.tipo === 'other'
                         }">
                         {{ content.tipo }}
                     </span>
@@ -348,7 +347,7 @@
                 <p class="text-neutral-500 text-xs line-clamp-2">{{ content.descripcion }}</p>
                 }
                 <div class="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamano) }}</span>
+                    <span class="text-neutral-600 text-xs">{{ content.tamanio }}MB</span>
                     @if (content.fecha_subida) {
                     <span class="text-neutral-600 text-xs">{{ content.fecha_subida | date: 'dd/MM/yy' }}</span>
                     }
@@ -375,14 +374,14 @@
                 <h4 class="text-white font-medium text-sm truncate">{{ content.nombre }}</h4>
                 <div class="flex items-center gap-3">
                     <span class="px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold border" [ngClass]="{
-                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': content.tipo === 'imagen',
+                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': content.tipo === 'image',
                             'bg-purple-500/10 text-purple-400 border-purple-500/20': content.tipo === 'video',
-                            'bg-blue-500/10 text-blue-400 border-blue-500/20': content.tipo === 'documento',
-                            'bg-neutral-500/10 text-neutral-400 border-neutral-500/20': content.tipo === 'otro'
+                            'bg-blue-500/10 text-blue-400 border-blue-500/20': content.tipo === 'application',
+                            'bg-neutral-500/10 text-neutral-400 border-neutral-500/20': content.tipo === 'other'
                         }">
                         {{ content.tipo }}
                     </span>
-                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamano) }}</span>
+                    <span class="text-neutral-600 text-xs">{{ content.tamanio}}MB</span>
                     @if (content.fecha_subida) {
                     <span class="text-neutral-600 text-xs">{{ content.fecha_subida | date: 'dd/MM/yyyy' }}</span>
                     }

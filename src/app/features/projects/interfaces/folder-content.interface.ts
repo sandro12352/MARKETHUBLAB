@@ -3,9 +3,9 @@ export interface FolderContent {
     id_carpeta_material: number;
     nombre: string;
     descripcion?: string;
-    tipo: 'imagen' | 'video' | 'documento' | 'otro';
+    tipo: 'image' | 'video' | 'application' | 'other';
     ruta: string;
-    tamano?: number;
+    tamanio?: number;
     fecha_subida?: Date;
 }
 

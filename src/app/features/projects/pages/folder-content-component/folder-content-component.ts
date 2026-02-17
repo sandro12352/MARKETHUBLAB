@@ -49,9 +49,9 @@ export class FolderContentComponent implements OnInit {
     isUploading = signal(false);
     viewMode = signal<'grid' | 'list'>('grid');
 
-    imageCount = computed(() => this.folderContents().filter(c => c.tipo === 'imagen').length);
+    imageCount = computed(() => this.folderContents().filter(c => c.tipo === 'image').length);
     videoCount = computed(() => this.folderContents().filter(c => c.tipo === 'video').length);
-    docCount = computed(() => this.folderContents().filter(c => c.tipo === 'documento' || c.tipo === 'otro').length);
+    docCount = computed(() => this.folderContents().filter(c => c.tipo === 'application' || c.tipo === 'other').length);
 
     previewContent = signal<FolderContent | null>(null);
     isPreviewOpen = signal(false);
@@ -238,19 +238,13 @@ export class FolderContentComponent implements OnInit {
     }
 
     isImage(content: FolderContent): boolean {
-        return content.tipo === 'imagen';
+        return content.tipo === 'image';
     }
 
     isVideo(content: FolderContent): boolean {
         return content.tipo === 'video';
     }
 
-    formatFileSize(bytes?: number): string {
-        if (!bytes) return '—';
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / 1048576).toFixed(1) + ' MB';
-    }
 
     toggleViewMode() {
         this.viewMode.update(mode => mode === 'grid' ? 'list' : 'grid');
