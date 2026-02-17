@@ -131,4 +131,15 @@ export class ProjectsService {
     );
   }
 
+  approveContent(id_proyecto_material: number): Observable<FolderContent> {
+    return this.http.patch<FolderContent>(`${environment.apiUrl}/api/project-material/${id_proyecto_material}`,
+      { estado: 'aprobado' },
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
+  }
+
 }
