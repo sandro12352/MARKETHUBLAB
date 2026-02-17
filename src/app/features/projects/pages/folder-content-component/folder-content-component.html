@@ -360,7 +360,7 @@
 
                 <div class="flex items-center justify-between pt-2 border-t border-white/5">
                     <div class="flex items-center gap-2">
-                        <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamanio) }}</span>
+                        <span class="text-neutral-600 text-xs">{{content.tamanio + "MB" }}</span>
                         <!-- Estado badge -->
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border"
                             [ngClass]="getStatusClasses(content.estado)">
@@ -390,12 +390,18 @@
         @for (content of folderContents(); track content.id_proyecto_material; let i = $index) {
         <div class="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors"
             [ngClass]="{ 'border-t border-white/5': i > 0 }">
+
+            @if(content.ruta && content.tipo === 'image'){
+            <img [src]="content.ruta" [alt]="content.nombre"
+                class="w-12 h-12 object-cover group-hover:scale-105 transition-transform duration-500 rounded-lg" />
+            } @else {
             <!-- Icon -->
             <div class="w-12 h-12 rounded-xl bg-linear-to-br flex items-center justify-center shrink-0"
                 [ngClass]="getFileBgColor(content.tipo)">
                 <iconify-icon [icon]="getFileIcon(content.tipo)" width="22"
                     [ngClass]="getFileIconColor(content.tipo)"></iconify-icon>
             </div>
+            }
 
             <!-- Info -->
             <div class="flex-1 min-w-0">
@@ -414,7 +420,7 @@
                         [ngClass]="getStatusClasses(content.estado)">
                         {{ getStatusLabel(content.estado) }}
                     </span>
-                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamanio) }}</span>
+                    <span class="text-neutral-600 text-xs">{{ content.tamanio + "MB"}}</span>
                     @if (content.trabajador) {
                     <span class="flex items-center gap-1 text-neutral-500 text-xs">
                         <iconify-icon icon="lucide:user" width="12" class="text-indigo-400"></iconify-icon>

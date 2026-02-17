@@ -47,14 +47,11 @@ export class CampaignsComponent implements OnInit {
     searchTerm = signal('');
     activeFilter = signal<string>('todas');
     isLoading = signal(true);
+    isSubmitting = signal(false);
 
     campaignForm = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
         objetivo: ['', [Validators.required]],
-        plataforma: ['', [Validators.required]],
-        presupuesto_total: [0, [Validators.required, Validators.min(1)]],
-        fecha_inicio: ['', [Validators.required]],
-        fecha_fin: ['', [Validators.required]],
     });
 
     selectedCampaign = signal<Campaign | null>(null);
@@ -67,6 +64,7 @@ export class CampaignsComponent implements OnInit {
         this.isLoading.set(true);
         this.campaignsService.getAllCampaigns().subscribe({
             next: (campaigns) => {
+                console.log(campaigns)
                 this.campaigns.set(campaigns);
                 this.applyFilters();
                 this.isLoading.set(false);
@@ -89,7 +87,6 @@ export class CampaignsComponent implements OnInit {
             const term = this.searchTerm().toLowerCase();
             filtered = filtered.filter(c =>
                 c.name.toLowerCase().includes(term) ||
-                c.plataforma.toLowerCase().includes(term) ||
                 c.objective.toLowerCase().includes(term)
             );
         }
@@ -118,13 +115,10 @@ export class CampaignsComponent implements OnInit {
         const campaignData: Partial<Campaign> = {
             name: this.campaignForm.value.nombre!,
             objective: this.campaignForm.value.objetivo!,
-            plataforma: this.campaignForm.value.plataforma!,
-            presupuesto_total: this.campaignForm.value.presupuesto_total!,
-            fecha_inicio: this.campaignForm.value.fecha_inicio!,
-            fecha_fin: this.campaignForm.value.fecha_fin!,
-            status: 'PAUSED',
+            status: this.selectedCampaign()?.status || 'PAUSED',
         };
 
+        this.isSubmitting.set(true);
         if (this.selectedCampaign()) {
             this.campaignsService.updateCampaign(this.selectedCampaign()!.id_campana!, campaignData).subscribe({
                 next: (updated) => {
@@ -134,7 +128,10 @@ export class CampaignsComponent implements OnInit {
                     this.resetForm();
                     ctx.close();
                 },
-                error: (error) => toast.error(error.error.message)
+                error: (error) => {
+                    toast.error(error.error?.message || 'Error al actualizar la campaña');
+                },
+                complete: () => this.isSubmitting.set(false)
             });
         } else {
             this.campaignsService.createCampaign(campaignData).subscribe({
@@ -145,7 +142,10 @@ export class CampaignsComponent implements OnInit {
                     this.resetForm();
                     ctx.close();
                 },
-                error: () => toast.error('Error al crear la campaña')
+                error: () => {
+                    toast.error('Error al crear la campaña');
+                },
+                complete: () => this.isSubmitting.set(false)
             });
         }
     }
@@ -155,10 +155,6 @@ export class CampaignsComponent implements OnInit {
         this.campaignForm.patchValue({
             nombre: campaign.name,
             objetivo: campaign.objective,
-            plataforma: campaign.plataforma,
-            presupuesto_total: campaign.presupuesto_total,
-            fecha_inicio: campaign.fecha_inicio,
-            fecha_fin: campaign.fecha_fin,
         });
     }
 
@@ -177,7 +173,7 @@ export class CampaignsComponent implements OnInit {
 
     resetForm() {
         this.selectedCampaign.set(null);
-        this.campaignForm.reset({ presupuesto_total: 0 });
+        this.campaignForm.reset();
     }
 
     getStatusColor(status: string): string {
@@ -190,12 +186,27 @@ export class CampaignsComponent implements OnInit {
 
     getStatusLabel(status: string): string {
         const labels: Record<string, string> = {
-            borrador: 'Borrador',
-            activa: 'Activa',
-            pausada: 'Pausada',
-            finalizada: 'Finalizada',
+            'PAUSED': 'En pausa',
+            'ACTIVE': 'Activa',
+            'DELETED': 'Eliminada',
+            'FINALIZED': 'Finalizada',
+            'pausada': 'En pausa',
+            'activa': 'Activa',
+            'borrador': 'Borrador',
         };
-        return labels[status] || status;
+        return labels[status.toUpperCase()] || labels[status] || status;
+    }
+
+    getObjectiveLabel(objective: string): string {
+        const labels: Record<string, string> = {
+            'OUTCOME_AWARENESS': 'Reconocimiento',
+            'OUTCOME_TRAFFIC': 'Tráfico',
+            'OUTCOME_ENGAGEMENT': 'Interacción',
+            'OUTCOME_LEADS': 'Clientes Potenciales',
+            'OUTCOME_SALES': 'Ventas',
+            'OUTCOME_APP_PROMOTION': 'Promoción App',
+        };
+        return labels[objective] || objective;
     }
 
     getCampaignStats() {
@@ -204,7 +215,6 @@ export class CampaignsComponent implements OnInit {
             total: all.length,
             activas: all.filter(c => c.status === 'ACTIVE').length,
             pausadas: all.filter(c => c.status === 'PAUSED').length,
-            presupuesto: all.reduce((sum, c) => sum + c.presupuesto_total, 0),
         };
     }
 }

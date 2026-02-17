@@ -3,12 +3,8 @@ export interface Campaign {
     id_proyecto?: number;
     name: string;
     objective: string;
-    plataforma: string;
     status: 'PAUSED' | 'ACTIVE' | 'DELETED' | 'FINALIZED';
     special_ad_categories: string[];
-    presupuesto_total: number;
-    fecha_inicio: string;
-    fecha_fin: string;
     fecha_creacion?: string;
     conjuntos_anuncios?: AdSet[];
 }

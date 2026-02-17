@@ -342,4 +342,16 @@ export class CampaignDetailComponent implements OnInit {
         };
         return labels[cta] || cta;
     }
+
+    getObjectiveLabel(objective: string): string {
+        const labels: Record<string, string> = {
+            'OUTCOME_AWARENESS': 'Reconocimiento',
+            'OUTCOME_TRAFFIC': 'Tráfico',
+            'OUTCOME_ENGAGEMENT': 'Interacción',
+            'OUTCOME_LEADS': 'Clientes Potenciales',
+            'OUTCOME_SALES': 'Ventas',
+            'OUTCOME_APP_PROMOTION': 'Promoción App',
+        };
+        return labels[objective] || objective;
+    }
 }
