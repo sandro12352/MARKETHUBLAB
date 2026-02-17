@@ -144,8 +144,7 @@
                     <hlm-alert-dialog-footer>
                         <button hlmBtn variant="ghost" (click)="ctx.close(); resetContentForm()"
                             class="text-neutral-400 hover:text-white">Cancelar</button>
-                        <button hlmBtn (click)="onSubmitContent(ctx)"
-                            [disabled]="contentForm.invalid || !selectedFile() || isUploading()"
+                        <button hlmBtn (click)="onSubmitContent(ctx)" [disabled]="contentForm.invalid || isUploading()"
                             class="bg-indigo-600 hover:bg-indigo-500 text-white border-none shadow-lg shadow-indigo-500/20 flex items-center gap-2">
                             @if (isUploading()) {
                             <div class="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin">
@@ -310,14 +309,14 @@
                 <!-- Type Badge -->
                 <div class="absolute top-3 left-3">
                     <span
-                        class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-bold backdrop-blur-sm border"
+                        class="px-2.5 py-1 rounded-lg text-[11px] uppercase tracking-wider font-semibold backdrop-blur-md border shadow-sm"
                         [ngClass]="{
-                            'bg-emerald-500/20 text-emerald-300 border-emerald-500/30': content.tipo === 'imagen',
-                            'bg-purple-500/20 text-purple-300 border-purple-500/30': content.tipo === 'video',
-                            'bg-blue-500/20 text-blue-300 border-blue-500/30': content.tipo === 'documento',
-                            'bg-neutral-500/20 text-neutral-300 border-neutral-500/30': content.tipo === 'otro'
+                            'bg-emerald-500/25 text-emerald-200 border-emerald-400/30': content.tipo === 'image',
+                            'bg-purple-500/25 text-purple-200 border-purple-400/30': content.tipo === 'video',
+                            'bg-blue-500/25 text-blue-200 border-blue-400/30': content.tipo === 'application',
+                            'bg-neutral-500/25 text-neutral-200 border-neutral-400/30': content.tipo === 'other'
                         }">
-                        {{ content.tipo }}
+                        {{ getTypeLabel(content.tipo) }}
                     </span>
                 </div>
 
@@ -347,12 +346,41 @@
                 @if (content.descripcion) {
                 <p class="text-neutral-500 text-xs line-clamp-2">{{ content.descripcion }}</p>
                 }
+
+                <!-- Trabajador asignado -->
+                @if (content.trabajador) {
+                <div class="flex items-center gap-2 pt-1">
+                    <div
+                        class="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+                        <iconify-icon icon="lucide:user" width="11" class="text-indigo-400"></iconify-icon>
+                    </div>
+                    <span class="text-neutral-400 text-xs truncate">{{ content.trabajador.nombres }} {{
+                        content.trabajador.apellidos }}</span>
+                </div>
+                }
+
                 <div class="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamano) }}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamanio) }}</span>
+                        <!-- Estado badge -->
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border"
+                            [ngClass]="getStatusClasses(content.estado)">
+                            {{ getStatusLabel(content.estado) }}
+                        </span>
+                    </div>
                     @if (content.fecha_subida) {
                     <span class="text-neutral-600 text-xs">{{ content.fecha_subida | date: 'dd/MM/yy' }}</span>
                     }
                 </div>
+
+                <!-- Botón Aprobar -->
+                @if (content.estado !== 'aprobado' && content.ruta) {
+                <button hlmBtn variant="ghost" (click)="approveContent(content); $event.stopPropagation()"
+                    class="w-full mt-1 h-8 text-xs font-semibold rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 hover:border-emerald-500/40 transition-all flex items-center justify-center gap-1.5">
+                    <iconify-icon icon="lucide:check-circle" width="14"></iconify-icon>
+                    Aprobar
+                </button>
+                }
             </div>
         </div>
         }
@@ -373,16 +401,27 @@
             <!-- Info -->
             <div class="flex-1 min-w-0">
                 <h4 class="text-white font-medium text-sm truncate">{{ content.nombre }}</h4>
-                <div class="flex items-center gap-3">
-                    <span class="px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold border" [ngClass]="{
-                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': content.tipo === 'imagen',
-                            'bg-purple-500/10 text-purple-400 border-purple-500/20': content.tipo === 'video',
-                            'bg-blue-500/10 text-blue-400 border-blue-500/20': content.tipo === 'documento',
-                            'bg-neutral-500/10 text-neutral-400 border-neutral-500/20': content.tipo === 'otro'
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="px-2 py-0.5 rounded text-[11px] uppercase tracking-wider font-semibold border"
+                        [ngClass]="{
+                            'bg-emerald-500/15 text-emerald-400 border-emerald-500/25': content.tipo === 'image',
+                            'bg-purple-500/15 text-purple-400 border-purple-500/25': content.tipo === 'video',
+                            'bg-blue-500/15 text-blue-400 border-blue-500/25': content.tipo === 'application',
+                            'bg-neutral-500/15 text-neutral-400 border-neutral-500/25': content.tipo === 'other'
                         }">
-                        {{ content.tipo }}
+                        {{ getTypeLabel(content.tipo) }}
                     </span>
-                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamano) }}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border"
+                        [ngClass]="getStatusClasses(content.estado)">
+                        {{ getStatusLabel(content.estado) }}
+                    </span>
+                    <span class="text-neutral-600 text-xs">{{ formatFileSize(content.tamanio) }}</span>
+                    @if (content.trabajador) {
+                    <span class="flex items-center gap-1 text-neutral-500 text-xs">
+                        <iconify-icon icon="lucide:user" width="12" class="text-indigo-400"></iconify-icon>
+                        {{ content.trabajador.nombres }} {{ content.trabajador.apellidos }}
+                    </span>
+                    }
                     @if (content.fecha_subida) {
                     <span class="text-neutral-600 text-xs">{{ content.fecha_subida | date: 'dd/MM/yyyy' }}</span>
                     }
@@ -391,6 +430,13 @@
 
             <!-- Actions -->
             <div class="flex items-center gap-2 shrink-0">
+                @if (content.estado !== 'aprobado' && content.ruta) {
+                <button hlmBtn variant="ghost" (click)="approveContent(content)"
+                    class="h-9 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 transition-all flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:check-circle" width="14" class="text-emerald-400"></iconify-icon>
+                    <span class="text-emerald-400 text-xs font-semibold">Aprobar</span>
+                </button>
+                }
                 <button hlmBtn variant="ghost" (click)="openPreview(content)"
                     class="h-9 w-9 p-0 rounded-lg hover:bg-white/10">
                     <iconify-icon icon="lucide:eye" width="16" class="text-neutral-400"></iconify-icon>

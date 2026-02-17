@@ -49,9 +49,9 @@ export class FolderContentComponent implements OnInit {
     isUploading = signal(false);
     viewMode = signal<'grid' | 'list'>('grid');
 
-    imageCount = computed(() => this.folderContents().filter(c => c.tipo === 'imagen').length);
+    imageCount = computed(() => this.folderContents().filter(c => c.tipo === 'image').length);
     videoCount = computed(() => this.folderContents().filter(c => c.tipo === 'video').length);
-    docCount = computed(() => this.folderContents().filter(c => c.tipo === 'documento' || c.tipo === 'otro').length);
+    docCount = computed(() => this.folderContents().filter(c => c.tipo === 'application' || c.tipo === 'other').length);
 
     previewContent = signal<FolderContent | null>(null);
     isPreviewOpen = signal(false);
@@ -161,11 +161,8 @@ export class FolderContentComponent implements OnInit {
     }
 
     onSubmitContent(ctx: any) {
-        if (this.contentForm.invalid || !this.selectedFile()) {
+        if (this.contentForm.invalid) {
             this.contentForm.markAllAsTouched();
-            if (!this.selectedFile()) {
-                toast.error('Debes seleccionar un archivo para subir');
-            }
             return;
         }
 
@@ -173,7 +170,7 @@ export class FolderContentComponent implements OnInit {
 
         this.projectService.uploadContent(
             this.id_carpeta,
-            4,
+            3,
             this.selectedFile()!,
             this.contentForm.value.nombre!,
             this.contentForm.value.descripcion || ''
@@ -238,7 +235,7 @@ export class FolderContentComponent implements OnInit {
     }
 
     isImage(content: FolderContent): boolean {
-        return content.tipo === 'imagen';
+        return content.tipo === 'image';
     }
 
     isVideo(content: FolderContent): boolean {
@@ -281,5 +278,53 @@ export class FolderContentComponent implements OnInit {
         if (file.type.startsWith('video/')) return 'video';
         if (file.type.includes('pdf') || file.type.includes('document') || file.type.includes('text')) return 'documento';
         return 'otro';
+    }
+
+    getTypeLabel(tipo: string): string {
+        const labels: Record<string, string> = {
+            'image': 'Imagen',
+            'video': 'Video',
+            'application': 'Documento',
+            'other': 'Otro'
+        };
+        return labels[tipo] || tipo;
+    }
+
+    getStatusLabel(estado?: string): string {
+        const labels: Record<string, string> = {
+            'pendiente': 'Pendiente',
+            'aprobado': 'Aprobado',
+            'rechazado': 'Rechazado'
+        };
+        return labels[estado || 'pendiente'] || estado || 'Pendiente';
+    }
+
+    getStatusClasses(estado?: string): string {
+        switch (estado) {
+            case 'aprobado':
+                return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25';
+            case 'rechazado':
+                return 'bg-red-500/15 text-red-400 border-red-500/25';
+            default:
+                return 'bg-amber-500/15 text-amber-400 border-amber-500/25';
+        }
+    }
+
+    approveContent(content: FolderContent) {
+        if (!content.id_proyecto_material) return;
+        this.projectService.approveContent(content.id_proyecto_material).subscribe({
+            next: (updated) => {
+                this.folderContents.update(contents =>
+                    contents.map(c => c.id_proyecto_material === content.id_proyecto_material
+                        ? { ...c, estado: 'aprobado' }
+                        : c
+                    )
+                );
+                toast.success('¡Contenido aprobado exitosamente!');
+            },
+            error: () => {
+                toast.error('Error al aprobar el contenido');
+            }
+        });
     }
 }
