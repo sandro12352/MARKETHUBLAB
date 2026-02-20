@@ -1,369 +1,411 @@
-<div class="max-w-7xl mx-auto p-6 space-y-10 animate-in fade-in duration-700">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-    <!-- Header -->
-    <div class="mb-12 flex flex-col md:flex-row md:items-end gap-x-4 gap-y-4 justify-between">
-      <div>
-        <h1 class="text-3xl font-semibold tracking-tight mb-2 text-white">Proyectos</h1>
-        <p class="text-sm text-neutral-400">Gestiona y monitorea todos los proyectos de tus clientes</p>
-      </div>
+<!-- ═══════════════════════════════════════════════════════════════════
+     PROJECTS MODULE — Refined Editorial Dark Theme
+     ═══════════════════════════════════════════════════════════════════ -->
 
+<div class="relative max-w-7xl mx-auto px-6 py-8 space-y-10">
+
+  <!-- ── Ambient Background Glow ── -->
+  <div class="fixed top-0 left-64 right-0 h-full overflow-hidden -z-10 pointer-events-none">
+    <div class="absolute -top-[20%] right-[10%] w-[600px] h-[600px] rounded-full blur-[180px] bg-indigo-600/[0.05]">
+    </div>
+    <div class="absolute bottom-[10%] left-[5%] w-[400px] h-[400px] rounded-full blur-[140px] bg-blue-600/[0.03]"></div>
+  </div>
+
+  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+  <div class="proj-entrance flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3 mb-1">
+        <div
+          class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center text-indigo-400 shadow-lg shadow-indigo-500/5">
+          <iconify-icon icon="lucide:layers" width="20"></iconify-icon>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Módulo</p>
+          <h1 class="proj-display-font text-2xl font-bold text-white leading-tight">Proyectos</h1>
+        </div>
+      </div>
+      <p class="text-sm text-neutral-500 max-w-md leading-relaxed pl-[52px]">
+        Gestiona y monitorea el flujo de trabajo de todos los proyectos audiovisuales.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
       <hlm-alert-dialog>
-        <button
-          class="px-4 py-2 text-xs font-medium hover:bg-indigo-500 border border-transparent rounded-lg shadow-lg transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-indigo-900/20 w-full md:w-auto justify-center md:justify-start hover:shadow-indigo-900/30 hover:cursor-pointer"
-          hlmAlertDialogTrigger variant="outline">
-          <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+        <button hlmAlertDialogTrigger
+          class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-sm shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-2">
+          <iconify-icon icon="lucide:plus" width="16"></iconify-icon>
           Nuevo Proyecto
         </button>
 
+        <!-- Registar Proyecto Modal -->
         <form [formGroup]="projectForm">
-          <hlm-alert-dialog-content class="sm:max-w-[600px]" *brnAlertDialogContent="let ctx">
-            <hlm-alert-dialog-header>
-              <h2 hlmAlertDialogTitle>Registrar Nuevo Proyecto</h2>
-              <p hlmAlertDialogDescription>
-                Ingrese la información necesaria para dar de alta un nuevo proyecto audiovisual.
-              </p>
-            </hlm-alert-dialog-header>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 max-h-[70vh] overflow-y-auto px-1">
-              <hlm-toaster />
-
-              <div class="flex flex-col gap-2 md:col-span-2">
-                <label hlmLabel for="nombre">Nombre del Proyecto</label>
-                <input hlmInput formControlName="nombre" id="nombre" type="text"
-                  placeholder="Ej. Videoclip Musical - Artista X" />
+          <hlm-alert-dialog-content class="sm:max-w-[650px] bg-[#0c0d14] border-white/10 p-0 overflow-hidden"
+            *brnAlertDialogContent="let ctx">
+            <div class="px-6 py-5 border-b border-white/[0.06] flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                <iconify-icon icon="lucide:file-plus" width="18"></iconify-icon>
               </div>
-
-              <div class="flex flex-col gap-2">
-                <label hlmLabel for="cliente">Cliente</label>
-                <brn-select formControlName="id_cliente" class="inline-block" placeholder="Seleccione un cliente">
-                  <hlm-select-trigger class="w-56">
-                    <hlm-select-value />
-                  </hlm-select-trigger>
-                  <hlm-select-content>
-                    @for (client of clients(); track $index) {
-                    <hlm-option [value]="client.id_cliente">{{client.nombres}} {{client.apellidos}}</hlm-option>
-                    }
-                  </hlm-select-content>
-                </brn-select>
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <label hlmLabel for="presupuesto">Cantidad de Contenido</label>
-                <input hlmInput formControlName="cantidad_contenido" id="presupuesto" class="w-55" type="text"
-                  placeholder="Ejm:10" />
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <label hlmLabel for="estado">Estado</label>
-                <brn-select formControlName="estado" class="inline-block" placeholder="Estado">
-                  <hlm-select-trigger class="w-56">
-                    <hlm-select-value />
-                  </hlm-select-trigger>
-                  <hlm-select-content>
-                    <hlm-option value="planificacion">Planificación</hlm-option>
-                    <hlm-option value="en_progreso">En Progreso</hlm-option>
-                    <hlm-option value="activo">Activo</hlm-option>
-                    <hlm-option value="completado">Completado</hlm-option>
-                  </hlm-select-content>
-                </brn-select>
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <label hlmLabel for="prioridad">Prioridad</label>
-                <brn-select formControlName="prioridad" class="inline-block" placeholder="Prioridad">
-                  <hlm-select-trigger class="w-56">
-                    <hlm-select-value />
-                  </hlm-select-trigger>
-                  <hlm-select-content>
-                    <hlm-option value="baja">Baja</hlm-option>
-                    <hlm-option value="media">Media</hlm-option>
-                    <hlm-option value="alta">Alta</hlm-option>
-                  </hlm-select-content>
-                </brn-select>
-
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <label hlmLabel for="fecha_registro">Fecha Inicio</label>
-                <input hlmInput formControlName="fecha_inicio" id="fecha_registro" class="w-55" type="date" />
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <label hlmLabel for="fecha_termino">Fecha Término</label>
-                <input hlmInput formControlName="fecha_termino" id="fecha_termino" class="w-55" type="date" />
-              </div>
-
-              <div class="flex flex-col gap-2 md:col-span-2">
-                <label hlmLabel for="plan_archivo">Plan de Grabación (Archivo)</label>
-
-                <div class="flex items-center justify-center max-w-118"
-                  (dragover)="$event.preventDefault(); $event.stopPropagation(); isDragging = true"
-                  (dragleave)="isDragging = false" (drop)="onFileDropped($event)">
-                  <label for="plan_archivo" [class.border-indigo-500]="isDragging" [class.bg-indigo-50]="isDragging"
-                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 border-border hover:bg-muted transition-all">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                      <iconify-icon [icon]="isDragging ? 'lucide:file-plus' : 'lucide:upload-cloud'" width="24"
-                        [class.text-indigo-500]="isDragging" class="text-muted-foreground mb-2"></iconify-icon>
-
-                      <p class="mb-2 text-sm text-muted-foreground px-4">
-                        <span class="font-semibold">Haga clic</span> o arrastre el archivo aquí
-                      </p>
-                    </div>
-
-                    <input lmInput id="plan_archivo" type="file" class="hidden" (change)="onFileSelected($event)" />
-                  </label>
-                </div>
-
-
-                @if (fileName) {
-                <div class="flex items-center gap-2 p-2 mt-1 bg-indigo-50 border border-indigo-100 rounded-md">
-                  <iconify-icon icon="lucide:file-check" class="text-indigo-600"></iconify-icon>
-                  <span class="text-xs font-medium text-indigo-700 truncate flex-1">{{ fileName }}</span>
-                  <button (click)="fileName = ''; fileToUpload = null" class="text-indigo-400 hover:text-red-500">
-                    <iconify-icon icon="lucide:x" width="14"></iconify-icon>
-                  </button>
-                </div>
-                }
-              </div>
-
-              <div class="flex flex-col gap-2 md:col-span-2">
-                <label hlmLabel for="descripcion">Descripción</label>
-                <textarea formControlName="descripcion" hlmTextarea id="descripcion"
-                  placeholder="Detalles adicionales..." class="min-h-[80px]"></textarea>
+              <div>
+                <h2 class="proj-display-font text-lg font-bold text-white">Registrar Proyecto</h2>
+                <p class="text-[11px] text-neutral-500 uppercase tracking-wider mt-0.5">Nueva producción audiovisual</p>
               </div>
             </div>
 
-            <hlm-alert-dialog-footer>
-              <button hlmBtn variant="ghost" (click)="ctx.close()">Cancelar</button>
-              <button hlmBtn type="submit" (click)="onSubmmit(ctx)">Guardar Proyecto</button>
-            </hlm-alert-dialog-footer>
-          </hlm-alert-dialog-content>
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto proj-scrollbar">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Nombre -->
+                <div class="md:col-span-2 space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Nombre del
+                    Proyecto *</label>
+                  <input formControlName="nombre" type="text" placeholder="Ej: Videoclip Musical - Artista X"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none" />
+                </div>
 
+                <!-- Cliente -->
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Cliente
+                    *</label>
+                  <brn-select formControlName="id_cliente" placeholder="Seleccione un cliente">
+                    <hlm-select-trigger class="w-full bg-white/[0.03] border-white/[0.08] rounded-xl text-neutral-300">
+                      <hlm-select-value />
+                    </hlm-select-trigger>
+                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                      @for (client of clients(); track $index) {
+                      <hlm-option [value]="client.id_cliente">{{client.nombres}} {{client.apellidos}}</hlm-option>
+                      }
+                    </hlm-select-content>
+                  </brn-select>
+                </div>
+
+                <!-- Cantidad -->
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Cantidad de
+                    Contenido *</label>
+                  <input formControlName="cantidad_contenido" type="number" placeholder="Ej: 10"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none" />
+                </div>
+
+                <!-- Estado -->
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Estado
+                    *</label>
+                  <brn-select formControlName="estado" placeholder="Estado">
+                    <hlm-select-trigger class="w-full bg-white/[0.03] border-white/[0.08] rounded-xl text-neutral-300">
+                      <hlm-select-value />
+                    </hlm-select-trigger>
+                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                      <hlm-option value="planificacion">Planificación</hlm-option>
+                      <hlm-option value="en_progreso">En Progreso</hlm-option>
+                      <hlm-option value="activo">Activo</hlm-option>
+                      <hlm-option value="completado">Completado</hlm-option>
+                    </hlm-select-content>
+                  </brn-select>
+                </div>
+
+                <!-- Prioridad -->
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Prioridad
+                    *</label>
+                  <brn-select formControlName="prioridad" placeholder="Prioridad">
+                    <hlm-select-trigger class="w-full bg-white/[0.03] border-white/[0.08] rounded-xl text-neutral-300">
+                      <hlm-select-value />
+                    </hlm-select-trigger>
+                    <hlm-select-content class="bg-neutral-900 border-white/10">
+                      <hlm-option value="baja">Baja</hlm-option>
+                      <hlm-option value="media">Media</hlm-option>
+                      <hlm-option value="alta">Alta</hlm-option>
+                    </hlm-select-content>
+                  </brn-select>
+                </div>
+
+                <!-- Fecha Inicio -->
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Fecha Inicio
+                    *</label>
+                  <input formControlName="fecha_inicio" type="date"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 transition-all outline-none" />
+                </div>
+
+                <!-- Fecha Término -->
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Fecha Término
+                    *</label>
+                  <input formControlName="fecha_termino" type="date"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 transition-all outline-none" />
+                </div>
+
+                <!-- Plan de Grabación -->
+                <div class="md:col-span-2 space-y-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Plan de
+                    Grabación (Archivo)</label>
+                  <div class="relative group"
+                    (dragover)="$event.preventDefault(); $event.stopPropagation(); isDragging = true"
+                    (dragleave)="isDragging = false" (drop)="onFileDropped($event)">
+                    <label for="plan_archivo"
+                      class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-2xl cursor-pointer bg-white/[0.02] transition-all"
+                      [ngClass]="isDragging ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-white/10 hover:border-white/20 hover:bg-white/[0.04]'">
+                      <div class="flex flex-col items-center justify-center py-5">
+                        <iconify-icon [icon]="isDragging ? 'lucide:file-plus-2' : 'lucide:upload-cloud'" width="28"
+                          class="mb-3" [ngClass]="isDragging ? 'text-indigo-400' : 'text-neutral-600'"></iconify-icon>
+                        <p class="text-xs text-neutral-500">
+                          <span class="font-bold text-neutral-400 uppercase tracking-wider">Haga clic</span> o arrastre
+                          el archivo
+                        </p>
+                      </div>
+                      <input id="plan_archivo" type="file" class="hidden" (change)="onFileSelected($event)" />
+                    </label>
+                  </div>
+
+                  @if (fileName) {
+                  <div
+                    class="flex items-center gap-3 p-3 mt-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl animate-in slide-in-from-top-2">
+                    <iconify-icon icon="lucide:file-check" class="text-indigo-400" width="16"></iconify-icon>
+                    <span class="text-xs font-medium text-neutral-300 truncate flex-1">{{ fileName }}</span>
+                    <button (click)="fileName = ''; fileToUpload = null"
+                      class="text-neutral-500 hover:text-red-400 transition-colors">
+                      <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+                    </button>
+                  </div>
+                  }
+                </div>
+
+                <!-- Descripción -->
+                <div class="md:col-span-2 space-y-1.5">
+                  <label
+                    class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Descripción</label>
+                  <textarea formControlName="descripcion" placeholder="Detalles adicionales sobre el proyecto..."
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none resize-none min-h-[100px]"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
+              <button hlmBtn variant="ghost" (click)="ctx.close()"
+                class="text-neutral-500 hover:text-white">Cancelar</button>
+              <button (click)="onSubmmit(ctx)"
+                class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-sm shadow-lg shadow-indigo-600/15 transition-all outline-none">
+                Guardar Proyecto
+              </button>
+            </div>
+          </hlm-alert-dialog-content>
         </form>
       </hlm-alert-dialog>
-    </div>
 
-    <!-- Filters -->
-    <div class="flex flex-col md:flex-row gap-4 mb-8 items-end">
-      <!-- Search Input -->
-      <div class="relative flex-1">
-        <input type="text" placeholder="Buscar por nombre, cliente o descripción..." (input)="onSearchChange($event)"
-          class="w-full px-4 py-2 text-sm bg-white/5 border border-white/5 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all hover:border-white/10" />
-        <svg class="absolute right-3 top-2.5 w-5 h-5 text-neutral-400" fill="none" stroke="currentColor"
-          viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+      <div class="px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl">
+        <span class="text-[11px] font-medium text-neutral-400 flex items-center gap-2">
+          <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full proj-glow-dot"></span>
+          Sistema Activo
+        </span>
       </div>
+    </div>
+  </div>
 
-      <!-- Status Filter -->
-      <div class="w-full md:w-auto">
-        <brn-select class="inline-block" placeholder="Todos los estados" (valueChange)="onStatusFilterChange($event)">
-          <hlm-select-trigger
-            class="w-full md:w-52 bg-white/5 border-white/5 text-white hover:border-white/10 focus:ring-2 focus:ring-indigo-500 rounded-lg transition-all">
-            <hlm-select-value />
-          </hlm-select-trigger>
-          <hlm-select-content class="border-white/10">
-            <hlm-option value="all">Todos los estados</hlm-option>
-            <hlm-option value="activo">Activos</hlm-option>
-            <hlm-option value="planificacion">Planificación</hlm-option>
-            <hlm-option value="en_progreso">En progreso</hlm-option>
-            <hlm-option value="completado">Completados</hlm-option>
-          </hlm-select-content>
-        </brn-select>
+  <!-- ═══════════════════════ STATS ROW ═══════════════════════ -->
+  <div class="proj-entrance proj-entrance-delay-1 grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <!-- Total Projects -->
+    <div class="stat-card proj-grain relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+      <div class="relative z-10">
+        <div
+          class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-500/5">
+          <iconify-icon icon="lucide:layout-grid" width="18"></iconify-icon>
+        </div>
+        <p class="proj-display-font text-3xl font-bold text-white">{{ projects().length }}</p>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500 mt-1">Total Proyectos</p>
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-      <div
-        class="p-5 rounded-xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border hover:border-indigo-500/20 transition-all group border-white/5">
-        <div class="flex justify-between items-start mb-4">
-          <div
-            class="p-2 bg-indigo-500/10 rounded-lg group-hover:text-indigo-300 group-hover:bg-indigo-500/20 transition-colors text-indigo-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
-          </div>
+    <!-- Active Projects -->
+    <div class="stat-card proj-grain relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+      <div class="relative z-10">
+        <div
+          class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-4 shadow-lg shadow-emerald-500/5">
+          <iconify-icon icon="lucide:activity" width="18"></iconify-icon>
         </div>
-        <div class="text-2xl font-semibold tracking-tight text-white">{{ projects().length }}</div>
-        <div class="text-xs text-neutral-500 mt-1">Total de Proyectos</div>
-      </div>
-
-      <div
-        class="p-5 rounded-xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border hover:border-indigo-500/20 transition-all group border-white/5">
-        <div class="flex justify-between items-start mb-4">
-          <div
-            class="p-2 bg-green-500/10 rounded-lg group-hover:text-green-300 group-hover:bg-green-500/20 transition-colors text-green-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <span class="text-xs font-medium bg-green-500/10 px-2 py-0.5 rounded-full text-green-400">Activo</span>
-        </div>
-        <div class="text-2xl font-semibold tracking-tight text-white">23</div>
-        <div class="text-xs text-neutral-500 mt-1">Proyectos en ejecución</div>
-      </div>
-
-      <div
-        class="p-5 rounded-xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border hover:border-indigo-500/20 transition-all group border-white/5">
-        <div class="flex justify-between items-start mb-4">
-          <div
-            class="p-2 bg-purple-500/10 rounded-lg group-hover:text-purple-300 group-hover:bg-purple-500/20 transition-colors text-purple-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <span class="text-xs font-medium bg-purple-500/10 px-2 py-0.5 rounded-full text-purple-400">Planeación</span>
-        </div>
-        <div class="text-2xl font-semibold tracking-tight text-white">31</div>
-        <div class="text-xs text-neutral-500 mt-1">En fase de planeación</div>
-      </div>
-
-      <div
-        class="p-5 rounded-xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border hover:border-indigo-500/20 transition-all group border-white/5">
-        <div class="flex justify-between items-start mb-4">
-          <div
-            class="p-2 bg-blue-500/10 rounded-lg group-hover:text-blue-300 group-hover:bg-blue-500/20 transition-colors text-blue-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <span class="text-xs font-medium bg-blue-500/10 px-2 py-0.5 rounded-full text-blue-400">Completado</span>
-        </div>
-        <div class="text-2xl font-semibold tracking-tight text-white">41</div>
-        <div class="text-xs text-neutral-500 mt-1">Proyectos finalizados</div>
+        <p class="proj-display-font text-3xl font-bold text-white">23</p>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500 mt-1">En Ejecución</p>
       </div>
     </div>
 
-    <!-- Projects Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (project of filteredProjects(); track project.id_proyecto) {
-      <div
-        class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 group">
-        <!-- Card Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-3">
-          <div class="flex items-start justify-between mb-1">
-            <h3 class="text-base font-semibold text-white flex-1 pr-2 line-clamp-1">{{ project.nombre }}</h3>
-            <div class="flex-shrink-0">
-              <ng-icon [name]="getStatusIcon(project.estado)" class="w-4 h-4 text-white" />
-            </div>
-          </div>
-          <span class="text-sm">{{project.descripcion || "Proyecto sin descripción"}}</span>
+    <!-- Planning Projects -->
+    <div class="stat-card proj-grain relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+      <div class="relative z-10">
+        <div
+          class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-4 shadow-lg shadow-amber-500/5">
+          <iconify-icon icon="lucide:calendar-range" width="18"></iconify-icon>
         </div>
+        <p class="proj-display-font text-3xl font-bold text-white">31</p>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500 mt-1">En Planeación</p>
+      </div>
+    </div>
 
-        <!-- Card Body -->
-        <div class="p-4 space-y-3">
-          <!-- Client -->
+    <!-- Completed Projects -->
+    <div class="stat-card proj-grain relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+      <div class="relative z-10">
+        <div
+          class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4 shadow-lg shadow-blue-500/5">
+          <iconify-icon icon="lucide:check-circle-2" width="18"></iconify-icon>
+        </div>
+        <p class="proj-display-font text-3xl font-bold text-white">41</p>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500 mt-1">Finalizados</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ TOOLBAR ═══════════════════════ -->
+  <div class="proj-entrance proj-entrance-delay-2 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+    <!-- Search -->
+    <div class="relative flex-1 group">
+      <iconify-icon icon="lucide:search"
+        class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 transition-colors group-focus-within:text-indigo-400"
+        width="16"></iconify-icon>
+      <input type="text" placeholder="Buscar proyectos por nombre, cliente o descripción..."
+        (input)="onSearchChange($event)"
+        class="w-full pl-11 pr-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-2xl text-sm text-neutral-300 placeholder:text-neutral-600 focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-500/20 transition-all outline-none" />
+    </div>
+
+    <!-- Status Select -->
+    <div class="w-full md:w-64">
+      <brn-select (valueChange)="onStatusFilterChange($event)" placeholder="Todos los estados">
+        <hlm-select-trigger class="w-full bg-white/[0.02] border-white/[0.06] rounded-2xl text-neutral-400">
+          <hlm-select-value />
+        </hlm-select-trigger>
+        <hlm-select-content class="bg-neutral-900 border-white/10">
+          <hlm-option value="all">Ver todos los estados</hlm-option>
+          <hlm-option value="activo">Proyectos Activos</hlm-option>
+          <hlm-option value="planificacion">En Planificación</hlm-option>
+          <hlm-option value="en_progreso">En Progreso</hlm-option>
+          <hlm-option value="completado">Completados</hlm-option>
+        </hlm-select-content>
+      </brn-select>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ PROJECTS GRID ═══════════════════════ -->
+  <div class="proj-entrance proj-entrance-delay-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    @for (project of filteredProjects(); track project.id_proyecto) {
+    <div
+      class="proj-card group relative bg-white/[0.012] border border-white/[0.05] rounded-2xl overflow-hidden proj-grain flex flex-col proj-status-border"
+      [ngClass]="'proj-status-' + project.estado">
+
+      <!-- Status & Actions Floating -->
+      <div class="absolute top-4 right-4 z-20 flex gap-2">
+        <button (click)="deleteProject(project.id_proyecto!)"
+          class="p-2 bg-black/40 hover:bg-red-500/20 text-neutral-500 hover:text-red-400 rounded-lg backdrop-blur-md transition-all opacity-0 group-hover:opacity-100">
+          <iconify-icon icon="lucide:trash-2" width="14"></iconify-icon>
+        </button>
+      </div>
+
+      <!-- Card Content -->
+      <div class="p-6 space-y-5 flex-1 relative z-10">
+        <!-- Header -->
+        <div class="space-y-1">
           <div class="flex items-center gap-2">
-            <a class="hover:cursor-pointer" target="_blank" [href]="project.plan_grabacion_url">
-              <ng-icon hlm name="lucideFileTerminal" class="text-green-700" />
-            </a>
-            <p class="text-xs text-neutral-300">Plan de grabación</p>
-          </div>
-
-          <!-- Status and Priority -->
-          <div class="flex gap-2 flex-wrap">
-            <span [class]="'px-2 py-0.5 rounded-full text-xs font-medium border ' + getStatusColor(project.estado)">
-              {{ getStatusLabel(project.estado) }}
-            </span>
             <span
-              [class]="'px-2 py-0.5 rounded-full text-xs font-medium border ' + getPriorityColor(project.prioridad)">
+              [class]="'px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border ' + getPriorityColor(project.prioridad)">
               {{ getPriorityLabel(project.prioridad) }}
             </span>
+            <span class="text-[10px] text-neutral-600 font-medium tracking-tight">ID #{{ project.id_proyecto }}</span>
           </div>
+          <h3
+            class="proj-display-font text-lg font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight line-clamp-2">
+            {{ project.nombre }}
+          </h3>
+        </div>
 
-          <!-- Progress -->
+        <!-- Client & Description -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-white/5 flex items-center justify-center text-indigo-400">
+              <iconify-icon icon="lucide:user" width="16"></iconify-icon>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-neutral-600 leading-none mb-1">Cliente</p>
+              <p class="text-[12px] text-neutral-300 font-medium leading-none">{{ project.cliente?.nombres }} {{
+                project.cliente?.apellidos }}</p>
+            </div>
+          </div>
+          <p class="text-[12px] text-neutral-500 leading-relaxed line-clamp-2 min-h-[2.5rem]">
+            {{ project.descripcion || 'Sin descripción adicional para este proyecto.' }}
+          </p>
+        </div>
+
+        <!-- Progress -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-end">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-600">Completado</span>
+            <span class="text-xs font-bold text-indigo-400 tabular-nums">{{ project.progress || 0 }}%</span>
+          </div>
+          <div class="w-full h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+            <div
+              class="h-full bg-gradient-to-r from-indigo-600 to-indigo-400 rounded-full transition-all duration-1000 ease-out"
+              [style.width.%]="project.progress || 0"></div>
+          </div>
+        </div>
+
+        <!-- Bottom Metadata -->
+        <div class="pt-4 border-t border-white/[0.04] grid grid-cols-2 gap-4">
           <div>
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-xs text-neutral-400">Progreso</span>
-              <span class="text-xs font-semibold text-blue-400">{{ project.progress }}%</span>
-            </div>
-            <div class="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full transition-all duration-500"
-                [style.width.%]="project.progress"></div>
-            </div>
+            <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-600 mb-1">Inicio</p>
+            <p class="text-[11px] text-neutral-400 flex items-center gap-1.5">
+              <iconify-icon icon="lucide:calendar" width="12"></iconify-icon>
+              {{ project.fecha_registro | date:'dd MMM, yyyy' }}
+            </p>
           </div>
-
-          <!-- Dates -->
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <p class="text-neutral-500 mb-0.5">Inicio</p>
-              <p class="text-white font-medium">{{ formatDate(project.fecha_registro!) }}</p>
-            </div>
-            @if (project.fecha_termino) {
-            <div>
-              <p class="text-neutral-500 mb-0.5">Vencimiento</p>
-              <p class="text-white font-medium text-xs">
-                {{ formatDate(project.fecha_termino) }}
-                <span [class]="project.progress === 100 ? 'text-green-400' : 'text-neutral-500'"> ({{
-                  daysRemaining(project.fecha_termino) }})</span>
-              </p>
-            </div>
-            }
-          </div>
-
-          <!-- Team -->
-          <!-- <div>
-            <p class="text-xs text-neutral-500 mb-1.5">Equipo</p>
-            <div class="flex flex-wrap gap-1.5">
-              @for (member of project.team.slice(0, 2); track member) {
-              <div class="px-2 py-0.5 bg-white/5 rounded-full text-xs text-neutral-300 border border-white/10">
-                {{ member }}
-              </div>
+          <div>
+            <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-600 mb-1">Vencimiento</p>
+            <p class="text-[11px] text-neutral-400 flex items-center gap-1.5">
+              @if (project.fecha_termino) {
+              <iconify-icon icon="lucide:clock" width="12" class="text-neutral-600"></iconify-icon>
+              {{ project.fecha_termino | date:'dd MMM, yyyy' }}
+              } @else {
+              <span class="text-neutral-700 italic">—</span>
               }
-              @if (project.team.length > 2) {
-              <div class="px-2 py-0.5 bg-white/5 rounded-full text-xs text-neutral-300 border border-white/10">
-                +{{ project.team.length - 2 }}
-              </div>
-              }
-            </div>
-          </div> -->
-
-          <!-- Budget -->
-          @if (project.cantidad_material) {
-          <div class="pt-2 border-t border-white/10 flex items-center justify-between">
-            <span class="text-xs text-neutral-400">Cantidad de Contenido</span>
-            <span class="font-bold text-green-400 text-sm">#{{project.cantidad_material}}</span>
+            </p>
           </div>
-          }
         </div>
-
-        <!-- Card Footer -->
-        <div class="px-4 py-3 bg-white/5 border-t border-white/10 flex gap-2 items-center">
-          <button [routerLink]="[project.id_proyecto]" hlmBtn variant="outline"
-            class="flex-1 text-xs h-8 hover:bg-white/10 hover:cursor-pointer">
-            Ver
-          </button>
-
-          <button hlmBtn class="flex-1 text-xs h-8">
-            Editar
-          </button>
-
-          <!-- Eliminar -->
-          <button hlmBtn variant="outline"
-            class="h-8 w-8 flex items-center justify-center text-red-500 hover:bg-red-500/10 hover:text-red-400"
-            (click)="deleteProject(project.id_proyecto!)">
-            <iconify-icon icon="si:bin-duotone" width="1.2em" height="1.2em"></iconify-icon>
-          </button>
-        </div>
-
       </div>
-      } @empty {
-      <!-- Empty State -->
-      <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
-        <svg class="mx-auto h-12 w-12 text-slate-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 class="text-lg font-medium text-white mb-1">No hay proyectos</h3>
-        <p class="text-slate-400">Intenta ajustar tus filtros de búsqueda</p>
+
+      <!-- Footer Actions -->
+      <div class="px-6 py-4 bg-white/[0.015] border-t border-white/[0.03] flex items-center gap-2">
+        <button [routerLink]="[project.id_proyecto]"
+          class="flex-1 px-4 py-2 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 text-neutral-300 hover:text-white rounded-xl text-[11px] font-bold uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-2">
+          Detalles
+          <iconify-icon icon="lucide:arrow-right" width="14"></iconify-icon>
+        </button>
+        <button
+          class="p-2.5 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 text-neutral-500 hover:text-indigo-400 rounded-xl transition-all">
+          <iconify-icon icon="lucide:edit-3" width="16"></iconify-icon>
+        </button>
+        @if (project.plan_grabacion_url) {
+        <a [href]="project.plan_grabacion_url" target="_blank"
+          class="p-2.5 bg-white/[0.03] hover:bg-green-500/10 border border-white/5 text-neutral-500 hover:text-green-400 rounded-xl transition-all"
+          title="Plan de Grabación">
+          <iconify-icon icon="lucide:file-text" width="16"></iconify-icon>
+        </a>
+        }
       </div>
-      }
     </div>
+
+    } @empty {
+    <!-- Empty State -->
+    <div class="col-span-full py-24 flex flex-col items-center gap-5">
+      <div class="w-20 h-20 rounded-3xl bg-white/[0.02] border border-white/5 flex items-center justify-center">
+        <iconify-icon icon="lucide:folder-search" width="40" class="text-neutral-700"></iconify-icon>
+      </div>
+      <div class="text-center space-y-1">
+        <h3 class="proj-display-font text-lg font-bold text-neutral-400">Sin resultados</h3>
+        <p class="text-sm text-neutral-600 max-w-xs leading-relaxed">No encontramos proyectos que coincidan con tu
+          búsqueda o filtros actuales.</p>
+      </div>
+      <button (click)="statusFilter.set('all'); searchTerm.set(''); filterProjects()"
+        class="text-xs font-bold uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors">
+        Limpiar todos los filtros
+      </button>
+    </div>
+    }
   </div>
 </div>
 

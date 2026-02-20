@@ -1,8 +1,47 @@
+/* ═══════════════════════════════════════════════════════
+   FOLDER CONTENT — Refined Editorial Dark Theme
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
 :host {
+    --fold-font-display: 'Sora', sans-serif;
+    --fold-font-body: 'DM Sans', sans-serif;
+
+    /* Accent Palette */
+    --fold-accent: #818cf8;
+    --fold-accent-glow: rgba(129, 140, 248, 0.15);
+
     display: block;
+    font-family: var(--fold-font-body);
 }
 
-@keyframes fadeIn {
+/* ── Grain Overlay ── */
+.fold-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    z-index: 0;
+}
+
+/* ── Entrance Animations ── */
+@keyframes foldSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes foldFadeIn {
     from {
         opacity: 0;
     }
@@ -12,22 +51,70 @@
     }
 }
 
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.4;
     }
 
-    to {
+    50% {
         opacity: 1;
-        transform: scale(1);
     }
 }
 
-.animate-in {
-    animation: fadeIn 0.2s ease-out;
+.fold-entrance {
+    animation: foldSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.animate-in>div:last-child {
-    animation: scaleIn 0.25s ease-out;
+.fold-entrance-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.fold-entrance-delay-2 {
+    animation-delay: 0.2s;
+}
+
+.fold-fade-in {
+    animation: foldFadeIn 0.5s ease both;
+}
+
+/* ── Typography ── */
+.fold-display-font {
+    font-family: var(--fold-font-display);
+    letter-spacing: -0.025em;
+}
+
+/* ── File Card ── */
+.file-card {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.file-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Glow dot ── */
+.fold-glow-dot {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ── Custom Scrollbar ── */
+.fold-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.fold-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fold-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+.fold-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
 }

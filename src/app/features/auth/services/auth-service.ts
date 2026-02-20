@@ -10,7 +10,7 @@ export interface User {
   apellidos?: string;
   email?: string;
   telefono?: string;
-  rol?: string;
+  id_rol?: number;
   [key: string]: any;
 }
 
@@ -18,7 +18,7 @@ export interface User {
   providedIn: 'root',
 })
 export class AuthService {
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
   private userSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public user$ = this.userSubject.asObservable();
   private token: string | null = this.getTokenFromStorage();
@@ -31,7 +31,7 @@ export class AuthService {
     }
   }
 
-  login(email: string, password: string):Observable<AuthResponse> {
+  login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/auth/login`, { email, password }, { withCredentials: true });
   }
 

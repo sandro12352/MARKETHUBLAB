@@ -1,0 +1,297 @@
+/* ═══════════════════════════════════════════════════════
+   TASK MODULE — Refined Editorial Dark Theme
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+:host {
+  --task-font-display: 'Sora', sans-serif;
+  --task-font-body: 'DM Sans', sans-serif;
+
+  /* Accent Palette */
+  --task-accent: #818cf8;
+  --task-accent-glow: rgba(129, 140, 248, 0.15);
+  --task-surface: rgba(255, 255, 255, 0.02);
+  --task-surface-hover: rgba(255, 255, 255, 0.04);
+  --task-border: rgba(255, 255, 255, 0.06);
+  --task-border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Status Colors */
+  --status-pending: #f59e0b;
+  --status-progress: #3b82f6;
+  --status-uploaded: #a855f7;
+  --status-approved: #10b981;
+  --status-rejected: #ef4444;
+
+  display: block;
+  font-family: var(--task-font-body);
+}
+
+/* ── Grain Overlay ── */
+.task-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  z-index: 0;
+}
+
+/* ── Entrance Animations ── */
+@keyframes taskSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes taskFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes taskScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes taskShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes borderGlow {
+
+  0%,
+  100% {
+    border-color: rgba(129, 140, 248, 0.1);
+  }
+
+  50% {
+    border-color: rgba(129, 140, 248, 0.3);
+  }
+}
+
+.task-entrance {
+  animation: taskSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.task-entrance-delay-1 {
+  animation-delay: 0.05s;
+}
+
+.task-entrance-delay-2 {
+  animation-delay: 0.1s;
+}
+
+.task-entrance-delay-3 {
+  animation-delay: 0.15s;
+}
+
+.task-entrance-delay-4 {
+  animation-delay: 0.2s;
+}
+
+.task-entrance-delay-5 {
+  animation-delay: 0.25s;
+}
+
+.task-fade-in {
+  animation: taskFadeIn 0.5s ease both;
+}
+
+.task-scale-in {
+  animation: taskScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Skeleton Shimmer ── */
+.task-skeleton {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.03) 75%);
+  background-size: 200% 100%;
+  animation: taskShimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Status Left Border ── */
+.task-status-border {
+  position: relative;
+}
+
+.task-status-border::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  transition: all 0.3s ease;
+}
+
+.task-status-border:hover::before {
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+}
+
+.task-status-pending::before {
+  background: var(--status-pending);
+}
+
+.task-status-en_progreso::before {
+  background: var(--status-progress);
+}
+
+.task-status-subido::before {
+  background: var(--status-uploaded);
+}
+
+.task-status-aprobado::before {
+  background: var(--status-approved);
+}
+
+.task-status-rechazado::before {
+  background: var(--status-rejected);
+}
+
+/* ── Stat Card Hover ── */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card:hover::after {
+  opacity: 1;
+}
+
+.stat-card-pending::after {
+  background: radial-gradient(ellipse at 30% 80%, rgba(245, 158, 11, 0.08), transparent 70%);
+}
+
+.stat-card-progress::after {
+  background: radial-gradient(ellipse at 30% 80%, rgba(59, 130, 246, 0.08), transparent 70%);
+}
+
+.stat-card-uploaded::after {
+  background: radial-gradient(ellipse at 30% 80%, rgba(168, 85, 247, 0.08), transparent 70%);
+}
+
+.stat-card-approved::after {
+  background: radial-gradient(ellipse at 30% 80%, rgba(16, 185, 129, 0.08), transparent 70%);
+}
+
+.stat-card-rejected::after {
+  background: radial-gradient(ellipse at 30% 80%, rgba(239, 68, 68, 0.08), transparent 70%);
+}
+
+/* ── Action Button Hover ── */
+.task-action-btn {
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.task-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.task-action-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ── Modal Backdrop ── */
+.task-modal-backdrop {
+  animation: taskFadeIn 0.2s ease both;
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+.task-modal-content {
+  animation: taskScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Scrollbar ── */
+.task-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.task-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.task-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Display Typography ── */
+.task-display-font {
+  font-family: var(--task-font-display);
+  letter-spacing: -0.025em;
+}
+
+/* ── Glow dot ── */
+.task-glow-dot {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ── Border glow ── */
+.task-border-glow {
+  animation: borderGlow 3s ease-in-out infinite;
+}

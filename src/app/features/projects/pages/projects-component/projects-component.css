@@ -1,73 +1,220 @@
-/* Estilos personalizados para el componente de proyectos */
+/* ═══════════════════════════════════════════════════════
+   PROJECTS MODULE — Refined Editorial Dark Theme
+   ═══════════════════════════════════════════════════════ */
 
-/* Animación de entrada suave para las tarjetas */
-@keyframes slideIn {
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+:host {
+  --proj-font-display: 'Sora', sans-serif;
+  --proj-font-body: 'DM Sans', sans-serif;
+
+  /* Accent Palette */
+  --proj-accent: #818cf8;
+  --proj-accent-glow: rgba(129, 140, 248, 0.15);
+  --proj-surface: rgba(255, 255, 255, 0.02);
+  --proj-surface-hover: rgba(255, 255, 255, 0.04);
+  --proj-border: rgba(255, 255, 255, 0.06);
+  --proj-border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Status Colors */
+  --status-planificacion: #f59e0b;
+  --status-en-progreso: #3b82f6;
+  --status-activo: #10b981;
+  --status-completado: #6366f1;
+
+  display: block;
+  font-family: var(--proj-font-body);
+}
+
+/* ── Grain Overlay ── */
+.proj-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  z-index: 0;
+}
+
+/* ── Entrance Animations ── */
+@keyframes projSlideUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-:host {
-  --animation-duration: 0.3s;
+@keyframes projFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-/* Efecto hover mejorado */
-.group:hover {
-  transform: translateY(-4px);
+@keyframes projScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes projShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.proj-entrance {
+  animation: projSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.proj-entrance-delay-1 {
+  animation-delay: 0.05s;
+}
+
+.proj-entrance-delay-2 {
+  animation-delay: 0.1s;
+}
+
+.proj-entrance-delay-3 {
+  animation-delay: 0.15s;
+}
+
+.proj-entrance-delay-4 {
+  animation-delay: 0.2s;
+}
+
+.proj-fade-in {
+  animation: projFadeIn 0.5s ease both;
+}
+
+.proj-scale-in {
+  animation: projScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Skeleton Shimmer ── */
+.proj-skeleton {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.03) 75%);
+  background-size: 200% 100%;
+  animation: projShimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Custom Display Typography ── */
+.proj-display-font {
+  font-family: var(--proj-font-display);
+  letter-spacing: -0.025em;
+}
+
+/* ── Status Left Border ── */
+.proj-status-border {
+  position: relative;
+}
+
+.proj-status-border::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
   transition: all 0.3s ease;
 }
 
-/* Animación de progreso */
-@keyframes progressFill {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+.proj-status-planificacion::before {
+  background: var(--status-planificacion);
 }
 
-/* Scroll suave */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.proj-status-en_progreso::before {
+  background: var(--status-en-progreso);
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+.proj-status-activo::before {
+  background: var(--status-activo);
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(71, 85, 105, 0.5);
+.proj-status-completado::before {
+  background: var(--status-completado);
+}
+
+/* ── Project Card Hover ── */
+.proj-card {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.proj-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Stat Card Hover ── */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Glow dot ── */
+.proj-glow-dot {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ── Custom Scrollbar ── */
+.proj-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.proj-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.proj-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(71, 85, 105, 0.8);
-}
-
-/* Focus states para accesibilidad */
-input:focus,
-select:focus {
-  outline: none;
-}
-
-/* Línea clamp truncado */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.proj-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
 }

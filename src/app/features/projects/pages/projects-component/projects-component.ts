@@ -256,10 +256,10 @@ export class ProjectsComponent implements OnInit {
 
   getStatusIcon(status: Project['estado']): string {
     const icons: Record<Project['estado'], string> = {
-      activo: 'lucidePlay',           // En ejecución
-      completado: 'lucideCheckCircle', // Completado
-      en_progreso: 'lucideLoader',     // Cargando/En progreso
-      planificacion: 'lucideCalendar', // Calendario/Planificación
+      activo: 'lucide:play',           // En ejecución
+      completado: 'lucide:check-circle', // Completado
+      en_progreso: 'lucide:loader',     // Cargando/En progreso
+      planificacion: 'lucide:calendar', // Calendario/Planificación
     };
     return icons[status];
   }

@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════════════════
+   PROJECT DETAILS — Refined Editorial Dark Theme
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+:host {
+    --det-font-display: 'Sora', sans-serif;
+    --det-font-body: 'DM Sans', sans-serif;
+
+    /* Accent Palette */
+    --det-accent: #818cf8;
+    --det-accent-glow: rgba(129, 140, 248, 0.15);
+    --det-surface: rgba(255, 255, 255, 0.02);
+    --det-surface-hover: rgba(255, 255, 255, 0.04);
+    --det-border: rgba(255, 255, 255, 0.06);
+    --det-border-hover: rgba(255, 255, 255, 0.12);
+
+    /* Status Colors */
+    --status-planificacion: #f59e0b;
+    --status-en-progreso: #3b82f6;
+    --status-activo: #10b981;
+    --status-completado: #6366f1;
+
+    display: block;
+    font-family: var(--det-font-body);
+}
+
+/* ── Grain Overlay ── */
+.det-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    z-index: 0;
+}
+
+/* ── Entrance Animations ── */
+@keyframes detSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes detFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.det-entrance {
+    animation: detSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.det-entrance-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.det-entrance-delay-2 {
+    animation-delay: 0.2s;
+}
+
+.det-fade-in {
+    animation: detFadeIn 0.5s ease both;
+}
+
+/* ── Typography ── */
+.det-display-font {
+    font-family: var(--det-font-display);
+    letter-spacing: -0.025em;
+}
+
+/* ── Folder Card ── */
+.folder-card {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.folder-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Status Colors ── */
+.text-status-planificacion {
+    color: var(--status-planificacion);
+}
+
+.text-status-en-progreso {
+    color: var(--status-en-progreso);
+}
+
+.text-status-activo {
+    color: var(--status-activo);
+}
+
+.text-status-completado {
+    color: var(--status-completado);
+}
+
+.bg-status-planificacion {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.bg-status-en-progreso {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.bg-status-activo {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.bg-status-completado {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* ── Glow dot ── */
+.det-glow-dot {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ── Custom Scrollbar ── */
+.det-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.det-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.det-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+.det-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
