@@ -622,11 +622,11 @@
                     <div class="flex items-center gap-2">
                         <div
                             class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500/80 to-violet-600/80 flex items-center justify-center text-white text-[9px] font-bold">
-                            {{ selectedTask()!.trabajador?.nombres?.charAt(0) }}{{
-                            selectedTask()!.trabajador?.apellidos?.charAt(0) }}
+                            {{ selectedTask()!.trabajador.nombres.charAt(0) }}{{
+                            selectedTask()!.trabajador.apellidos.charAt(0) }}
                         </div>
-                        <span class="text-[12px] text-neutral-300 font-medium">{{ selectedTask()!.trabajador?.nombres }}
-                            {{ selectedTask()!.trabajador?.apellidos }}</span>
+                        <span class="text-[12px] text-neutral-300 font-medium">{{ selectedTask()!.trabajador.nombres }}
+                            {{ selectedTask()!.trabajador.apellidos }}</span>
                     </div>
                 </div>
 

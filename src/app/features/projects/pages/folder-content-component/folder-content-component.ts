@@ -170,7 +170,7 @@ export class FolderContentComponent implements OnInit {
 
         this.projectService.uploadContent(
             this.id_carpeta,
-            4,
+            3,
             this.selectedFile()!,
             this.contentForm.value.nombre!,
             this.contentForm.value.descripcion || ''

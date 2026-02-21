@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -45,8 +45,25 @@ export class ClientsComponent implements OnInit {
   protected authService = inject(AuthService);
 
   protected clientWithTasks = signal<ClientFile[]>([]);
-  protected isLoadingTask = signal<number | null>(null); // ID de tarea en procesamiento
-  protected taskUpdated = signal(false); // Signal para trigger actualizaciones
+  protected isLoadingTask = signal<number | null>(null);
+  protected taskUpdated = signal(false);
+  protected searchTerm = signal('');
+
+  // Computed filtered clients based on search
+  protected filteredClients = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    const clients = this.clientWithTasks();
+
+    if (!term) return clients;
+
+    return clients.filter(item => {
+      const fullName = `${item.cliente.nombres} ${item.cliente.apellidos}`.toLowerCase();
+      const empresa = (item.cliente.nombre_empresa || '').toLowerCase();
+      const telefono = (item.cliente.telefono || '').toLowerCase();
+      const dni = (item.cliente.dni || '').toLowerCase();
+      return fullName.includes(term) || empresa.includes(term) || telefono.includes(term) || dni.includes(term);
+    });
+  });
 
   get token() {
     return this.authService.getToken();
@@ -55,8 +72,6 @@ export class ClientsComponent implements OnInit {
   ngOnInit(): void {
     this.getClientsWithTasks();
   }
-  protected expandedRows: Set<number> = new Set();
-
 
   getClientsWithTasks() {
     this.clientService.getClientWithTasks().subscribe({
@@ -65,19 +80,16 @@ export class ClientsComponent implements OnInit {
         console.log(this.clientWithTasks());
       }
     })
-
   }
 
-  toggleRowExpand(cliente_id: number): void {
-    if (this.expandedRows.has(cliente_id)) {
-      this.expandedRows.delete(cliente_id);
-    } else {
-      this.expandedRows.add(cliente_id);
-    }
+  onSearchChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchTerm.set(input.value);
   }
 
-  isRowExpanded(cliente_id: number): boolean {
-    return this.expandedRows.has(cliente_id);
+  filterClients(): void {
+    // Triggered by clearing search — the computed signal handles actual filtering
+    this.searchTerm.set('');
   }
 
   approveTask(id_cliente_tarea: number): void {
@@ -89,8 +101,8 @@ export class ClientsComponent implements OnInit {
       next: (resp) => {
         console.log('Tarea aprobada:', resp);
         this.isLoadingTask.set(null);
-        this.taskUpdated.set(!this.taskUpdated()); // Toggle para trigger actualización
-        this.getClientsWithTasks(); // Refrescar datos
+        this.taskUpdated.set(!this.taskUpdated());
+        this.getClientsWithTasks();
       },
       error: (err) => {
         console.error('Error al aprobar tarea:', err);
@@ -108,8 +120,8 @@ export class ClientsComponent implements OnInit {
       next: (resp) => {
         console.log('Tarea rechazada:', resp);
         this.isLoadingTask.set(null);
-        this.taskUpdated.set(!this.taskUpdated()); // Toggle para trigger actualización
-        this.getClientsWithTasks(); // Refrescar datos
+        this.taskUpdated.set(!this.taskUpdated());
+        this.getClientsWithTasks();
       },
       error: (err) => {
         console.error('Error al rechazar tarea:', err);
@@ -137,5 +149,4 @@ export class ClientsComponent implements OnInit {
   getTotalPending(): number {
     return this.clientWithTasks().reduce((acc, item) => acc + item.tareas.filter(t => t.estado === 'pendiente').length, 0);
   }
-
 }

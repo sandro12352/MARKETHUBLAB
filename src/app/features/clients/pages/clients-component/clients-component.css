@@ -1,0 +1,299 @@
+/* ═══════════════════════════════════════════════════════
+   CLIENTS MODULE — Dossier Panel Dark Theme
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+:host {
+    --cli-font-display: 'Sora', sans-serif;
+    --cli-font-body: 'DM Sans', sans-serif;
+
+    /* Accent Palette */
+    --cli-accent: #818cf8;
+    --cli-accent-soft: rgba(129, 140, 248, 0.08);
+    --cli-accent-glow: rgba(129, 140, 248, 0.15);
+    --cli-surface: rgba(255, 255, 255, 0.02);
+    --cli-surface-hover: rgba(255, 255, 255, 0.04);
+    --cli-border: rgba(255, 255, 255, 0.06);
+    --cli-border-hover: rgba(255, 255, 255, 0.12);
+
+    /* Status Colors */
+    --status-pendiente: #f59e0b;
+    --status-subido: #3b82f6;
+    --status-aprobado: #10b981;
+    --status-rechazado: #ef4444;
+
+    display: block;
+    font-family: var(--cli-font-body);
+}
+
+/* ── Grain Overlay ── */
+.cli-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    z-index: 0;
+}
+
+/* ── Entrance Animations ── */
+@keyframes cliSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cliFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes cliScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes avatarRing {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.25);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(129, 140, 248, 0);
+    }
+}
+
+@keyframes sidebarGlow {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.cli-entrance {
+    animation: cliSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cli-entrance-delay-1 {
+    animation-delay: 0.05s;
+}
+
+.cli-entrance-delay-2 {
+    animation-delay: 0.1s;
+}
+
+.cli-entrance-delay-3 {
+    animation-delay: 0.15s;
+}
+
+.cli-entrance-delay-4 {
+    animation-delay: 0.2s;
+}
+
+.cli-fade-in {
+    animation: cliFadeIn 0.5s ease both;
+}
+
+.cli-scale-in {
+    animation: cliScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Custom Display Typography ── */
+.cli-display-font {
+    font-family: var(--cli-font-display);
+    letter-spacing: -0.025em;
+}
+
+/* ── Stat Card ── */
+.cli-stat-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cli-stat-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Dossier Panel ── */
+.cli-dossier {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cli-dossier:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 16px 48px -16px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Profile Sidebar ── */
+.cli-profile-sidebar {
+    position: relative;
+    background: rgba(255, 255, 255, 0.008);
+}
+
+/* Subtle gradient accent on left edge */
+.cli-profile-sidebar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(180deg, #818cf8 0%, #6366f1 50%, #818cf8 100%);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.cli-dossier:hover .cli-profile-sidebar::before {
+    opacity: 1;
+}
+
+/* ── Avatar Glow ── */
+.cli-avatar {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.cli-dossier:hover .cli-avatar {
+    animation: avatarRing 2s ease-in-out infinite;
+}
+
+/* ── Task Row ── */
+.cli-task-row {
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+.cli-task-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cli-task-row:hover::before {
+    opacity: 1;
+}
+
+.cli-task-pendiente::before {
+    background: var(--status-pendiente);
+}
+
+.cli-task-subido::before {
+    background: var(--status-subido);
+}
+
+.cli-task-aprobado::before {
+    background: var(--status-aprobado);
+}
+
+.cli-task-rechazado::before {
+    background: var(--status-rechazado);
+}
+
+.cli-task-row:hover {
+    background: rgba(255, 255, 255, 0.025) !important;
+}
+
+/* ── Glow dot ── */
+.cli-glow-dot {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ── Social Icon Hover ── */
+.cli-social-icon {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cli-social-icon:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* ── Custom Scrollbar ── */
+.cli-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.cli-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cli-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+.cli-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Search Focus Ring ── */
+.cli-search-input:focus {
+    box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.1), 0 4px 12px -4px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Responsive: stack profile on mobile ── */
+@media (max-width: 1023px) {
+    .cli-profile-sidebar {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .cli-profile-sidebar::before {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: auto;
+        width: 100%;
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+        background: linear-gradient(90deg, #818cf8 0%, #6366f1 50%, #818cf8 100%);
+    }
+}
