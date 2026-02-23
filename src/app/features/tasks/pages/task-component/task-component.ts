@@ -51,7 +51,7 @@ export class TaskComponent implements OnInit {
   showCreateModal = signal<boolean>(false);
   isCreating = signal<boolean>(false);
   newTask = signal<CreateTaskDto>({
-    nombre: '',
+    titulo: '',
     descripcion: '',
     prioridad: 'media',
     fecha_limite: '',
@@ -111,7 +111,11 @@ export class TaskComponent implements OnInit {
       this.taskService.getTasks()
         .pipe(finalize(() => this.loading.set(false)))
         .subscribe({
-          next: (data) => this.tasks.set(data),
+          next: (data) => {
+            console.log(data)
+            this.tasks.set(data)
+
+          },
           error: (err) => {
             console.error('Error loading tasks', err);
             toast.error('Error al cargar las tareas.');
@@ -153,7 +157,7 @@ export class TaskComponent implements OnInit {
 
   // Create Task
   openCreateModal(): void {
-    this.newTask.set({ nombre: '', descripcion: '', prioridad: 'media', fecha_limite: '', id_trabajador: 0 });
+    this.newTask.set({ titulo: '', descripcion: '', prioridad: 'media', fecha_limite: '', id_trabajador: 0 });
     this.showCreateModal.set(true);
   }
 
@@ -170,7 +174,7 @@ export class TaskComponent implements OnInit {
   }
 
   updateTaskNombre(value: string): void {
-    this.newTask.update(t => ({ ...t, nombre: value }));
+    this.newTask.update(t => ({ ...t, titulo: value }));
   }
 
   updateTaskDescripcion(value: string): void {
@@ -185,7 +189,7 @@ export class TaskComponent implements OnInit {
     const token = this.authService.getToken();
     const task = this.newTask();
 
-    if (!task.nombre || !task.descripcion || !task.id_trabajador || !token) {
+    if (!task.titulo || !task.descripcion || !task.id_trabajador || !token) {
       toast.error('Por favor, completa todos los campos obligatorios.');
       return;
     }

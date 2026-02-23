@@ -27,7 +27,7 @@ export interface ArchivoTarea {
 }
 
 export interface CreateTaskDto {
-  nombre: string;
+  titulo: string;
   descripcion: string;
   prioridad: 'alta' | 'media' | 'baja';
   fecha_limite?: string;

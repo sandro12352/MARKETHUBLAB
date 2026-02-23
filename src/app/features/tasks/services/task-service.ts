@@ -14,21 +14,21 @@ export class TaskService {
    * Get all tasks (admin)
    */
   getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${environment.apiUrl}/api/tasks/`);
+    return this.http.get<Task[]>(`${environment.apiUrl}/api/worker-tasks/`);
   }
 
   /**
    * Get tasks assigned to a specific worker
    */
   getTasksByWorker(idTrabajador: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${environment.apiUrl}/api/tasks/worker/${idTrabajador}`);
+    return this.http.get<Task[]>(`${environment.apiUrl}/api/worker-tasks/${idTrabajador}`);
   }
 
   /**
    * Create a new task (admin only)
    */
   createTask(task: CreateTaskDto, token: string): Observable<Task> {
-    return this.http.post<Task>(`${environment.apiUrl}/api/tasks/`, task, {
+    return this.http.post<Task>(`${environment.apiUrl}/api/worker-tasks/`, task, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
@@ -37,7 +37,7 @@ export class TaskService {
    * Update task status
    */
   updateTaskStatus(id_cliente_tarea: number, estado: string, token: string): Observable<Task> {
-    return this.http.put<Task>(`${environment.apiUrl}/api/task/${id_cliente_tarea}`, { estado }, {
+    return this.http.put<Task>(`${environment.apiUrl}/api/worker-tasks/${id_cliente_tarea}`, { estado }, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
@@ -74,6 +74,6 @@ export class TaskService {
    * Get all workers for assignment
    */
   getWorkers(): Observable<Worker[]> {
-    return this.http.get<Worker[]>(`${environment.apiUrl}/api/workers/`);
+    return this.http.get<Worker[]>(`${environment.apiUrl}/api/worker`);
   }
 }
