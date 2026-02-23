@@ -1,15 +1,236 @@
+/* ═══════════════════════════════════════════════════════
+   CONTRACTS MODULE — Refined Editorial Dark Theme
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
 :host {
+    --ct-font-display: 'Sora', sans-serif;
+    --ct-font-body: 'DM Sans', sans-serif;
+
+    /* Accent Palette */
+    --ct-accent: #818cf8;
+    --ct-accent-glow: rgba(129, 140, 248, 0.15);
+    --ct-surface: rgba(255, 255, 255, 0.02);
+    --ct-surface-hover: rgba(255, 255, 255, 0.04);
+    --ct-border: rgba(255, 255, 255, 0.06);
+    --ct-border-hover: rgba(255, 255, 255, 0.12);
+
     display: block;
+    font-family: var(--ct-font-body);
 }
 
-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1.25rem;
+/* ── Grain Overlay ── */
+.ct-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    z-index: 0;
 }
 
+/* ── Entrance Animations ── */
+@keyframes ctSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ctFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes ctScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes ctShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes ctSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.ct-entrance {
+    animation: ctSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ct-entrance-delay-1 {
+    animation-delay: 0.05s;
+}
+
+.ct-entrance-delay-2 {
+    animation-delay: 0.1s;
+}
+
+.ct-entrance-delay-3 {
+    animation-delay: 0.15s;
+}
+
+.ct-entrance-delay-4 {
+    animation-delay: 0.2s;
+}
+
+.ct-fade-in {
+    animation: ctFadeIn 0.5s ease both;
+}
+
+.ct-scale-in {
+    animation: ctScaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ct-slide-in {
+    animation: ctSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Skeleton Shimmer ── */
+.ct-skeleton {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.03) 25%,
+            rgba(255, 255, 255, 0.06) 50%,
+            rgba(255, 255, 255, 0.03) 75%);
+    background-size: 200% 100%;
+    animation: ctShimmer 1.8s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+/* ── Custom Display Typography ── */
+.ct-display-font {
+    font-family: var(--ct-font-display);
+    letter-spacing: -0.025em;
+}
+
+/* ── Glow dot ── */
+.ct-glow-dot {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ── Contract Card ── */
+.ct-card {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ct-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Stat Card ── */
+.ct-stat-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ct-stat-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Custom Scrollbar ── */
+.ct-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ct-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ct-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+.ct-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── PDF Viewer Panel ── */
+.ct-pdf-panel {
+    animation: ctSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ct-pdf-panel iframe {
+    border: none;
+    border-radius: 12px;
+}
+
+/* ── Upload area ── */
+.ct-upload-zone {
+    transition: all 0.3s ease;
+}
+
+.ct-upload-zone:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Table Styles ── */
+.ct-table-row {
+    transition: background 0.2s ease;
+}
+
+.ct-table-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+tr:last-child {
+    border-bottom: none;
+}
+
+/* ── Line Clamp ── */
 .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -17,11 +238,7 @@ select {
     overflow: hidden;
 }
 
-tr:last-child {
-    border-bottom: none;
-}
-
-/* Custom scrollbar for table container */
+/* ── Custom Scrollbar for overflow ── */
 .overflow-x-auto::-webkit-scrollbar {
     height: 6px;
 }
@@ -37,4 +254,27 @@ tr:last-child {
 
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
     background: #374151;
+}
+
+/* ── Active Document Tab ── */
+.ct-doc-tab {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ct-doc-tab:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.ct-doc-tab.active {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.25rem;
 }

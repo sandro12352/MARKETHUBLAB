@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateTaskDto, Task, Worker } from '../interface/task.interface';
+import { CreateTaskDto, Task, Worker, WorkerTask } from '../interface/task.interface';
 import { environment } from '../../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 
@@ -13,22 +13,22 @@ export class TaskService {
   /**
    * Get all tasks (admin)
    */
-  getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${environment.apiUrl}/api/worker-tasks/`);
+  getTasks(): Observable<WorkerTask[]> {
+    return this.http.get<WorkerTask[]>(`${environment.apiUrl}/api/worker-tasks/`);
   }
 
   /**
    * Get tasks assigned to a specific worker
    */
-  getTasksByWorker(idTrabajador: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${environment.apiUrl}/api/worker-tasks/${idTrabajador}`);
+  getTasksByWorker(idTrabajador: number): Observable<WorkerTask[]> {
+    return this.http.get<WorkerTask[]>(`${environment.apiUrl}/api/worker-tasks/trabajador/${idTrabajador}`);
   }
 
   /**
    * Create a new task (admin only)
    */
-  createTask(task: CreateTaskDto, token: string): Observable<Task> {
-    return this.http.post<Task>(`${environment.apiUrl}/api/worker-tasks/`, task, {
+  createTask(task: CreateTaskDto, token: string): Observable<WorkerTask> {
+    return this.http.post<WorkerTask>(`${environment.apiUrl}/api/worker-tasks/`, task, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
@@ -36,8 +36,8 @@ export class TaskService {
   /**
    * Update task status
    */
-  updateTaskStatus(id_cliente_tarea: number, estado: string, token: string): Observable<Task> {
-    return this.http.put<Task>(`${environment.apiUrl}/api/worker-tasks/${id_cliente_tarea}`, { estado }, {
+  updateTaskStatus(id_cliente_tarea: number, estado: string, token: string): Observable<WorkerTask> {
+    return this.http.put<WorkerTask>(`${environment.apiUrl}/api/worker-tasks/${id_cliente_tarea}`, { estado }, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
@@ -45,15 +45,15 @@ export class TaskService {
   /**
    * Approve a task (admin only)
    */
-  approveTask(id_cliente_tarea: number, token: string): Observable<Task> {
+  approveTask(id_cliente_tarea: number, token: string): Observable<WorkerTask> {
     return this.updateTaskStatus(id_cliente_tarea, 'aprobado', token);
   }
 
   /**
    * Reject a task (admin only)
    */
-  rejectTask(id_cliente_tarea: number, observacion: string, token: string): Observable<Task> {
-    return this.http.put<Task>(`${environment.apiUrl}/api/task/${id_cliente_tarea}`, {
+  rejectTask(id_cliente_tarea: number, observacion: string, token: string): Observable<WorkerTask> {
+    return this.http.put<WorkerTask>(`${environment.apiUrl}/api/worker-tasks/${id_cliente_tarea}`, {
       estado: 'rechazado',
       observacion
     }, {
@@ -65,7 +65,7 @@ export class TaskService {
    * Delete a task (admin only)
    */
   deleteTask(id_cliente_tarea: number, token: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/api/task/${id_cliente_tarea}`, {
+    return this.http.delete<void>(`${environment.apiUrl}/api/worker-tasks/${id_cliente_tarea}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }

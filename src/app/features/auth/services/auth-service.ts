@@ -11,6 +11,7 @@ export interface User {
   email?: string;
   telefono?: string;
   id_rol?: number;
+  id_trabajador?: number;
   [key: string]: any;
 }
 

@@ -14,6 +14,7 @@ import { HlmLabelImports } from '@spartan/ui/label';
 import { HlmTextareaImports } from '@spartan/ui/textarea';
 import { toast } from 'ngx-sonner';
 import { HlmToasterImports } from '@spartan/ui/sonner';
+import { AuthService } from '../../../auth/services/auth-service';
 
 @Component({
     selector: 'app-folder-content',
@@ -39,6 +40,7 @@ export class FolderContentComponent implements OnInit {
     private projectService = inject(ProjectsService);
     private route = inject(ActivatedRoute);
     private fb = inject(FormBuilder);
+    private authService = inject(AuthService);
 
     folder = signal<Folder | null>(null);
     folderContents = signal<FolderContent[]>([]);
@@ -170,7 +172,7 @@ export class FolderContentComponent implements OnInit {
 
         this.projectService.uploadContent(
             this.id_carpeta,
-            3,
+            this.authService.getUser()?.id_trabajador || 0,
             this.selectedFile()!,
             this.contentForm.value.nombre!,
             this.contentForm.value.descripcion || ''

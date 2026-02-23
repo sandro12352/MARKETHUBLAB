@@ -9,7 +9,7 @@ import { HlmTextareaImports } from '@spartan/ui/textarea';
 import { HlmToasterImports } from '@spartan/ui/sonner';
 import { TaskService } from '../../services/task-service';
 import { AuthService, User } from '../../../auth/services/auth-service';
-import { Task, Worker, CreateTaskDto } from '../../interface/task.interface';
+import { WorkerTask, Worker, CreateTaskDto } from '../../interface/task.interface';
 import { finalize } from 'rxjs';
 import { toast } from 'ngx-sonner';
 
@@ -39,7 +39,7 @@ export class TaskComponent implements OnInit {
   isAdmin = computed(() => this.currentUser()?.id_rol === 3);
 
   // Data State
-  tasks = signal<Task[]>([]);
+  tasks = signal<WorkerTask[]>([]);
   workers = signal<Worker[]>([]);
   loading = signal<boolean>(true);
 
@@ -65,7 +65,7 @@ export class TaskComponent implements OnInit {
 
   // Detail Modal
   showDetailModal = signal<boolean>(false);
-  selectedTask = signal<Task | null>(null);
+  selectedTask = signal<WorkerTask | null>(null);
 
   // Computed Stats
   totalTasks = computed(() => this.filteredTasks().length);
@@ -87,8 +87,8 @@ export class TaskComponent implements OnInit {
 
     if (search) {
       filtered = filtered.filter(t =>
-        t.nombre.toLowerCase().includes(search) ||
-        t.descripcion.toLowerCase().includes(search) ||
+        t.titulo?.toLowerCase().includes(search) ||
+        t.descripcion?.toLowerCase().includes(search) ||
         `${t.trabajador?.nombres} ${t.trabajador?.apellidos}`.toLowerCase().includes(search)
       );
     }
@@ -112,7 +112,6 @@ export class TaskComponent implements OnInit {
         .pipe(finalize(() => this.loading.set(false)))
         .subscribe({
           next: (data) => {
-            console.log(data)
             this.tasks.set(data)
 
           },
@@ -133,7 +132,9 @@ export class TaskComponent implements OnInit {
         this.taskService.getTasksByWorker(workerId)
           .pipe(finalize(() => this.loading.set(false)))
           .subscribe({
-            next: (data) => this.tasks.set(data),
+            next: (data) => {
+              this.tasks.set(data)
+            },
             error: (err) => {
               console.error('Error loading tasks', err);
               toast.error('Error al cargar tus tareas.');
@@ -278,7 +279,7 @@ export class TaskComponent implements OnInit {
   }
 
   // Task Detail
-  openDetailModal(task: Task): void {
+  openDetailModal(task: WorkerTask): void {
     this.selectedTask.set(task);
     this.showDetailModal.set(true);
   }

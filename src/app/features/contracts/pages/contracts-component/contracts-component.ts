@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmSelectImports } from '@spartan/ui/select';
 import { ContractService } from '../../services/contract.service';
@@ -24,6 +25,7 @@ export class ContractsComponent implements OnInit {
   private contractService = inject(ContractService);
   private clientsService = inject(ClientsService);
   private authService = inject(AuthService);
+  private sanitizer = inject(DomSanitizer);
 
   // States
   contratos = signal<Contrato[]>([]);
@@ -40,8 +42,23 @@ export class ContractsComponent implements OnInit {
   contratoFile: File | null = null;
   planFile: File | null = null;
 
+  // Upload Panel
+  showUploadPanel = signal<boolean>(false);
+
   // Observation Modal State
   selectedObservation = signal<string | null>(null);
+
+  // Inline PDF Viewer State
+  selectedPdfUrl = signal<string | null>(null);
+  selectedPdfType = signal<'contrato' | 'plan' | 'firma'>('contrato');
+  selectedPdfContrato = signal<Contrato | null>(null);
+
+  // Sanitized URL for iframe
+  sanitizedPdfUrl = computed<SafeResourceUrl>(() => {
+    const url = this.selectedPdfUrl();
+    if (!url) return '';
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  });
 
   ngOnInit(): void {
     this.loadData();
@@ -104,6 +121,7 @@ export class ContractsComponent implements OnInit {
           toast.success('Documentos subidos con éxito.');
           this.loadData();
           this.resetForm();
+          this.showUploadPanel.set(false);
         },
         error: (err) => {
           console.error('Upload error', err);
@@ -122,6 +140,7 @@ export class ContractsComponent implements OnInit {
     this.planFile = null;
   }
 
+  // ── Observation Modal ──
   openObservationModal(observation: string) {
     this.selectedObservation.set(observation);
   }
@@ -130,5 +149,16 @@ export class ContractsComponent implements OnInit {
     this.selectedObservation.set(null);
   }
 
+  // ── Inline PDF Viewer ──
+  openPdfInline(url: string, type: 'contrato' | 'plan' | 'firma', contrato: Contrato) {
+    this.selectedPdfUrl.set(url);
+    this.selectedPdfType.set(type);
+    this.selectedPdfContrato.set(contrato);
+  }
 
+  closePdfViewer() {
+    this.selectedPdfUrl.set(null);
+    this.selectedPdfType.set('contrato');
+    this.selectedPdfContrato.set(null);
+  }
 }

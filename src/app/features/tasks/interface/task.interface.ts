@@ -26,10 +26,36 @@ export interface ArchivoTarea {
   fecha_subida: string | Date;
 }
 
+
+
 export interface CreateTaskDto {
   titulo: string;
   descripcion: string;
   prioridad: 'alta' | 'media' | 'baja';
   fecha_limite?: string;
   id_trabajador: number;
+}
+
+export interface WorkerTask {
+  id_trabajador_tarea: number;
+  titulo: null | string;
+  descripcion: null | string;
+  id_trabajador: number;
+  id_proyecto_material: null;
+  estado: string;
+  prioridad: string;
+  fecha_creacion: Date;
+  fecha_limite: Date;
+  fecha_finalizacion: null;
+  observacion: null;
+  trabajador: Trabajador;
+  proyecto_material: null;
+}
+
+export interface Trabajador {
+  id_trabajador: number;
+  id_usuario: number;
+  nombres: string;
+  apellidos: string;
+  fecha_registro: Date;
 }
