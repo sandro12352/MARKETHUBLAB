@@ -131,6 +131,20 @@ export class ProjectsService {
     );
   }
 
+  updateContent(id_proyecto_material: number, file: File, nombre: string, descripcion: string): Observable<FolderContent> {
+    const formData = new FormData();
+    formData.append('ruta', file);
+    formData.append('nombre', nombre);
+    formData.append('descripcion', descripcion);
+    return this.http.patch<FolderContent>(`${environment.apiUrl}/api/project-material/${id_proyecto_material}`, formData,
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
+  }
+
   approveContent(id_proyecto_material: number): Observable<FolderContent> {
     return this.http.patch<FolderContent>(`${environment.apiUrl}/api/project-material/${id_proyecto_material}`,
       { estado: 'aprobado' },

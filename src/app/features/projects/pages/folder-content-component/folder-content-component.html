@@ -1,10 +1,10 @@
-<!-- ═══════════════════════════════════════════════════════════════════
-     FOLDER CONTENT — Refined Editorial Dark Theme
-     ═══════════════════════════════════════════════════════════════════ -->
+﻿<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     FOLDER CONTENT â€” Refined Editorial Dark Theme
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 
 <div class="relative max-w-7xl mx-auto px-6 py-8 space-y-10">
 
-    <!-- ── Ambient Background Glow ── -->
+    <!-- â”€â”€ Ambient Background Glow â”€â”€ -->
     <div class="fixed top-0 left-64 right-0 h-full overflow-hidden -z-10 pointer-events-none">
         <div class="absolute -top-[10%] right-[10%] w-[500px] h-[500px] rounded-full blur-[160px] bg-indigo-600/[0.04]">
         </div>
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <!-- ── Top Navigation / Breadcrumb ── -->
+    <!-- â”€â”€ Top Navigation / Breadcrumb â”€â”€ -->
     <div class="fold-entrance flex items-center justify-between gap-4">
         <div class="flex items-center gap-2">
             <button [routerLink]="'/home/projects/' + id_proyecto"
@@ -26,17 +26,19 @@
         </div>
 
         @if (folder()) {
-        <div class="px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl">
-            <span class="text-[11px] font-medium text-neutral-400 flex items-center gap-2">
-                <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full fold-glow-dot"></span>
-                {{ folderContents().length }} Archivos en esta categoría
-            </span>
+        <div class="flex items-center gap-3">
+            <div class="px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl">
+                <span class="text-[11px] font-medium text-neutral-400 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full fold-glow-dot"></span>
+                    {{ folderTasks().length }} Tareas · {{ folderContents().length }} Archivos
+                </span>
+            </div>
         </div>
         }
     </div>
 
     @if (folder()) {
-    <!-- ═══════════════════════ FOLDER HEADER ═══════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• FOLDER HEADER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div
         class="fold-entrance fold-entrance-delay-1 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
         <div class="flex items-center gap-5">
@@ -55,296 +57,252 @@
         </div>
 
         <div class="flex items-center gap-3 w-full md:w-auto">
-            <!-- View Toggle -->
-            <button (click)="toggleViewMode()"
-                class="flex-1 md:flex-none px-4 py-2.5 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 text-neutral-400 hover:text-white transition-all rounded-xl flex items-center justify-center gap-2">
-                <iconify-icon [icon]="viewMode() === 'grid' ? 'lucide:list' : 'lucide:layout-grid'"
-                    width="16"></iconify-icon>
-                <span class="text-[11px] font-bold uppercase tracking-widest">{{ viewMode() === 'grid' ? 'Lista' :
-                    'Grilla' }}</span>
+            <!-- Create Task (Admin) -->
+            @if (isAdmin()) {
+            <button (click)="openCreateTaskModal()"
+                class="flex-1 md:flex-none px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-violet-600/20 transition-all flex items-center justify-center gap-2">
+                <iconify-icon icon="lucide:list-plus" width="16"></iconify-icon>
+                Crear Tarea
             </button>
-
-            <!-- Upload Trigger -->
-            <hlm-alert-dialog>
-                <button hlmAlertDialogTrigger (click)="resetContentForm()"
-                    class="flex-1 md:flex-none px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2">
-                    <iconify-icon icon="lucide:upload" width="16"></iconify-icon>
-                    Subir Material
-                </button>
-
-                <!-- Upload Modal -->
-                <hlm-alert-dialog-content class="sm:max-w-[560px] bg-[#0c0d14] border-white/10 p-0 overflow-hidden"
-                    *brnAlertDialogContent="let ctx">
-                    <div class="px-6 py-5 border-b border-white/[0.06] flex items-center gap-3">
-                        <div
-                            class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                            <iconify-icon icon="lucide:cloud-upload" width="18"></iconify-icon>
-                        </div>
-                        <div>
-                            <h2 class="fold-display-font text-lg font-bold text-white">Subir Material</h2>
-                            <p class="text-[10px] text-neutral-500 uppercase tracking-widest mt-0.5">Nuevos archivos
-                                para {{ folder()!.nombre }}</p>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-6">
-                        <!-- Drag & Drop Zone -->
-                        <div class="relative" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
-                            (drop)="onDrop($event)">
-                            @if (!selectedFile()) {
-                            <label for="file-upload"
-                                class="flex flex-col items-center justify-center py-10 px-6 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer"
-                                [ngClass]="isDragging() ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-white/10 bg-white/[0.015] hover:border-white/20 hover:bg-white/[0.03]'">
-                                <iconify-icon icon="lucide:file-up" width="32" class="mb-4"
-                                    [ngClass]="isDragging() ? 'text-indigo-400' : 'text-neutral-700'"></iconify-icon>
-                                <p class="text-[14px] text-neutral-300 font-bold tracking-tight mb-1">
-                                    {{ isDragging() ? '¡Suelta para subir!' : 'Arrastra y suelta aquí' }}
-                                </p>
-                                <p class="text-xs text-neutral-600 tracking-wide font-medium">o selecciona desde tu
-                                    dispositivo</p>
-                                <input id="file-upload" type="file" class="hidden" (change)="onFileSelected($event)"
-                                    accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
-                            </label>
-                            } @else {
-                            <div class="rounded-2xl border border-white/10 bg-white/[0.015] p-5 space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            [class]="'w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ' + getFileBgColor(getSelectedFileType())">
-                                            <iconify-icon [icon]="getFileIcon(getSelectedFileType())" width="22"
-                                                [ngClass]="getFileIconColor(getSelectedFileType())"></iconify-icon>
-                                        </div>
-                                        <div class="min-w-0">
-                                            <p class="text-white font-bold text-sm truncate max-w-[240px]">{{
-                                                selectedFile()!.name }}</p>
-                                            <p
-                                                class="text-neutral-600 text-[10px] font-black uppercase tracking-widest">
-                                                {{ (selectedFile()!.size) + "MB"}}</p>
-                                        </div>
-                                    </div>
-                                    <button (click)="resetContentForm()"
-                                        class="p-2 text-neutral-600 hover:text-red-400 transition-colors">
-                                        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
-                                    </button>
-                                </div>
-
-                                @if (previewUrl()) {
-                                <div class="rounded-xl overflow-hidden border border-white/5 ring-1 ring-white/10">
-                                    @if (getSelectedFileType() === 'imagen') {
-                                    <img [src]="previewUrl()" alt="Preview" class="w-full h-40 object-cover" />
-                                    } @else if (getSelectedFileType() === 'video') {
-                                    <video [src]="previewUrl()" class="w-full h-40 object-cover" controls></video>
-                                    }
-                                </div>
-                                }
-                            </div>
-                            }
-                        </div>
-
-                        <!-- Metadata Form -->
-                        <form [formGroup]="contentForm" class="space-y-4">
-                            <div class="space-y-1.5">
-                                <label
-                                    class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Nombre
-                                    Descriptivo *</label>
-                                <input formControlName="nombre" type="text" placeholder="Ej: Storyboard Escena 01..."
-                                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none" />
-                            </div>
-
-                            <div class="space-y-1.5">
-                                <label
-                                    class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Observación
-                                    (Opcional)</label>
-                                <textarea formControlName="descripcion"
-                                    placeholder="Explica brevemente qué es este archivo..."
-                                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none resize-none min-h-[80px]"></textarea>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
-                        <button hlmBtn variant="ghost" (click)="ctx.close(); resetContentForm()"
-                            class="text-neutral-500 hover:text-white">Cancelar</button>
-                        <button (click)="onSubmitContent(ctx)" [disabled]="contentForm.invalid || isUploading()"
-                            class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/15 transition-all flex items-center gap-2">
-                            @if (isUploading()) {
-                            <iconify-icon icon="lucide:loader-2" class="animate-spin" width="16"></iconify-icon>
-                            Subiendo...
-                            } @else {
-                            <iconify-icon icon="lucide:upload-cloud" width="16"></iconify-icon>
-                            Iniciar Subida
-                            }
-                        </button>
-                    </div>
-                </hlm-alert-dialog-content>
-            </hlm-alert-dialog>
+            }
         </div>
     </div>
 
-    <!-- ═══════════════════════ STATS BAR ═══════════════════════ -->
-    <div class="fold-entrance fold-entrance-delay-2 grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] det-grain relative overflow-hidden group">
-            <div class="relative z-10">
-                <iconify-icon icon="lucide:files" width="16" class="text-indigo-400 mb-2"></iconify-icon>
-                <div class="flex items-end gap-1">
-                    <p class="fold-display-font text-2xl font-bold text-white">{{ folderContents().length }}</p>
-                    <p class="text-[10px] font-bold text-neutral-600 mb-1 uppercase tracking-widest">Total</p>
-                </div>
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• UNIFIED STATS BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="fold-entrance fold-entrance-delay-2 grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="stat-card p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 mb-2">
+                <iconify-icon icon="lucide:clock" width="16"></iconify-icon>
             </div>
+            <p class="fold-display-font text-xl font-bold text-white">{{ taskPendingCount() }}</p>
+            <p class="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Pendientes</p>
         </div>
-        <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] det-grain relative overflow-hidden group">
-            <div class="relative z-10">
-                <iconify-icon icon="lucide:image" width="16" class="text-emerald-400 mb-2"></iconify-icon>
-                <div class="flex items-end gap-1">
-                    <p class="fold-display-font text-2xl font-bold text-white">{{ imageCount() }}</p>
-                    <p class="text-[10px] font-bold text-neutral-600 mb-1 uppercase tracking-widest">Imágenes</p>
-                </div>
+        <div class="stat-card p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative">
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 mb-2">
+                <iconify-icon icon="lucide:activity" width="16"></iconify-icon>
             </div>
+            <p class="fold-display-font text-xl font-bold text-white">{{ taskInProgressCount() }}</p>
+            <p class="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">En Progreso</p>
         </div>
-        <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] det-grain relative overflow-hidden group">
-            <div class="relative z-10">
-                <iconify-icon icon="lucide:video" width="16" class="text-purple-400 mb-2"></iconify-icon>
-                <div class="flex items-end gap-1">
-                    <p class="fold-display-font text-2xl font-bold text-white">{{ videoCount() }}</p>
-                    <p class="text-[10px] font-bold text-neutral-600 mb-1 uppercase tracking-widest">Videos</p>
-                </div>
+        <div class="stat-card p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative">
+            <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 mb-2">
+                <iconify-icon icon="lucide:upload-cloud" width="16"></iconify-icon>
             </div>
+            <p class="fold-display-font text-xl font-bold text-white">{{ taskUploadedCount() }}</p>
+            <p class="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Subidos</p>
         </div>
-        <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] det-grain relative overflow-hidden group">
-            <div class="relative z-10">
-                <iconify-icon icon="lucide:file-text" width="16" class="text-blue-400 mb-2"></iconify-icon>
-                <div class="flex items-end gap-1">
-                    <p class="fold-display-font text-2xl font-bold text-white">{{ docCount() }}</p>
-                    <p class="text-[10px] font-bold text-neutral-600 mb-1 uppercase tracking-widest">Docs</p>
-                </div>
+        <div class="stat-card p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-2">
+                <iconify-icon icon="lucide:check-circle-2" width="16"></iconify-icon>
             </div>
+            <p class="fold-display-font text-xl font-bold text-white">{{ taskApprovedCount() }}</p>
+            <p class="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Aprobados</p>
+        </div>
+        <div class="stat-card p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative">
+            <div class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 mb-2">
+                <iconify-icon icon="lucide:x-circle" width="16"></iconify-icon>
+            </div>
+            <p class="fold-display-font text-xl font-bold text-white">{{ taskRejectedCount() }}</p>
+            <p class="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Rechazados</p>
         </div>
     </div>
 
-    <!-- ═══════════════════════ CONTENT AREA ═══════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• UNIFIED TASK CARDS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="fold-entrance fold-entrance-delay-2 min-h-[40vh]">
-        @if (isLoading()) {
+        @if (isLoadingTasks()) {
         <div class="flex flex-col items-center justify-center py-20 gap-4">
-            <iconify-icon icon="lucide:loader-2" width="32" class="text-indigo-400 animate-spin"></iconify-icon>
-            <p class="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-600">Sincronizando Archivos...</p>
+            <iconify-icon icon="lucide:loader-2" width="32" class="text-violet-400 animate-spin"></iconify-icon>
+            <p class="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-600">Cargando tareas...</p>
         </div>
-        } @else if (folderContents().length === 0) {
+        } @else if (folderTasks().length === 0) {
         <div
-            class="flex flex-col items-center justify-center py-32 gap-6 rounded-3xl bg-white/[0.015] border border-dashed border-white/10 det-grain">
+            class="flex flex-col items-center justify-center py-32 gap-6 rounded-3xl bg-white/[0.015] border border-dashed border-white/10">
             <div class="w-20 h-20 rounded-3xl bg-white/[0.02] border border-white/5 flex items-center justify-center">
-                <iconify-icon icon="lucide:file-question" width="40" class="text-neutral-700"></iconify-icon>
+                <iconify-icon icon="lucide:clipboard-list" width="40" class="text-neutral-700"></iconify-icon>
             </div>
             <div class="text-center space-y-1.5">
-                <h3 class="fold-display-font text-xl font-bold text-neutral-400">Carpeta vacía</h3>
-                <p class="text-sm text-neutral-600 max-w-xs mx-auto leading-relaxed">No hay material cargado en esta
-                    categoría. Comienza subiendo tus archivos.</p>
+                <h3 class="fold-display-font text-xl font-bold text-neutral-400">Sin tareas asignadas</h3>
+                <p class="text-sm text-neutral-600 max-w-xs mx-auto leading-relaxed">
+                    @if (isAdmin()) {
+                    Crea una tarea para asignar trabajo a un miembro del equipo.
+                    } @else {
+                    No tienes tareas pendientes en esta carpeta.
+                    }
+                </p>
             </div>
         </div>
         } @else {
 
-        <!-- ── GRID VIEW ── -->
-        @if (viewMode() === 'grid') {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
-            @for (content of folderContents(); track content.id_proyecto_material) {
+        <!-- â”€â”€ CARD GRID â”€â”€ -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pb-10">
+            @for (task of folderTasks(); track task.id_trabajador_tarea) {
             <div
-                class="file-card group relative bg-white/[0.012] border border-white/[0.06] rounded-2xl overflow-hidden det-grain flex flex-col">
+                class="task-card group relative bg-white/[0.012] border border-white/[0.06] rounded-2xl overflow-hidden flex flex-col">
 
-                <!-- Header Accént -->
-                <div [class]="'absolute top-0 left-0 right-0 h-1 ' +
-                  (content.estado === 'aprobado' ? 'bg-emerald-500/40' : 'bg-indigo-500/20')"></div>
+                <!-- Priority Stripe -->
+                <div [class]="'priority-stripe ' +
+                    (task.prioridad === 'alta' ? 'bg-red-500' :
+                     task.prioridad === 'media' ? 'bg-amber-500' : 'bg-emerald-500')"></div>
 
-                <!-- Preview Area -->
-                <div class="relative h-44 bg-neutral-950 flex items-center justify-center overflow-hidden cursor-pointer"
-                    (click)="openPreview(content)">
-                    @if (isImage(content)) {
-                    <img [src]="content.ruta" [alt]="content.nombre"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    } @else if (isVideo(content)) {
-                    <video [src]="content.ruta" class="w-full h-full object-cover" muted></video>
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <!-- Status Accent Bar -->
+                <div [class]="'absolute top-0 left-0 right-0 h-[2px] ' +
+                    (task.estado === 'aprobado' ? 'bg-emerald-500/50' :
+                     task.estado === 'rechazado' ? 'bg-red-500/50' :
+                     task.estado === 'subido' ? 'bg-purple-500/50' :
+                     task.estado === 'en_progreso' ? 'bg-blue-500/50' : 'bg-amber-500/30')"></div>
+
+                <!-- File Preview Area -->
+                <div class="relative h-40 bg-neutral-950/80 flex items-center justify-center overflow-hidden">
+                    @if (task.proyecto_material) {
+                    @if (isImage(task.proyecto_material)) {
+                    <img [src]="task.proyecto_material.ruta" [alt]="task.proyecto_material.nombre"
+                        class="file-thumb w-full h-full object-cover cursor-pointer"
+                        (click)="openPreview(task.proyecto_material)" />
+                    } @else if (isVideo(task.proyecto_material)) {
+                    <video [src]="task.proyecto_material.ruta" class="file-thumb w-full h-full object-cover"
+                        muted></video>
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer"
+                        (click)="openPreview(task.proyecto_material)">
                         <div
                             class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-white/20 transition-all">
                             <iconify-icon icon="lucide:play" width="22" class="text-white ml-1"></iconify-icon>
                         </div>
                     </div>
                     } @else {
-                    <div
-                        [class]="'w-16 h-16 rounded-2xl border flex items-center justify-center transition-transform group-hover:scale-110 duration-500 ' + getFileBgColor(content.tipo)">
-                        <iconify-icon [icon]="getFileIcon(content.tipo)" width="32"
-                            [ngClass]="getFileIconColor(content.tipo)"></iconify-icon>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer"
+                        (click)="openPreview(task.proyecto_material)">
+                        <div
+                            [class]="'w-14 h-14 rounded-2xl border flex items-center justify-center file-thumb ' + getFileBgColor(task.proyecto_material.tipo)">
+                            <iconify-icon [icon]="getFileIcon(task.proyecto_material.tipo)" width="28"
+                                [ngClass]="getFileIconColor(task.proyecto_material.tipo)"></iconify-icon>
+                        </div>
+                        <span class="text-[10px] text-neutral-600 font-medium truncate max-w-[120px]">{{
+                            task.proyecto_material.nombre }}</span>
                     </div>
                     }
-
-                    <!-- Floating Badges -->
-                    <div class="absolute top-3 left-3 flex flex-col gap-1.5">
-                        <span [class]="'px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border backdrop-blur-md ' +
-                        (content.tipo === 'image' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                         content.tipo === 'video' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                         'bg-blue-500/10 text-blue-400 border-blue-500/20')">
-                            {{ getTypeLabel(content.tipo) }}
+                    <!-- File status badge -->
+                    <div class="absolute top-3 right-3">
+                        <span
+                            [class]="'px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border backdrop-blur-md ' + getStatusClasses(task.proyecto_material.estado)">
+                            {{ getStatusLabel(task.proyecto_material.estado) }}
                         </span>
                     </div>
-
-                    <!-- Hover Overlay -->
+                    <!-- Hover overlay -->
                     <div
-                        class="absolute inset-0 bg-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        class="absolute inset-0 bg-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                         <div
                             class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center">
                             <iconify-icon icon="lucide:maximize-2" width="18" class="text-white"></iconify-icon>
                         </div>
                     </div>
+                    } @else {
+                    <!-- No file attached -->
+                    <div class="flex flex-col items-center gap-3 text-neutral-700">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-center">
+                            <iconify-icon icon="lucide:file-x" width="24"></iconify-icon>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Sin archivo adjunto</span>
+                    </div>
+                    }
                 </div>
 
-                <!-- Info Area -->
+                <!-- Task Info Area -->
                 <div class="p-5 space-y-4 flex-1">
-                    <div class="space-y-1">
-                        <h4
-                            class="fold-display-font text-sm font-bold text-white line-clamp-1 group-hover:text-indigo-400 transition-colors">
-                            {{ content.nombre }}
-                        </h4>
-                        <p class="text-[11px] text-neutral-600 line-clamp-2 min-h-[2rem]">
-                            {{ content.descripcion || 'Sin información adicional.' }}
+                    <!-- Title + Description -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <button (click)="openTaskDetailModal(task)" class="text-left group/title">
+                                <h4
+                                    class="fold-display-font text-sm font-bold text-white line-clamp-1 group-hover/title:text-violet-400 transition-colors">
+                                    {{ task.titulo }}
+                                </h4>
+                            </button>
+                            <span
+                                [class]="'shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider ' + getTaskStatusClasses(task.estado)">
+                                {{ getTaskStatusLabel(task.estado) }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-neutral-600 line-clamp-2 min-h-[2rem] leading-relaxed">
+                            {{ task.descripcion || 'Sin descripciÃ³n adicional.' }}
                         </p>
                     </div>
 
-                    <div class="pt-4 border-t border-white/[0.04] flex flex-col gap-3">
+                    <!-- Meta Row: Worker + Priority + Date -->
+                    <div class="pt-3 border-t border-white/[0.04] space-y-3">
                         <div class="flex items-center justify-between">
+                            <!-- Worker -->
                             <div class="flex items-center gap-2">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-indigo-500/10 border border-white/5 flex items-center justify-center text-indigo-400">
-                                    <iconify-icon icon="lucide:user" width="11"></iconify-icon>
+                                    class="w-6 h-6 rounded-md bg-linear-to-br from-violet-500/80 to-indigo-600/80 flex items-center justify-center text-white text-[8px] font-bold shadow-sm">
+                                    {{ task.trabajador?.nombres?.charAt(0) }}{{ task.trabajador?.apellidos?.charAt(0) }}
                                 </div>
-                                <span class="text-[11px] font-medium text-neutral-400 truncate max-w-[80px]">
-                                    {{ content.trabajador ? (content.trabajador.nombres + ' ' +
-                                    content.trabajador.apellidos.charAt(0) + '.') : 'Sistema' }}
+                                <span class="text-[11px] font-medium text-neutral-400 truncate max-w-[100px]">
+                                    {{ task.trabajador?.nombres }} {{ task.trabajador?.apellidos?.charAt(0) }}.
                                 </span>
                             </div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-neutral-600">{{
-                                content.tamanio }}MB</span>
+                            <!-- Priority -->
+                            <span
+                                [class]="'inline-flex items-center gap-1 text-[10px] font-semibold ' +
+                                (task.prioridad === 'alta' ? 'text-red-400' : task.prioridad === 'media' ? 'text-amber-400' : 'text-emerald-400')">
+                                <iconify-icon [icon]="getPriorityIcon(task.prioridad)" width="12"></iconify-icon>
+                                {{ getPriorityLabel(task.prioridad) }}
+                            </span>
                         </div>
 
-                        <div class="flex items-center justify-between gap-2">
-                            <span
-                                [class]="'px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ' + getStatusClasses(content.estado)">
-                                {{ getStatusLabel(content.estado) }}
+                        <!-- Date + Actions -->
+                        <div class="flex items-center justify-between">
+                            @if (task.fecha_limite) {
+                            <span class="text-[10px] text-neutral-600 flex items-center gap-1.5">
+                                <iconify-icon icon="lucide:calendar" width="11"></iconify-icon>
+                                {{ task.fecha_limite | date:'dd MMM yyyy' }}
                             </span>
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                @if (content.estado !== 'aprobado' && content.ruta) {
-                                <button (click)="approveContent(content); $event.stopPropagation()"
-                                    class="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-all"
-                                    title="Aprobar">
-                                    <iconify-icon icon="lucide:check-circle-2" width="14"></iconify-icon>
+                            } @else {
+                            <span class="text-[10px] text-neutral-700 italic">Sin fecha lÃ­mite</span>
+                            }
+
+                            <!-- Card Actions -->
+                            <div class="card-actions flex items-center gap-1">
+                                <button (click)="openTaskDetailModal(task)"
+                                    class="p-1.5 rounded-lg text-neutral-500 hover:text-violet-400 hover:bg-violet-500/10 transition-all"
+                                    title="Ver detalle">
+                                    <iconify-icon icon="lucide:eye" width="14"></iconify-icon>
+                                </button>
+                                @if (task.proyecto_material) {
+                                <button (click)="openPreview(task.proyecto_material)"
+                                    class="p-1.5 rounded-lg text-neutral-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
+                                    title="Ver archivo">
+                                    <iconify-icon icon="lucide:file-search" width="14"></iconify-icon>
                                 </button>
                                 }
-                                <button (click)="deleteContent(content.id_proyecto_material!); $event.stopPropagation()"
-                                    class="p-2 bg-white/[0.03] hover:bg-red-500/10 text-neutral-600 hover:text-red-400 rounded-lg transition-all"
+                                @if (isAdmin()) {
+                                @if (task.estado === 'subido') {
+                                <button (click)="approveTask(task.id_trabajador_tarea); $event.stopPropagation()"
+                                    class="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-all"
+                                    title="Aprobar">
+                                    <iconify-icon icon="lucide:check" width="14"></iconify-icon>
+                                </button>
+                                <button (click)="openRejectModal(task.id_trabajador_tarea); $event.stopPropagation()"
+                                    class="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-all"
+                                    title="Rechazar">
+                                    <iconify-icon icon="lucide:x" width="14"></iconify-icon>
+                                </button>
+                                }
+                                <button (click)="deleteTask(task.id_trabajador_tarea); $event.stopPropagation()"
+                                    class="p-1.5 rounded-lg text-neutral-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                                     title="Eliminar">
                                     <iconify-icon icon="lucide:trash-2" width="14"></iconify-icon>
                                 </button>
+                                } @else {
+                                @if (task.estado === 'pendiente' || task.estado === 'en_progreso' || task.estado ===
+                                'rechazado') {
+                                <button (click)="openUploadModal(task.id_trabajador_tarea); $event.stopPropagation()"
+                                    class="p-1.5 rounded-lg text-purple-500 hover:bg-purple-500/10 transition-all"
+                                    title="Subir material">
+                                    <iconify-icon icon="lucide:upload-cloud" width="14"></iconify-icon>
+                                </button>
+                                }
+                                }
                             </div>
                         </div>
                     </div>
@@ -352,98 +310,6 @@
             </div>
             }
         </div>
-        }
-
-        <!-- ── LIST VIEW ── -->
-        @else {
-        <div class="bg-white/[0.015] border border-white/[0.06] rounded-2xl overflow-hidden det-grain pb-20">
-            <table class="w-full">
-                <thead class="bg-white/[0.01] border-b border-white/[0.06]">
-                    <tr>
-                        <th
-                            class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-neutral-600">
-                            Material</th>
-                        <th
-                            class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-neutral-600">
-                            Tipo</th>
-                        <th
-                            class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-neutral-600">
-                            Subido por</th>
-                        <th
-                            class="px-6 py-4 text-center text-[10px] font-black uppercase tracking-widest text-neutral-600">
-                            Estado</th>
-                        <th
-                            class="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-neutral-600">
-                            Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/[0.03]">
-                    @for (content of folderContents(); track content.id_proyecto_material) {
-                    <tr class="group hover:bg-white/[0.02] transition-colors cursor-pointer"
-                        (click)="openPreview(content)">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    [class]="'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ' + getFileBgColor(content.tipo)">
-                                    <iconify-icon [icon]="getFileIcon(content.tipo)" width="18"
-                                        [ngClass]="getFileIconColor(content.tipo)"></iconify-icon>
-                                </div>
-                                <div class="min-w-0">
-                                    <p
-                                        class="text-[13px] font-bold text-white group-hover:text-indigo-400 transition-colors truncate">
-                                        {{ content.nombre }}</p>
-                                    <p class="text-[11px] text-neutral-600 truncate max-w-[200px]">{{
-                                        content.descripcion || 'Sin descripción' }}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="text-[11px] font-bold text-neutral-500 uppercase tracking-widest">{{
-                                getTypeLabel(content.tipo) }}</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-2">
-                                <iconify-icon icon="lucide:user" width="12" class="text-indigo-500/40"></iconify-icon>
-                                <span class="text-[12px] text-neutral-300 font-medium">
-                                    {{ content.trabajador ? (content.trabajador.nombres + ' ' +
-                                    content.trabajador.apellidos) : 'Sistema' }}
-                                </span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <span
-                                [class]="'px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border inline-block ' + getStatusClasses(content.estado)">
-                                {{ getStatusLabel(content.estado) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div
-                                class="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                @if (content.estado !== 'aprobado' && content.ruta) {
-                                <button (click)="approveContent(content); $event.stopPropagation()"
-                                    class="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-all"
-                                    title="Aprobar">
-                                    <iconify-icon icon="lucide:check-circle-2" width="15"></iconify-icon>
-                                </button>
-                                }
-                                <button (click)="downloadFile(content); $event.stopPropagation()"
-                                    class="p-2 bg-white/[0.03] hover:bg-white/10 text-neutral-500 hover:text-white rounded-lg transition-all"
-                                    title="Descargar">
-                                    <iconify-icon icon="lucide:download" width="15"></iconify-icon>
-                                </button>
-                                <button (click)="deleteContent(content.id_proyecto_material!); $event.stopPropagation()"
-                                    class="p-2 bg-white/[0.03] hover:bg-red-500/10 text-neutral-600 hover:text-red-400 rounded-lg transition-all"
-                                    title="Eliminar">
-                                    <iconify-icon icon="lucide:trash-2" width="15"></iconify-icon>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        }
         }
     </div>
     } @else {
@@ -456,9 +322,118 @@
     }
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════
+<!-- SUBIR MATERIAL -->
+
+@if (showUploadModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" (click)="closeUploadModal()">
+    <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-lg shadow-2xl"
+        (click)="$event.stopPropagation()">
+        <div class="px-6 py-5 border-b border-white/[0.06] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                    <iconify-icon icon="lucide:cloud-upload" width="18"></iconify-icon>
+                </div>
+                <div>
+                    <h2 class="fold-display-font text-lg font-bold text-white">Subir Material</h2>
+                    <p class="text-[10px] text-neutral-500 uppercase tracking-widest mt-0.5">
+                        {{ uploadForTaskId() ? 'Entregable para tarea' : 'Nuevos archivos para ' + folder()!.nombre }}
+                    </p>
+                </div>
+            </div>
+            <button (click)="closeUploadModal()" class="text-neutral-600 hover:text-white transition-colors">
+                <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <!-- Drag & Drop Zone -->
+            <div class="relative" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)">
+                @if (!selectedFile()) {
+                <label for="file-upload"
+                    class="flex flex-col items-center justify-center py-10 px-6 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer"
+                    [ngClass]="isDragging() ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-white/10 bg-white/[0.015] hover:border-white/20 hover:bg-white/[0.03]'">
+                    <iconify-icon icon="lucide:file-up" width="32" class="mb-4"
+                        [ngClass]="isDragging() ? 'text-indigo-400' : 'text-neutral-700'"></iconify-icon>
+                    <p class="text-[14px] text-neutral-300 font-bold tracking-tight mb-1">
+                        {{ isDragging() ? 'Â¡Suelta para subir!' : 'Arrastra y suelta aquí'}}
+                    </p>
+                    <p class="text-xs text-neutral-600 tracking-wide font-medium">o selecciona desde tu dispositivo</p>
+                    <input id="file-upload" type="file" class="hidden" (change)="onFileSelected($event)"
+                        accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+                </label>
+                } @else {
+                <div class="rounded-2xl border border-white/10 bg-white/[0.015] p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                [class]="'w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ' + getFileBgColor(getSelectedFileType())">
+                                <iconify-icon [icon]="getFileIcon(getSelectedFileType())" width="22"
+                                    [ngClass]="getFileIconColor(getSelectedFileType())"></iconify-icon>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-white font-bold text-sm truncate max-w-[240px]">{{ selectedFile()!.name
+                                    }}</p>
+                                <p class="text-neutral-600 text-[10px] font-black uppercase tracking-widest">
+                                    {{ (selectedFile()!.size / 1024 / 1024 | number:'1.2-2') }} MB
+                                </p>
+                            </div>
+                        </div>
+                        <button (click)="resetContentForm()"
+                            class="p-2 text-neutral-600 hover:text-red-400 transition-colors">
+                            <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+                        </button>
+                    </div>
+
+                    @if (previewUrl()) {
+                    <div class="rounded-xl overflow-hidden border border-white/5 ring-1 ring-white/10">
+                        @if (getSelectedFileType() === 'imagen') {
+                        <img [src]="previewUrl()" alt="Preview" class="w-full h-40 object-cover" />
+                        } @else if (getSelectedFileType() === 'video') {
+                        <video [src]="previewUrl()" class="w-full h-40 object-cover" controls></video>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <!-- Metadata Form -->
+            <form [formGroup]="contentForm" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Nombre
+                        Descriptivo *</label>
+                    <input formControlName="nombre" type="text" placeholder="Ej: Storyboard Escena 01..."
+                        class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 outline-none focus:border-indigo-500/30" />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Observación
+                        (Opcional)</label>
+                    <textarea formControlName="descripcion" placeholder="Explica brevemente quÃ© es este archivo..."
+                        class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 outline-none resize-none min-h-[80px] focus:border-indigo-500/30"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
+            <button (click)="closeUploadModal()" class="text-neutral-500 hover:text-white px-4 py-2">Cancelar</button>
+            <button (click)="onSubmitContent(null)" [disabled]="contentForm.invalid || isUploading() || !selectedFile()"
+                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2">
+                @if (isUploading()) {
+                <iconify-icon icon="lucide:loader-2" class="animate-spin" width="16"></iconify-icon> Subiendo...
+                } @else {
+                <iconify-icon icon="lucide:upload-cloud" width="16"></iconify-icon> Iniciar Subida
+                }
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      PREVIEW MODAL
-     ════════════════════════════════════════════════════════════════ -->
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 @if (previewContent()) {
 <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-in fade-in duration-300"
     (click)="closePreview()">
@@ -474,19 +449,28 @@
             </div>
             <div>
                 <h4 class="fold-display-font text-base font-bold text-white">{{ previewContent()!.nombre }}</h4>
-                <p class="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-black">{{
-                    previewContent()!.tamanio }}MB • {{ previewContent()!.fecha_subida | date:'dd MMM, yyyy' }}</p>
+                <div class="flex items-center gap-3 mt-1">
+                    <p class="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-black">
+                        {{ previewContent()!.tamanio }}MB â€¢ {{ previewContent()!.fecha_subida | date:'dd MMM, yyyy' }}
+                    </p>
+                    <span class="w-1 h-1 rounded-full bg-white/20"></span>
+                    <span
+                        [class]="'text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ' + getStatusClasses(previewContent()!.estado)">
+                        {{ getStatusLabel(previewContent()!.estado) }}
+                    </span>
+                    @if (previewContent()!.trabajador) {
+                    <span class="w-1 h-1 rounded-full bg-white/20"></span>
+                    <p
+                        class="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-black flex items-center gap-1.5">
+                        <iconify-icon icon="lucide:user" width="12"></iconify-icon>
+                        {{ previewContent()!.trabajador!.nombres }} {{ previewContent()!.trabajador!.apellidos }}
+                    </p>
+                    @}
+                </div>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
-            @if (previewContent()!.estado !== 'aprobado' && previewContent()!.ruta) {
-            <button (click)="approveContent(previewContent()!); closePreview(); $event.stopPropagation()"
-                class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2">
-                <iconify-icon icon="lucide:check-circle" width="16"></iconify-icon>
-                Aprobar Material
-            </button>
-            }
             <button (click)="downloadFile(previewContent()!); $event.stopPropagation()"
                 class="p-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-all" title="Descargar">
                 <iconify-icon icon="lucide:download" width="20"></iconify-icon>
@@ -538,6 +522,252 @@
         </div>
     </div>
     }
+</div>
+}
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     MODAL: CREAR TAREA (Admin)
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+@if (showCreateTaskModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" (click)="closeCreateTaskModal()">
+    <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50"
+        (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
+                    <iconify-icon icon="lucide:list-plus" width="18"></iconify-icon>
+                </div>
+                <div>
+                    <h3 class="fold-display-font text-base font-semibold text-white">Nueva Tarea</h3>
+                    <p class="text-[11px] text-neutral-600">Asignar tarea en {{ folder()?.nombre }}</p>
+                </div>
+            </div>
+            <button (click)="closeCreateTaskModal()"
+                class="text-neutral-600 hover:text-white transition-colors p-2 hover:bg-white/[0.04] rounded-lg">
+                <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-5 max-h-[65vh] overflow-y-auto">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">TÃ­tulo *</label>
+                <input type="text" [ngModel]="newTask().titulo" (ngModelChange)="updateTaskTitulo($event)"
+                    placeholder="Ej: Diseñar banner promocional"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-violet-500/30 focus:border-violet-500/30 transition-all outline-none" />
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">DescripciÃ³n *</label>
+                <textarea [ngModel]="newTask().descripcion" (ngModelChange)="updateTaskDescripcion($event)"
+                    placeholder="Detalla los requisitos y entregables..." rows="3"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-violet-500/30 focus:border-violet-500/30 transition-all outline-none resize-none"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">Asignar a
+                        *</label>
+                    <brn-select class="inline-block w-full" placeholder="Seleccionar..."
+                        (valueChange)="onWorkerSelect($event)">
+                        <hlm-select-trigger
+                            class="w-full bg-white/[0.03] border-white/[0.08] rounded-xl text-sm text-neutral-300">
+                            <hlm-select-value />
+                        </hlm-select-trigger>
+                        <hlm-select-content class="border-white/10">
+                            @for (worker of workers(); track worker.id_trabajador) {
+                            <hlm-option [value]="worker.id_trabajador">{{ worker.nombres }} {{ worker.apellidos
+                                }}</hlm-option>
+                            }
+                        </hlm-select-content>
+                    </brn-select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">Prioridad</label>
+                    <brn-select class="inline-block w-full" placeholder="Media"
+                        (valueChange)="onPrioritySelect($event)">
+                        <hlm-select-trigger
+                            class="w-full bg-white/[0.03] border-white/[0.08] rounded-xl text-sm text-neutral-300">
+                            <hlm-select-value />
+                        </hlm-select-trigger>
+                        <hlm-select-content class="border-white/10">
+                            <hlm-option value="alta"><span class="flex items-center gap-2"><iconify-icon
+                                        icon="lucide:arrow-up" class="text-red-400" width="13"></iconify-icon>
+                                    Alta</span></hlm-option>
+                            <hlm-option value="media"><span class="flex items-center gap-2"><iconify-icon
+                                        icon="lucide:minus" class="text-amber-400" width="13"></iconify-icon>
+                                    Media</span></hlm-option>
+                            <hlm-option value="baja"><span class="flex items-center gap-2"><iconify-icon
+                                        icon="lucide:arrow-down" class="text-emerald-400" width="13"></iconify-icon>
+                                    Baja</span></hlm-option>
+                        </hlm-select-content>
+                    </brn-select>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">Fecha LÃ­mite <span
+                        class="text-neutral-700 normal-case tracking-normal">(opcional)</span></label>
+                <input type="date" [ngModel]="newTask().fecha_limite" (ngModelChange)="updateTaskFechaLimite($event)"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-300 focus:ring-1 focus:ring-violet-500/30 focus:border-violet-500/30 transition-all outline-none" />
+            </div>
+        </div>
+        <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
+            <button (click)="closeCreateTaskModal()"
+                class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-300 transition-colors">Cancelar</button>
+            <button (click)="submitTask()" [disabled]="isCreatingTask()"
+                class="px-5 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-violet-600/15 transition-all flex items-center gap-2">
+                @if (isCreatingTask()) {
+                <iconify-icon icon="lucide:loader-2" class="animate-spin" width="15"></iconify-icon> Creando...
+                } @else {
+                <iconify-icon icon="lucide:send" width="15"></iconify-icon> Crear Tarea
+                }
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     MODAL: DETALLE TAREA
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+@if (showTaskDetailModal() && selectedTask()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" (click)="closeTaskDetailModal()">
+    <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-lg shadow-2xl"
+        (click)="$event.stopPropagation()">
+        <div [class]="'h-1 w-full rounded-t-2xl bg-gradient-to-r ' +
+            (selectedTask()!.estado === 'pendiente' ? 'from-amber-500/60 to-amber-500/10' :
+             selectedTask()!.estado === 'en_progreso' ? 'from-blue-500/60 to-blue-500/10' :
+             selectedTask()!.estado === 'subido' ? 'from-purple-500/60 to-purple-500/10' :
+             selectedTask()!.estado === 'aprobado' ? 'from-emerald-500/60 to-emerald-500/10' :
+             'from-red-500/60 to-red-500/10')"></div>
+        <div class="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center text-violet-400">
+                    <iconify-icon icon="lucide:file-text" width="18"></iconify-icon>
+                </div>
+                <h3 class="fold-display-font text-base font-semibold text-white">Detalle de Tarea</h3>
+            </div>
+            <button (click)="closeTaskDetailModal()"
+                class="text-neutral-600 hover:text-white transition-colors p-2 hover:bg-white/[0.04] rounded-lg">
+                <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-5 max-h-[65vh] overflow-y-auto">
+            <div class="flex items-start justify-between gap-3">
+                <h4 class="fold-display-font text-lg font-bold text-white leading-snug">{{ selectedTask()!.titulo }}
+                </h4>
+                <span
+                    [class]="'shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ' + getTaskStatusClasses(selectedTask()!.estado)">
+                    {{ getTaskStatusLabel(selectedTask()!.estado) }}
+                </span>
+            </div>
+            <p class="text-[13px] text-neutral-400 leading-relaxed">{{ selectedTask()!.descripcion }}</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-600 mb-2">Asignado a</p>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500/80 to-indigo-600/80 flex items-center justify-center text-white text-[9px] font-bold">
+                            {{ selectedTask()!.trabajador.nombres.charAt(0) }}{{
+                            selectedTask()!.trabajador.apellidos.charAt(0) }}
+                        </div>
+                        <span class="text-[12px] text-neutral-300 font-medium">{{ selectedTask()!.trabajador.nombres }}
+                            {{ selectedTask()!.trabajador.apellidos }}</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-600 mb-2">Prioridad</p>
+                    <span
+                        [class]="'inline-flex items-center gap-1.5 text-[12px] font-semibold ' +
+                        (selectedTask()!.prioridad === 'alta' ? 'text-red-400' : selectedTask()!.prioridad === 'media' ? 'text-amber-400' : 'text-emerald-400')">
+                        <iconify-icon [icon]="getPriorityIcon(selectedTask()!.prioridad)" width="14"></iconify-icon>
+                        {{ getPriorityLabel(selectedTask()!.prioridad) }}
+                    </span>
+                </div>
+                <div class="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-600 mb-2">Fecha LÃ­mite</p>
+                    @if (selectedTask()!.fecha_limite) { <span class="text-[12px] text-neutral-300">{{
+                        selectedTask()!.fecha_limite | date:'dd MMM yyyy' }}</span> }
+                    @else { <span class="text-neutral-600 italic text-[12px]">Sin fecha</span> }
+                </div>
+                <div class="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-600 mb-2">Creada</p>
+                    @if (selectedTask()!.fecha_creacion) { <span class="text-[12px] text-neutral-300">{{
+                        selectedTask()!.fecha_creacion | date:'dd MMM yyyy' }}</span> }
+                    @else { <span class="text-neutral-600">â€”</span> }
+                </div>
+            </div>
+            @if (selectedTask()!.observacion) {
+            <div class="p-4 bg-red-500/[0.04] border border-red-500/10 rounded-xl">
+                <p
+                    class="text-[10px] font-bold uppercase tracking-[0.15em] text-red-400/70 mb-2 flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:alert-triangle" width="12"></iconify-icon> ObservaciÃ³n del rechazo
+                </p>
+                <p class="text-[13px] text-neutral-300 leading-relaxed">{{ selectedTask()!.observacion }}</p>
+            </div>
+            }
+        </div>
+        <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                @if (isAdmin() && selectedTask()!.estado === 'subido') {
+                <button (click)="approveTask(selectedTask()!.id_trabajador_tarea); closeTaskDetailModal()"
+                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:check" width="14"></iconify-icon> Aprobar
+                </button>
+                <button (click)="closeTaskDetailModal(); openRejectModal(selectedTask()!.id_trabajador_tarea)"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:x" width="14"></iconify-icon> Rechazar
+                </button>
+                }
+                @if (!isAdmin() && (selectedTask()!.estado === 'pendiente' || selectedTask()!.estado === 'en_progreso'
+                || selectedTask()!.estado === 'rechazado')) {
+                <button (click)="closeTaskDetailModal(); openUploadModal(selectedTask()!.id_trabajador_tarea)"
+                    class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:upload-cloud" width="14"></iconify-icon> Subir y Marcar como Subida
+                </button>
+                }
+            </div>
+            <button (click)="closeTaskDetailModal()"
+                class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-300 transition-colors">Cerrar</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     MODAL: RECHAZAR TAREA
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+@if (showRejectModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" (click)="closeRejectModal()">
+    <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-md shadow-2xl"
+        (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400">
+                    <iconify-icon icon="lucide:alert-triangle" width="18"></iconify-icon>
+                </div>
+                <h3 class="fold-display-font text-base font-semibold text-white">Rechazar Tarea</h3>
+            </div>
+            <button (click)="closeRejectModal()"
+                class="text-neutral-600 hover:text-white transition-colors p-2 hover:bg-white/[0.04] rounded-lg">
+                <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <p class="text-[13px] text-neutral-400 leading-relaxed">Indica el motivo del rechazo. El trabajador
+                recibira la observacion.</p>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">Observacion</label>
+                <textarea [ngModel]="rejectObservation()" (ngModelChange)="rejectObservation.set($event)"
+                    placeholder="Escribe el motivo del rechazo..." rows="4"
+                    class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-red-500/30 focus:border-red-500/30 transition-all outline-none resize-none"></textarea>
+            </div>
+        </div>
+        <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
+            <button (click)="closeRejectModal()"
+                class="px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-300 transition-colors">Cancelar</button>
+            <button (click)="submitReject()"
+                class="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-semibold text-sm shadow-lg shadow-red-600/15 transition-all flex items-center gap-2">
+                <iconify-icon icon="lucide:x-circle" width="15"></iconify-icon> Rechazar
+            </button>
+        </div>
+    </div>
 </div>
 }
 

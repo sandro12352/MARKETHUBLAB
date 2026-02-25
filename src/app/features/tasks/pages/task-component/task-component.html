@@ -312,34 +312,24 @@
                                     title="Ver detalle">
                                     <iconify-icon icon="lucide:eye" width="15"></iconify-icon>
                                 </button>
-
-                                @if (isAdmin()) {
-                                @if (task.estado === 'subido') {
-                                <button (click)="approveTask(task.id_trabajador_tarea)"
-                                    class="task-action-btn p-2 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-all"
-                                    title="Aprobar">
-                                    <iconify-icon icon="lucide:check" width="15"></iconify-icon>
-                                </button>
-                                <button (click)="openRejectModal(task.id_trabajador_tarea)"
-                                    class="task-action-btn p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-all"
-                                    title="Rechazar">
-                                    <iconify-icon icon="lucide:x" width="15"></iconify-icon>
+                                <!-- Ir a carpeta -->
+                                @if (task.id_carpeta_material) {
+                                <button
+                                    [routerLink]="['/home/projects', task.id_proyecto, 'folder', task.id_carpeta_material]"
+                                    class="task-action-btn p-2 rounded-lg text-indigo-400 hover:bg-indigo-500/10 transition-all"
+                                    title="Ir a carpeta del material">
+                                    <iconify-icon icon="lucide:folder-open" width="15"></iconify-icon>
                                 </button>
                                 }
+
+                                @if (isAdmin()) {
                                 <button (click)="deleteTask(task.id_trabajador_tarea)"
                                     class="task-action-btn p-2 rounded-lg text-neutral-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                                     title="Eliminar">
                                     <iconify-icon icon="lucide:trash-2" width="15"></iconify-icon>
                                 </button>
-                                } @else {
-                                @if (task.estado === 'pendiente' || task.estado === 'en_progreso') {
-                                <button (click)="markAsUploaded(task.id_trabajador_tarea)"
-                                    class="task-action-btn p-2 rounded-lg text-purple-500 hover:bg-purple-500/10 transition-all"
-                                    title="Resubir tarea">
-                                    <iconify-icon icon="lucide:upload-cloud" width="15"></iconify-icon>
-                                </button>
                                 }
-                                }
+
                             </div>
                         </td>
                     </tr>
@@ -711,26 +701,19 @@
                     <iconify-icon icon="lucide:check" width="14"></iconify-icon>
                     Aprobar
                 </button>
-                <button (click)="closeDetailModal(); openRejectModal(selectedTask()!.id_trabajador_tarea)"
+                <button (click)="openRejectModal(selectedTask()!.id_trabajador_tarea);closeDetailModal()"
                     class="task-action-btn px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
                     <iconify-icon icon="lucide:x" width="14"></iconify-icon>
                     Rechazar
                 </button>
                 }
-                @if (!isAdmin() && (selectedTask()!.estado === 'pendiente' || selectedTask()!.estado === 'en_progreso'))
-                {
-                <button (click)="markAsUploaded(selectedTask()!.id_trabajador_tarea); closeDetailModal()"
-                    class="task-action-btn px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
-                    <iconify-icon icon="lucide:upload-cloud" width="14"></iconify-icon>
-                    Marcar como Subida
-                </button>
-                }
-                <!-- Worker: Rechazado → puede reiniciar o resubir -->
-                @if (!isAdmin() && selectedTask()!.estado === 'rechazado') {
-                <button (click)="markAsUploaded(selectedTask()!.id_trabajador_tarea); closeDetailModal()"
-                    class="task-action-btn px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
-                    <iconify-icon icon="lucide:upload-cloud" width="14"></iconify-icon>
-                    Resubir Tarea
+                @if (selectedTask()!.id_carpeta_material) {
+                <button
+                    [routerLink]="['/home/projects', selectedTask()!.id_proyecto, 'folder', selectedTask()!.id_carpeta_material]"
+                    (click)="closeDetailModal()"
+                    class="task-action-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-semibold text-[12px] transition-all flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:folder-open" width="14"></iconify-icon>
+                    Ir a Carpeta
                 </button>
                 }
             </div>

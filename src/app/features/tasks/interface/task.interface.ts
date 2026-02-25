@@ -1,3 +1,5 @@
+import { FolderContent } from "../../projects/interfaces/folder-content.interface";
+
 export interface Worker {
   nombres: string;
   apellidos: string;
@@ -34,6 +36,8 @@ export interface CreateTaskDto {
   prioridad: 'alta' | 'media' | 'baja';
   fecha_limite?: string;
   id_trabajador: number;
+  id_carpeta_material?: number;
+  id_proyecto?: number;
 }
 
 export interface WorkerTask {
@@ -42,6 +46,8 @@ export interface WorkerTask {
   descripcion: null | string;
   id_trabajador: number;
   id_proyecto_material: null;
+  id_carpeta_material?: number | null;
+  id_proyecto?: number | null;
   estado: string;
   prioridad: string;
   fecha_creacion: Date;
@@ -49,7 +55,12 @@ export interface WorkerTask {
   fecha_finalizacion: null;
   observacion: null;
   trabajador: Trabajador;
-  proyecto_material: null;
+  proyecto_material: FolderContent; // This will be FolderContent or null
+  carpeta_material?: {
+    id_carpeta_material: number;
+    nombre: string;
+    id_proyecto: number;
+  } | null;
 }
 
 export interface Trabajador {

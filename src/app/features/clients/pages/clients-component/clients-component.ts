@@ -97,7 +97,7 @@ export class ClientsComponent implements OnInit {
 
     this.isLoadingTask.set(id_cliente_tarea);
 
-    this.taskService.updateTaskStatus(id_cliente_tarea, 'aprobado', this.token!).subscribe({
+    this.taskService.updateClientTaskStatus(id_cliente_tarea, 'aprobado', this.token!).subscribe({
       next: (resp) => {
         console.log('Tarea aprobada:', resp);
         this.isLoadingTask.set(null);

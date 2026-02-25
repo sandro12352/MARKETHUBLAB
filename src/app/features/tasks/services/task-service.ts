@@ -42,6 +42,25 @@ export class TaskService {
     });
   }
 
+
+  updateClientTaskStatus(id_cliente_tarea: number, estado: string, token: string): Observable<WorkerTask> {
+    return this.http.put<WorkerTask>(`${environment.apiUrl}/api/client-task/${id_cliente_tarea}`, { estado }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  updateTask(id_worker_task: number, data: any, token: string): Observable<WorkerTask> {
+    return this.http.put<WorkerTask>(`${environment.apiUrl}/api/worker-tasks/${id_worker_task}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+
+
+
+  updateTaskProjectMaterial(id_worker_task: number, id_proyecto_material: number, token: string) {
+    return this.updateTask(id_worker_task, { id_proyecto_material }, token);
+  }
   /**
    * Approve a task (admin only)
    */
@@ -68,6 +87,13 @@ export class TaskService {
     return this.http.delete<void>(`${environment.apiUrl}/api/worker-tasks/${id_cliente_tarea}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+  }
+
+  /**
+   * Get tasks by folder
+   */
+  getTasksByFolder(idCarpetaMaterial: number): Observable<WorkerTask[]> {
+    return this.http.get<WorkerTask[]>(`${environment.apiUrl}/api/worker-tasks/carpeta-material/${idCarpetaMaterial}`);
   }
 
   /**

@@ -1,6 +1,9 @@
 import { Component, inject, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, computed } from '@angular/core';
+import { ProjectsService } from '../../../projects/services/projects.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
 import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmSelectImports } from '@spartan/ui/select';
 import { HlmInputImports } from '@spartan/ui/input';
@@ -25,6 +28,7 @@ import { toast } from 'ngx-sonner';
     HlmInputImports,
     HlmLabelImports,
     HlmTextareaImports,
+    RouterModule
   ],
   templateUrl: './task-component.html',
   styleUrl: './task-component.css',
@@ -33,6 +37,7 @@ import { toast } from 'ngx-sonner';
 export class TaskComponent implements OnInit {
   private taskService = inject(TaskService);
   private authService = inject(AuthService);
+  private projectService = inject(ProjectsService);
 
   // User State
   currentUser = signal<User | null>(null);
@@ -266,16 +271,25 @@ export class TaskComponent implements OnInit {
     const token = this.authService.getToken();
     if (!token) return;
 
-    this.taskService.deleteTask(taskId, token).subscribe({
-      next: () => {
-        toast.success('Tarea eliminada.');
-        this.loadData();
-      },
-      error: (err) => {
-        console.error('Error deleting task', err);
-        toast.error('Error al eliminar la tarea.');
-      }
-    });
+    if (confirm('¿Estás seguro de eliminar esta tarea?')) {
+      const taskToDelete = this.tasks().find(t => t.id_trabajador_tarea === taskId);
+
+      this.taskService.deleteTask(taskId, token).subscribe({
+        next: () => {
+          // Si la tarea tenía un material asociado, eliminarlo también
+          if (taskToDelete?.proyecto_material?.id_proyecto_material) {
+            this.projectService.deleteContent(taskToDelete.proyecto_material.id_proyecto_material).subscribe();
+          }
+
+          toast.success('Tarea eliminada.');
+          this.loadData();
+        },
+        error: (err) => {
+          console.error('Error deleting task', err);
+          toast.error('Error al eliminar la tarea.');
+        }
+      });
+    }
   }
 
   // Task Detail
