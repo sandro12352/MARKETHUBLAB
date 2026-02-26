@@ -51,6 +51,8 @@ export class FolderContentComponent implements OnInit {
     private fb = inject(FormBuilder);
     private authService = inject(AuthService);
 
+    token = this.authService.getToken();
+
     folder = signal<Folder | null>(null);
     folderContents = signal<FolderContent[]>([]);
     isLoading = signal(true);
@@ -70,6 +72,10 @@ export class FolderContentComponent implements OnInit {
 
     previewContent = signal<FolderContent | null>(null);
     isPreviewOpen = signal(false);
+    previewHasExtraInfo = computed(() => {
+        const content = this.previewContent();
+        return content && (content.referencia || content.observacion);
+    });
 
     // ── Task Management ──
     folderTasks = signal<WorkerTask[]>([]);
@@ -518,6 +524,11 @@ export class FolderContentComponent implements OnInit {
                     this.folderContents.update(contents =>
                         contents.map(c => c.id_proyecto_material === existingMaterialId ? content : c)
                     );
+                    this.projectService.updateStatusContent(existingMaterialId, "pendiente", this.token!).subscribe({
+                        next: (contents) => {
+                            this.folderContents.set(this.folderContents().map(c => c.id_proyecto_material === existingMaterialId ? contents : c));
+                        }
+                    });
                 } else {
                     this.folderContents.update(contents => [...contents, content]);
                 }
@@ -589,6 +600,22 @@ export class FolderContentComponent implements OnInit {
 
     isVideo(content: FolderContent): boolean {
         return content.tipo === 'video';
+    }
+
+    getFileExtension(ruta: string): string {
+        const parts = ruta.split('.');
+        return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : 'file';
+    }
+
+
+    isImageReferencia(content: FolderContent): boolean {
+        const ext = this.getFileExtension(content.referencia!);
+        return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext);
+    }
+
+    isVideoReferencia(content: FolderContent): boolean {
+        const ext = this.getFileExtension(content.referencia!);
+        return ['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(ext);
     }
 
 

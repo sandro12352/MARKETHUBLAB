@@ -117,6 +117,7 @@ export class TaskComponent implements OnInit {
         .pipe(finalize(() => this.loading.set(false)))
         .subscribe({
           next: (data) => {
+            console.log(data)
             this.tasks.set(data)
 
           },
@@ -138,6 +139,7 @@ export class TaskComponent implements OnInit {
           .pipe(finalize(() => this.loading.set(false)))
           .subscribe({
             next: (data) => {
+              console.log(data)
               this.tasks.set(data)
             },
             error: (err) => {

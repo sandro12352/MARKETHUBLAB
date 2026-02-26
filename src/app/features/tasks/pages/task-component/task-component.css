@@ -157,6 +157,7 @@
 }
 
 .task-status-border::before {
+  content: '';
   position: absolute;
   left: 0;
   top: 12px;
@@ -172,25 +173,22 @@
   width: 4px;
 }
 
-.task-status-pending::before {
-  background: var(--status-pending);
-}
-
-.task-status-en_progreso::before {
-  background: var(--status-progress);
-}
-
-.task-status-subido::before {
+.proyecto_material-estado-pendiente::before {
   background: var(--status-uploaded);
 }
 
-.task-status-aprobado::before {
+.proyecto_material-estado-aprobado::before {
   background: var(--status-approved);
 }
 
-.task-status-rechazado::before {
+.proyecto_material-estado-rechazado::before {
   background: var(--status-rejected);
 }
+
+
+
+
+
 
 /* ── Stat Card Hover ── */
 .stat-card {

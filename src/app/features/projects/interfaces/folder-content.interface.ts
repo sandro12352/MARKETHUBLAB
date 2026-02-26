@@ -10,6 +10,8 @@ export interface FolderContent {
     estado?: string;
     fecha_subida?: Date;
     trabajador?: Trabajador;
+    referencia?: string;
+    observacion?: string;
 }
 
 export interface Trabajador {

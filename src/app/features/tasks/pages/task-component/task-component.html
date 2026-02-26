@@ -230,7 +230,7 @@
 
                     @for (task of filteredTasks(); track task.id_trabajador_tarea) {
                     <tr class="task-status-border group border-b border-white/[0.03] last:border-b-0 hover:bg-white/[0.02] transition-colors"
-                        [ngClass]="'task-status-' + task.estado">
+                        [ngClass]="'proyecto_material-estado-' + task.proyecto_material?.estado">
 
 
                         <!-- Tarea -->
