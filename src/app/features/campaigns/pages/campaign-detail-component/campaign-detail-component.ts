@@ -52,12 +52,12 @@ export class CampaignDetailComponent implements OnInit {
     // ─── Ad Set Form ──────────────────────────────────────────
     adSetForm = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
-        segmentacion: ['', [Validators.required]],
         presupuesto_diario: [0, [Validators.required, Validators.min(1)]],
-        ubicacion: [''],
         edad_min: [18],
         edad_max: [65],
         genero: ['todos'],
+        optimization_goal: ['REACH', [Validators.required]],
+        billing_event: ['IMPRESSIONS', [Validators.required]],
     });
     selectedAdSet = signal<AdSet | null>(null);
 
@@ -75,16 +75,18 @@ export class CampaignDetailComponent implements OnInit {
     activeAdSetForAd = signal<number | null>(null);
 
     ngOnInit(): void {
-        const id = this.route.snapshot.params['id_campana'];
-        this.loadCampaignData(Number(id));
+        const id = this.route.snapshot.params['id_campaign'];
+        console.log(id)
+        this.loadCampaignData(id);
     }
 
-    loadCampaignData(id: number) {
+    loadCampaignData(id: string) {
         this.isLoading.set(true);
         this.campaignsService.getCampaignById(id).subscribe({
             next: (campaign) => {
+                console.log(campaign);
                 this.campaign.set(campaign);
-                this.loadAdSets(id);
+                this.loadAdSets(Number(id));
             },
             error: () => {
                 this.isLoading.set(false);
@@ -139,15 +141,21 @@ export class CampaignDetailComponent implements OnInit {
         }
 
         const adSetData: Partial<AdSet> = {
-            id_campana: this.campaign()?.id_campana!,
-            nombre: this.adSetForm.value.nombre!,
-            segmentacion: this.adSetForm.value.segmentacion!,
-            presupuesto_diario: this.adSetForm.value.presupuesto_diario!,
-            ubicacion: this.adSetForm.value.ubicacion || '',
-            edad_min: this.adSetForm.value.edad_min || 18,
-            edad_max: this.adSetForm.value.edad_max || 65,
-            genero: this.adSetForm.value.genero || 'todos',
-            estado: 'borrador',
+            id_campaign: this.campaign()?.id_campaign!,
+            name: this.adSetForm.value.nombre!,
+            daily_budget: this.adSetForm.value.presupuesto_diario!,
+            targeting: {
+                geo_locations: {
+                    countries: ['PE']
+                },
+                age_min: this.adSetForm.value.edad_min || 18,
+                age_max: this.adSetForm.value.edad_max || 65,
+                genders: this.adSetForm.value.genero === 'todos' ? [1, 2] : this.adSetForm.value.genero === 'hombres' ? [1] : [2],
+                publisher_platforms: ['facebook', 'instagram', 'messenger', 'audience_network']
+            },
+            status: 'ACTIVE',
+            optimization_goal: this.adSetForm.value.optimization_goal as AdSet['optimization_goal'],
+            billing_event: this.adSetForm.value.billing_event as AdSet['billing_event'],
         };
 
         if (this.selectedAdSet()) {
@@ -176,13 +184,13 @@ export class CampaignDetailComponent implements OnInit {
     editAdSet(adSet: AdSet) {
         this.selectedAdSet.set(adSet);
         this.adSetForm.patchValue({
-            nombre: adSet.nombre,
-            segmentacion: adSet.segmentacion,
-            presupuesto_diario: adSet.presupuesto_diario,
-            ubicacion: adSet.ubicacion || '',
-            edad_min: adSet.edad_min || 18,
-            edad_max: adSet.edad_max || 65,
-            genero: adSet.genero || 'todos',
+            nombre: adSet.name,
+            presupuesto_diario: adSet.daily_budget,
+            edad_min: adSet.targeting?.age_min || 18,
+            edad_max: adSet.targeting?.age_max || 65,
+            genero: adSet.targeting?.genders?.length === 2 ? 'todos' : (adSet.targeting?.genders?.[0] === 1 ? 'hombres' : 'mujeres'),
+            optimization_goal: adSet.optimization_goal,
+            billing_event: adSet.billing_event,
         });
     }
 
@@ -200,7 +208,14 @@ export class CampaignDetailComponent implements OnInit {
 
     resetAdSetForm() {
         this.selectedAdSet.set(null);
-        this.adSetForm.reset({ presupuesto_diario: 0, edad_min: 18, edad_max: 65, genero: 'todos' });
+        this.adSetForm.reset({
+            presupuesto_diario: 0,
+            edad_min: 18,
+            edad_max: 65,
+            genero: 'todos',
+            optimization_goal: 'REACH',
+            billing_event: 'IMPRESSIONS'
+        });
     }
 
     // ─── Ad CRUD ──────────────────────────────────────────────
@@ -322,11 +337,14 @@ export class CampaignDetailComponent implements OnInit {
             borrador: 'Borrador',
             activa: 'Activa',
             activo: 'Activo',
+            ACTIVE: 'Activa',
             pausada: 'Pausada',
             pausado: 'Pausado',
+            PAUSED: 'Pausada',
             finalizada: 'Finalizada',
             finalizado: 'Finalizado',
             rechazado: 'Rechazado',
+            ARCHIVED: 'Archivado',
         };
         return labels[status] || status;
     }

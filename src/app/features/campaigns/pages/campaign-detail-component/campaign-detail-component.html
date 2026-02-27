@@ -88,25 +88,23 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <label hlmLabel class="text-neutral-300">Segmentación</label>
-                                <brn-select formControlName="segmentacion" placeholder="Tipo de segmentación">
+                                <label hlmLabel class="text-neutral-300">Meta de Optimización</label>
+                                <brn-select formControlName="optimization_goal" placeholder="Seleccionar meta">
                                     <hlm-select-trigger
                                         class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
                                         <hlm-select-value />
                                     </hlm-select-trigger>
                                     <hlm-select-content class="bg-neutral-900 border-white/10">
-                                        <hlm-option value="intereses"
-                                            class="text-neutral-300 focus:bg-white/10">Intereses</hlm-option>
-                                        <hlm-option value="demografica"
-                                            class="text-neutral-300 focus:bg-white/10">Demográfica</hlm-option>
-                                        <hlm-option value="comportamiento"
-                                            class="text-neutral-300 focus:bg-white/10">Comportamiento</hlm-option>
-                                        <hlm-option value="lookalike"
-                                            class="text-neutral-300 focus:bg-white/10">Lookalike</hlm-option>
-                                        <hlm-option value="remarketing"
-                                            class="text-neutral-300 focus:bg-white/10">Remarketing</hlm-option>
-                                        <hlm-option value="personalizada"
-                                            class="text-neutral-300 focus:bg-white/10">Personalizada</hlm-option>
+                                        <hlm-option value="REACH" class="text-neutral-300 focus:bg-white/10">Alcance
+                                            (REACH)</hlm-option>
+                                        <hlm-option value="IMPRESSIONS"
+                                            class="text-neutral-300 focus:bg-white/10">Impresiones</hlm-option>
+                                        <hlm-option value="LINK_CLICKS" class="text-neutral-300 focus:bg-white/10">Clics
+                                            en el enlace</hlm-option>
+                                        <hlm-option value="CONVERSIONS"
+                                            class="text-neutral-300 focus:bg-white/10">Conversiones</hlm-option>
+                                        <hlm-option value="POST_ENGAGEMENT"
+                                            class="text-neutral-300 focus:bg-white/10">Interacción</hlm-option>
                                     </hlm-select-content>
                                 </brn-select>
                             </div>
@@ -118,9 +116,19 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label hlmLabel class="text-neutral-300">Ubicación</label>
-                            <input hlmInput formControlName="ubicacion" type="text"
-                                placeholder="Ej: Lima, Perú; LATAM..." class="w-full bg-white/5 border-white/10" />
+                            <label hlmLabel class="text-neutral-300">Evento de Facturación</label>
+                            <brn-select formControlName="billing_event" placeholder="Seleccionar evento">
+                                <hlm-select-trigger
+                                    class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                    <hlm-select-value />
+                                </hlm-select-trigger>
+                                <hlm-select-content class="bg-neutral-900 border-white/10">
+                                    <hlm-option value="IMPRESSIONS"
+                                        class="text-neutral-300 focus:bg-white/10">Impresiones</hlm-option>
+                                    <hlm-option value="LINK_CLICKS" class="text-neutral-300 focus:bg-white/10">Clics en
+                                        el enlace</hlm-option>
+                                </hlm-select-content>
+                            </brn-select>
                         </div>
 
                         <div class="grid grid-cols-3 gap-4">
@@ -181,27 +189,29 @@
                                 <iconify-icon icon="lucide:target" width="22" class="text-purple-400"></iconify-icon>
                             </div>
                             <div>
-                                <h3 class="text-white font-bold text-lg">{{ adSet.nombre }}</h3>
+                                <h3 class="text-white font-bold text-lg">{{ adSet.name }}</h3>
                                 <p class="text-neutral-400 text-sm flex items-center gap-2">
-                                    <span class="capitalize">{{ adSet.segmentacion }}</span>
+                                    <span class="capitalize">{{ adSet.optimization_goal?.replace('_', '
+                                        ')?.toLowerCase()
+                                        }}</span>
                                     <span class="text-neutral-600">·</span>
-                                    @if(adSet.ubicacion) {
-                                    <span>{{ adSet.ubicacion }}</span>
+                                    @if(adSet.targeting?.geo_locations?.countries) {
+                                    <span>{{ adSet.targeting?.geo_locations?.countries?.join(', ') }}</span>
                                     <span class="text-neutral-600">·</span>
                                     }
-                                    <span>{{ adSet.edad_min }}-{{ adSet.edad_max }} años</span>
+                                    <span>{{ adSet.targeting?.age_min }}-{{ adSet.targeting?.age_max }} años</span>
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-4">
-                            <span [ngClass]="getStatusColor(adSet.estado)"
+                            <span [ngClass]="getStatusColor(adSet.status)"
                                 class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold uppercase tracking-wider">
-                                {{ getStatusLabel(adSet.estado) }}
+                                {{ getStatusLabel(adSet.status) }}
                             </span>
                             <div class="p-3 rounded-lg bg-white/5 text-center hidden sm:block">
                                 <p class="text-[10px] text-neutral-500 uppercase">Diario</p>
-                                <p class="text-sm font-semibold text-white">${{ adSet.presupuesto_diario |
+                                <p class="text-sm font-semibold text-white">${{ adSet.daily_budget |
                                     number:'1.2-2' }}</p>
                             </div>
                             <div class="p-3 rounded-lg bg-white/5 text-center hidden sm:block">
@@ -235,7 +245,7 @@
                                                     <p hlmAlertDialogDescription class="text-neutral-400">Actualiza
                                                         la segmentación del conjunto.</p>
                                                 </hlm-alert-dialog-header>
-                                                <form [formGroup]="adSetForm" class="space-y-5 py-4">
+                                                <form [formGroup]="adSetForm" class="space-y-4 py-4">
                                                     <div class="space-y-2">
                                                         <label hlmLabel class="text-neutral-300">Nombre</label>
                                                         <input hlmInput formControlName="nombre" type="text"
@@ -249,10 +259,46 @@
                                                                 class="w-full bg-white/5 border-white/10" />
                                                         </div>
                                                         <div class="space-y-2">
-                                                            <label hlmLabel class="text-neutral-300">Ubicación</label>
-                                                            <input hlmInput formControlName="ubicacion" type="text"
-                                                                class="w-full bg-white/5 border-white/10" />
+                                                            <label hlmLabel class="text-neutral-300">Meta de
+                                                                Optimización</label>
+                                                            <brn-select formControlName="optimization_goal"
+                                                                placeholder="Meta">
+                                                                <hlm-select-trigger
+                                                                    class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                                                    <hlm-select-value />
+                                                                </hlm-select-trigger>
+                                                                <hlm-select-content
+                                                                    class="bg-neutral-900 border-white/10">
+                                                                    <hlm-option value="REACH"
+                                                                        class="text-neutral-300 focus:bg-white/10 uppercase text-xs">REACH</hlm-option>
+                                                                    <hlm-option value="IMPRESSIONS"
+                                                                        class="text-neutral-300 focus:bg-white/10 uppercase text-xs">IMPRESSIONS</hlm-option>
+                                                                    <hlm-option value="LINK_CLICKS"
+                                                                        class="text-neutral-300 focus:bg-white/10 uppercase text-xs">LINK_CLICKS</hlm-option>
+                                                                    <hlm-option value="CONVERSIONS"
+                                                                        class="text-neutral-300 focus:bg-white/10 uppercase text-xs">CONVERSIONS</hlm-option>
+                                                                    <hlm-option value="POST_ENGAGEMENT"
+                                                                        class="text-neutral-300 focus:bg-white/10 uppercase text-xs">ENGAGEMENT</hlm-option>
+                                                                </hlm-select-content>
+                                                            </brn-select>
                                                         </div>
+                                                    </div>
+                                                    <div class="space-y-2">
+                                                        <label hlmLabel class="text-neutral-300">Evento de
+                                                            Facturación</label>
+                                                        <brn-select formControlName="billing_event"
+                                                            placeholder="Evento">
+                                                            <hlm-select-trigger
+                                                                class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
+                                                                <hlm-select-value />
+                                                            </hlm-select-trigger>
+                                                            <hlm-select-content class="bg-neutral-900 border-white/10">
+                                                                <hlm-option value="IMPRESSIONS"
+                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">IMPRESSIONS</hlm-option>
+                                                                <hlm-option value="LINK_CLICKS"
+                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">LINK_CLICKS</hlm-option>
+                                                            </hlm-select-content>
+                                                        </brn-select>
                                                     </div>
                                                 </form>
                                                 <hlm-alert-dialog-footer>

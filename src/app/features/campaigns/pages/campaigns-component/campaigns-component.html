@@ -190,7 +190,7 @@
 
     <!-- Campaigns Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        @for (campaign of filteredCampaigns(); track campaign.id_campana) {
+        @for (campaign of filteredCampaigns(); track campaign.id_campaign) {
         <div
             class="group relative rounded-2xl bg-linear-to-br from-white/8 to-white/2 border border-white/10 p-6 hover:border-indigo-500/50 transition-all duration-300 hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.2)] flex flex-col hover:-translate-y-1.5 overflow-hidden">
 
@@ -293,7 +293,7 @@
                                 </hlm-alert-dialog-content>
                             </hlm-alert-dialog>
                             <hlm-dropdown-menu-separator class="bg-white/5"></hlm-dropdown-menu-separator>
-                            <button hlmDropdownMenuItem (click)="deleteCampaign(campaign.id_campana!)"
+                            <button hlmDropdownMenuItem (click)="deleteCampaign(campaign.id_campaign!)"
                                 class="text-red-400 hover:bg-red-500/10 cursor-pointer">
                                 <iconify-icon icon="lucide:trash-2" width="14" class="mr-2"></iconify-icon>
                                 <span>Eliminar</span>
@@ -328,7 +328,7 @@
 
             <!-- Action Button -->
             <div class="mt-auto pt-5 border-t border-white/5 relative z-10">
-                <a [routerLink]="['/home/campaigns', campaign.id_campana]" hlmBtn variant="outline"
+                <a [routerLink]="['/home/campaigns', campaign.id_campaign]" hlmBtn variant="outline"
                     class="w-full border-white/10 text-indigo-300 hover:text-white hover:bg-indigo-600 hover:border-transparent transition-all duration-300 group/btn rounded-xl py-2 h-11 text-sm font-semibold">
                     <span>Gestionar Campaña</span>
                     <iconify-icon icon="lucide:arrow-right" width="16"

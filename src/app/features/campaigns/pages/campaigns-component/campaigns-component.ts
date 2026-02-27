@@ -120,9 +120,9 @@ export class CampaignsComponent implements OnInit {
 
         this.isSubmitting.set(true);
         if (this.selectedCampaign()) {
-            this.campaignsService.updateCampaign(this.selectedCampaign()!.id_campana!, campaignData).subscribe({
+            this.campaignsService.updateCampaign(this.selectedCampaign()!.id_campaign!, campaignData).subscribe({
                 next: (updated) => {
-                    this.campaigns.update(list => list.map(c => c.id_campana === updated.id_campana ? updated : c));
+                    this.campaigns.update(list => list.map(c => c.id_campaign === updated.id_campaign ? updated : c));
                     this.applyFilters();
                     toast.success('¡Campaña actualizada con éxito!');
                     this.resetForm();
@@ -162,7 +162,7 @@ export class CampaignsComponent implements OnInit {
         if (confirm('¿Estás seguro de que deseas eliminar esta campaña?')) {
             this.campaignsService.deleteCampaign(id).subscribe({
                 next: () => {
-                    this.campaigns.update(list => list.filter(c => c.id_campana !== id));
+                    this.campaigns.update(list => list.filter(c => c.id_campaign !== id));
                     this.applyFilters();
                     toast.success('Campaña eliminada con éxito');
                 },

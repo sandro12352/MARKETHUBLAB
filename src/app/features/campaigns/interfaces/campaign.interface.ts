@@ -1,5 +1,5 @@
 export interface Campaign {
-    id_campana?: number;
+    id_campaign: number;
     id_proyecto?: number;
     name: string;
     objective: string;
@@ -11,17 +11,36 @@ export interface Campaign {
 
 export interface AdSet {
     id_conjunto?: number;
-    id_campana?: number;
-    nombre: string;
-    segmentacion: string;
-    presupuesto_diario: number;
-    estado: 'borrador' | 'activo' | 'pausado' | 'finalizado';
-    ubicacion?: string;
-    edad_min?: number;
-    edad_max?: number;
-    genero?: string;
-    fecha_creacion?: string;
-    anuncios?: Ad[];
+    id_campaign?: number;
+    name: string;
+    daily_budget?: number;
+    status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+    optimization_goal: 'REACH' | 'IMPRESSIONS' | 'LINK_CLICKS' | 'CONVERSIONS' | 'POST_ENGAGEMENT';
+    billing_event: 'IMPRESSIONS' | 'LINK_CLICKS';
+    // El objeto de segmentación (Targeting)
+    // Aquí es donde se mete la edad, género y ubicación
+    targeting: {
+        geo_locations?: {
+            countries?: string[]; // Ej: ["PE"]
+            regions?: Array<{ key: string }>;
+            cities?: Array<{ key: string, radius: number, distance_unit: 'millas' | 'kilómetros' }>;
+        };
+        age_min?: number;
+        age_max?: number;
+        genders?: number[]; // [1] hombres, [2] mujeres, omitir para ambos
+        publisher_platforms?: string[]; // ["facebook", "instagram", "messenger", "audience_network"]
+    };
+
+    // Objeto promocionado (Obligatorio si el objetivo es Conversión/Ventas)
+    promoted_object?: {
+        pixel_id?: string;
+        custom_event_type?: 'PURCHASE' | 'LEAD' | 'COMPLETE_REGISTRATION';
+        page_id?: string; // Obligatorio para campañas de interacción con página
+    };
+
+    // Metadatos de lectura
+    created_time?: string;
+    updated_time?: string;
 }
 
 export interface Ad {
