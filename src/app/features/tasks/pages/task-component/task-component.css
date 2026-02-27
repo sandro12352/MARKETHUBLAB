@@ -152,11 +152,11 @@
 }
 
 /* ── Status Left Border ── */
-.task-status-border {
+.task-status-border td:first-child {
   position: relative;
 }
 
-.task-status-border::before {
+.task-status-border td:first-child::before {
   content: '';
   position: absolute;
   left: 0;
@@ -167,28 +167,32 @@
   transition: all 0.3s ease;
 }
 
+.proyecto_material-estado-pendiente td:first-child::before {
+  background: var(--status-uploaded);
+}
+
+.proyecto_material-estado-en_progreso td:first-child::before {
+  background: rgb(96 165 250);
+}
+
+.proyecto_material-estado-subido td:first-child::before {
+  background: rgb(167 139 250);
+}
+
+.proyecto_material-estado-aprobado td:first-child::before {
+  background: var(--status-approved);
+}
+
+.proyecto_material-estado-rechazado td:first-child::before {
+  background: var(--status-rejected);
+
+}
+
 .task-status-border:hover::before {
   top: 8px;
   bottom: 8px;
   width: 4px;
 }
-
-.proyecto_material-estado-pendiente::before {
-  background: var(--status-uploaded);
-}
-
-.proyecto_material-estado-aprobado::before {
-  background: var(--status-approved);
-}
-
-.proyecto_material-estado-rechazado::before {
-  background: var(--status-rejected);
-}
-
-
-
-
-
 
 /* ── Stat Card Hover ── */
 .stat-card {
