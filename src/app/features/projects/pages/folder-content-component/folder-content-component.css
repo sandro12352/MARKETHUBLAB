@@ -3,7 +3,7 @@
    Aesthetic: Luxury editorial, cinematic darks, saturated accents
    ═══════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sora:wght@300;400;500;600;700;800&display=swap');
 
 :host {
     --fold-font-display: 'Sora', sans-serif;
@@ -35,20 +35,11 @@
         opacity: 0;
         transform: translateY(24px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-@keyframes foldFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes pulseGlow {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
 }
 
 @keyframes cardReveal {
@@ -56,34 +47,13 @@
         opacity: 0;
         transform: translateY(32px) scale(0.97);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
 }
 
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.fold-entrance {
-    animation: foldSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.fold-entrance-delay-1 {
-    animation-delay: 0.1s;
-}
-
-.fold-entrance-delay-2 {
-    animation-delay: 0.2s;
-}
-
-.fold-fade-in {
-    animation: foldFadeIn 0.5s ease both;
-}
-
-/* ── Typography ── */
 .fold-display-font {
     font-family: var(--fold-font-display);
     letter-spacing: -0.025em;
@@ -93,113 +63,81 @@
 .task-card {
     transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     animation: cardReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    position: relative;
 }
 
 .task-card:hover {
     transform: translateY(-6px);
     border-color: rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 24px 48px -16px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.06);
-}
-
-/* staggered delay per card */
-.task-card:nth-child(1) { animation-delay: 0.05s; }
-.task-card:nth-child(2) { animation-delay: 0.10s; }
-.task-card:nth-child(3) { animation-delay: 0.15s; }
-.task-card:nth-child(4) { animation-delay: 0.20s; }
-.task-card:nth-child(5) { animation-delay: 0.25s; }
-.task-card:nth-child(6) { animation-delay: 0.30s; }
-.task-card:nth-child(7) { animation-delay: 0.35s; }
-.task-card:nth-child(8) { animation-delay: 0.40s; }
-.task-card:nth-child(9) { animation-delay: 0.45s; }
-.task-card:nth-child(10) { animation-delay: 0.50s; }
-.task-card:nth-child(11) { animation-delay: 0.55s; }
-.task-card:nth-child(12) { animation-delay: 0.60s; }
-
-/* Priority stripe on left edge */
-.task-card .priority-stripe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    border-radius: 2xl 0 0 2xl;
-    transition: width 0.3s ease;
-}
-
-.task-card:hover .priority-stripe {
-    width: 4px;
-}
-
-/* ── File Thumbnail ── */
-.file-thumb {
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.task-card:hover .file-thumb {
-    transform: scale(1.05);
-}
-
-/* ── Glass effect for file preview area ── */
-.file-preview-glass {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-/* ── Glow dot ── */
-.fold-glow-dot {
-    animation: pulseGlow 2s ease-in-out infinite;
-}
-
-/* ── Actions reveal ── */
-.card-actions {
-    opacity: 0;
-    transform: translateY(4px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.task-card:hover .card-actions {
-    opacity: 1;
-    transform: translateY(0);
+    box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 /* ── Custom Scrollbar ── */
-.fold-scrollbar::-webkit-scrollbar {
-    width: 4px;
+.fold-scrollbar::-webkit-scrollbar,
+.det-scrollbar::-webkit-scrollbar {
+    width: 6px;
 }
 
-.fold-scrollbar::-webkit-scrollbar-track {
+.fold-scrollbar::-webkit-scrollbar-track,
+.det-scrollbar::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.fold-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
+.fold-scrollbar::-webkit-scrollbar-thumb,
+.det-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
 }
 
-.fold-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.15);
+.fold-scrollbar::-webkit-scrollbar-thumb:hover,
+.det-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
-/* ── Stat card subtle hover ── */
-.stat-card {
-    transition: all 0.3s ease;
+/* ── Scene Card Enhancement (Luxury) ── */
+.scene-indicator {
+    position: relative;
+    overflow: hidden;
 }
 
-.stat-card:hover {
-    background: rgba(255, 255, 255, 0.025);
-    border-color: rgba(255, 255, 255, 0.08);
+.scene-indicator::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 251, 235, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
 }
 
-/* Old .file-card alias kept for modals */
-.file-card {
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.scene-indicator:hover::after {
+    transform: translateX(100%);
 }
 
-.file-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+.script-box {
+    position: relative;
+}
+
+.script-box::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: -5px;
+    font-size: 40px;
+    font-family: serif;
+    color: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-animate {
+    animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

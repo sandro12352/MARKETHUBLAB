@@ -5,6 +5,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { ProjectsService } from '../../services/projects.service';
 import { Folder } from '../../interfaces/folder.interface';
 import { FolderContent } from '../../interfaces/folder-content.interface';
+import { PlanGrabacion, Escena } from '../../interfaces/plan-grabacion.interface';
 import { HlmButtonImports } from '@spartan/ui/button';
 import { HlmDropdownMenuImports } from '@spartan/ui/dropdown-menu';
 import { BrnAlertDialogImports } from '@spartan-ng/brain/alert-dialog';
@@ -93,8 +94,13 @@ export class FolderContentComponent implements OnInit {
         fecha_limite: '',
         id_trabajador: 0,
         id_carpeta_material: 0,
-        id_proyecto: 0
+        id_proyecto: 0,
+        id_escena: undefined
     });
+
+    // ── Plan de Grabación Scenes ──
+    planEscenas = signal<Escena[]>([]);
+    loadingEscenas = signal(false);
 
     // Task stats
     taskPendingCount = computed(() => this.folderTasks().filter(t => t.estado === 'pendiente').length);
@@ -105,6 +111,7 @@ export class FolderContentComponent implements OnInit {
 
     // Task detail modal
     showTaskDetailModal = signal(false);
+    showSceneDetailModal = signal(false);
     selectedTask = signal<WorkerTask | null>(null);
 
     // Reject modal
@@ -133,6 +140,9 @@ export class FolderContentComponent implements OnInit {
         if (this.showTaskDetailModal()) {
             this.closeTaskDetailModal();
         }
+        if (this.showSceneDetailModal()) {
+            this.closeSceneDetailModal();
+        }
         if (this.showRejectModal()) {
             this.closeRejectModal();
         }
@@ -140,7 +150,9 @@ export class FolderContentComponent implements OnInit {
 
     contentForm = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(2)]],
-        descripcion: ['']
+        descripcion: [''],
+        copy: [''],
+        fecha_publicacion: ['']
     });
 
     id_proyecto!: number;
@@ -153,6 +165,7 @@ export class FolderContentComponent implements OnInit {
         this.loadFolderData();
         this.loadFolderContents();
         this.loadFolderTasks();
+        this.loadPlanEscenas();
 
         // Load workers if admin
         if (this.isAdmin()) {
@@ -207,7 +220,8 @@ export class FolderContentComponent implements OnInit {
             fecha_limite: '',
             id_trabajador: 0,
             id_carpeta_material: this.id_carpeta,
-            id_proyecto: this.id_proyecto
+            id_proyecto: this.id_proyecto,
+            id_escena: undefined
         });
         this.showCreateTaskModal.set(true);
     }
@@ -230,6 +244,9 @@ export class FolderContentComponent implements OnInit {
     }
     onPrioritySelect(value: any) {
         this.newTask.update(t => ({ ...t, prioridad: value }));
+    }
+    onEscenaSelect(value: any) {
+        this.newTask.update(t => ({ ...t, id_escena: value ? Number(value) : undefined }));
     }
 
     submitTask() {
@@ -259,12 +276,24 @@ export class FolderContentComponent implements OnInit {
 
     // Task Detail
     openTaskDetailModal(task: WorkerTask) {
+        console.log(task);
         this.selectedTask.set(task);
         this.showTaskDetailModal.set(true);
     }
 
     closeTaskDetailModal() {
         this.showTaskDetailModal.set(false);
+        this.selectedTask.set(null);
+    }
+
+    // Scene Detail
+    openSceneDetailModal(task: WorkerTask) {
+        this.selectedTask.set(task);
+        this.showSceneDetailModal.set(true);
+    }
+
+    closeSceneDetailModal() {
+        this.showSceneDetailModal.set(false);
         this.selectedTask.set(null);
     }
 
@@ -514,7 +543,9 @@ export class FolderContentComponent implements OnInit {
                 this.authService.getUser()?.id_trabajador || 0,
                 this.selectedFile()!,
                 this.contentForm.value.nombre!,
-                this.contentForm.value.descripcion || ''
+                this.contentForm.value.descripcion || '',
+                this.contentForm.value.copy || undefined,
+                this.contentForm.value.fecha_publicacion || undefined
             );
 
         request.subscribe({
@@ -565,6 +596,21 @@ export class FolderContentComponent implements OnInit {
         this.contentForm.reset();
         this.selectedFile.set(null);
         this.previewUrl.set(null);
+    }
+
+    // ── Load Plan de Grabación Scenes ──
+    loadPlanEscenas() {
+        this.loadingEscenas.set(true);
+        this.projectService.getPlanByProject(this.id_proyecto).subscribe({
+            next: (plan) => {
+                this.planEscenas.set(plan.escenas || []);
+                this.loadingEscenas.set(false);
+            },
+            error: () => {
+                this.planEscenas.set([]);
+                this.loadingEscenas.set(false);
+            }
+        });
     }
 
     getFileIcon(tipo: string): string {

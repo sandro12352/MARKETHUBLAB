@@ -6,6 +6,7 @@ import { from, Observable } from 'rxjs';
 import { ProjectResponse } from '../interfaces/projects-response.interface';
 import { Folder } from '../interfaces/folder.interface';
 import { FolderContent } from '../interfaces/folder-content.interface';
+import { PlanGrabacion, Escena } from '../interfaces/plan-grabacion.interface';
 import { AuthService } from '../../auth/services/auth-service';
 
 @Injectable({
@@ -105,13 +106,15 @@ export class ProjectsService {
     );
   }
 
-  uploadContent(id_carpeta_material: number, id_trabajador: number, file: File, nombre: string, descripcion: string): Observable<FolderContent> {
+  uploadContent(id_carpeta_material: number, id_trabajador: number, file: File, nombre: string, descripcion: string, copy?: string, fecha_publicacion?: string): Observable<FolderContent> {
     const formData = new FormData();
     formData.append('id_carpeta_material', id_carpeta_material.toString());
     formData.append('id_trabajador', id_trabajador.toString());
     formData.append('ruta', file);
     formData.append('nombre', nombre);
     formData.append('descripcion', descripcion);
+    if (copy) formData.append('copy', copy);
+    if (fecha_publicacion) formData.append('fecha_publicacion', fecha_publicacion);
     return this.http.post<FolderContent>(`${environment.apiUrl}/api/project-material/`, formData,
       {
         headers: {
@@ -165,6 +168,58 @@ export class ProjectsService {
         }
       }
     );
+  }
+
+  // ── Plan de Grabación ──────────────────────────────────────────
+
+  getPlanByProject(id_proyecto: number): Observable<PlanGrabacion> {
+    return this.http.get<PlanGrabacion>(`${environment.apiUrl}/api/plan-grabacion/proyecto/${id_proyecto}`, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
+  }
+
+  createPlan(plan: Partial<PlanGrabacion>): Observable<{ planGrabacion: PlanGrabacion, message: string }> {
+    return this.http.post<{ planGrabacion: PlanGrabacion, message: string }>(`${environment.apiUrl}/api/plan-grabacion`, plan, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
+  }
+
+  updatePlan(id_plan_grabacion: number, plan: Partial<PlanGrabacion>): Observable<{ planGrabacion: PlanGrabacion, message: string }> {
+    return this.http.put<{ planGrabacion: PlanGrabacion, message: string }>(`${environment.apiUrl}/api/plan-grabacion/${id_plan_grabacion}`, plan, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
+  }
+
+  // ── Escenas ──────────────────────────────────────────────────
+
+  addEscena(escena: Partial<Escena>): Observable<Escena> {
+    return this.http.post<Escena>(`${environment.apiUrl}/api/escena`, escena, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
+  }
+
+  updateEscena(id_escena: number, escena: Partial<Escena>): Observable<Escena> {
+    return this.http.put<Escena>(`${environment.apiUrl}/api/escena/${id_escena}`, escena, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
+  }
+
+  deleteEscena(id_escena: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/api/escena/${id_escena}`, {
+      headers: {
+        Authorization: `Bearer ${this.autToken}`
+      }
+    });
   }
 
 }

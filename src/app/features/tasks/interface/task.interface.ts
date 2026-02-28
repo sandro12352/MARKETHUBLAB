@@ -1,4 +1,5 @@
 import { FolderContent } from "../../projects/interfaces/folder-content.interface";
+import { Escena } from "../../projects/interfaces/plan-grabacion.interface";
 
 export interface Worker {
   nombres: string;
@@ -38,6 +39,7 @@ export interface CreateTaskDto {
   id_trabajador: number;
   id_carpeta_material?: number;
   id_proyecto?: number;
+  id_escena?: number;
 }
 
 export interface WorkerTask {
@@ -48,6 +50,7 @@ export interface WorkerTask {
   id_proyecto_material: null;
   id_carpeta_material?: number | null;
   id_proyecto?: number | null;
+  escenaId_escena?: number | null;
   estado: string;
   prioridad: string;
   fecha_creacion: Date;
@@ -56,6 +59,7 @@ export interface WorkerTask {
   observacion: null;
   trabajador: Trabajador;
   proyecto_material: FolderContent; // This will be FolderContent or null
+  escena?: Escena | null;
   carpeta_material?: {
     id_carpeta_material: number;
     nombre: string;

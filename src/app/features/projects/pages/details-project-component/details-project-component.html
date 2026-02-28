@@ -152,6 +152,169 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════ PLAN DE GRABACIÓN SECTION ═══════════════════════ -->
+    <div class="det-entrance det-entrance-delay-2 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div class="space-y-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
+                        <iconify-icon icon="lucide:clapperboard" width="18"></iconify-icon>
+                    </div>
+                    <h2 class="det-display-font text-xl font-bold text-white tracking-tight">Plan de Grabación</h2>
+                </div>
+                <p class="text-sm text-neutral-500">Guion técnico con escenas, planos y speech para la producción
+                    audiovisual.</p>
+            </div>
+
+            <button (click)="openPlanModal()"
+                class="plan-btn-create px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg transition-all flex items-center gap-2"
+                [class]="planGrabacion() ? 'bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white shadow-black/20' : 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'">
+                <iconify-icon [icon]="planGrabacion() ? 'lucide:edit-3' : 'lucide:plus'" width="16"></iconify-icon>
+                {{ planGrabacion() ? 'Editar Plan' : 'Crear Plan de Grabación' }}
+            </button>
+        </div>
+
+        <!-- Plan Exists: Show Summary & Scenes -->
+        @if (planGrabacion()) {
+        <div class="relative bg-white/[0.012] border border-white/[0.06] rounded-2xl overflow-hidden det-grain">
+
+            <!-- Plan Header -->
+            <div
+                class="p-6 border-b border-white/[0.04] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shadow-inner">
+                        <iconify-icon icon="lucide:film" width="24"></iconify-icon>
+                    </div>
+                    <div>
+                        <h3 class="det-display-font text-base font-bold text-white">Plan #{{
+                            planGrabacion()!.id_plan_grabacion }}</h3>
+                        <p class="text-[11px] text-neutral-500 mt-0.5">{{ planGrabacion()!.escenas?.length || 0 }}
+                            escenas registradas</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span
+                        [class]="'px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border ' + getPlanStatusColor()">
+                        {{ getPlanStatusLabel() }}
+                    </span>
+                    @if (planGrabacion()!.fecha_envio) {
+                    <span class="text-[10px] text-neutral-600">
+                        Enviado: {{ planGrabacion()!.fecha_envio | date:'dd MMM, yyyy' }}
+                    </span>
+                    }
+                </div>
+            </div>
+
+            <!-- Observation -->
+            @if (planGrabacion()!.observacion_cliente) {
+            <div class="px-6 py-4 bg-amber-500/[0.03] border-b border-white/[0.04] flex items-start gap-3">
+                <iconify-icon icon="lucide:message-circle" width="16"
+                    class="text-amber-400/70 mt-0.5 shrink-0"></iconify-icon>
+                <p class="text-[13px] text-neutral-400 leading-relaxed italic">{{ planGrabacion()!.observacion_cliente
+                    }}</p>
+            </div>
+            }
+
+            <!-- Scenes List -->
+            <div class="divide-y divide-white/[0.04]">
+                @for (escena of planGrabacion()!.escenas; track escena.id_escena; let i = $index) {
+                <div class="plan-scene-row transition-all">
+                    <!-- Scene Header (clickable) -->
+                    <button (click)="toggleEscenaExpand(i)"
+                        class="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="plan-scene-number w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                                <span class="text-[11px] font-bold text-indigo-400 tabular-nums">{{ i + 1 }}</span>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[13px] font-semibold text-white">{{ escena.tema }}</p>
+                                <div class="flex items-center gap-3 mt-1">
+                                    <span
+                                        class="text-[10px] text-neutral-500 uppercase tracking-wider flex items-center gap-1">
+                                        <iconify-icon icon="lucide:frame" width="10"></iconify-icon>
+                                        {{ escena.valor_plano }}
+                                    </span>
+                                    <span class="text-[10px] text-neutral-600">•</span>
+                                    <span
+                                        class="text-[10px] text-neutral-500 uppercase tracking-wider flex items-center gap-1">
+                                        <iconify-icon icon="lucide:video" width="10"></iconify-icon>
+                                        {{ escena.movimiento_camara }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <iconify-icon [icon]="expandedEscena() === i ? 'lucide:chevron-up' : 'lucide:chevron-down'"
+                            width="16" class="text-neutral-600 transition-transform">
+                        </iconify-icon>
+                    </button>
+
+                    <!-- Scene Details (expanded) -->
+                    @if (expandedEscena() === i) {
+                    <div class="px-6 pb-5 pl-[4.5rem] space-y-4 plan-scene-expand">
+                        <!-- Speech -->
+                        <div class="space-y-1.5">
+                            <p class="text-[9px] font-bold uppercase tracking-[0.15em] text-amber-400/60">Speech / Guion
+                            </p>
+                            <div class="p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl">
+                                <p class="text-[13px] text-neutral-300 leading-relaxed whitespace-pre-line">{{
+                                    escena.speech }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Requerimientos -->
+                        @if (escena.requerimientos) {
+                        <div class="space-y-1.5">
+                            <p class="text-[9px] font-bold uppercase tracking-[0.15em] text-indigo-400/60">
+                                Requerimientos</p>
+                            <p class="text-[12px] text-neutral-400 leading-relaxed">{{ escena.requerimientos }}</p>
+                        </div>
+                        }
+
+                        <!-- Nota & Referencia -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @if (escena.nota) {
+                            <div class="space-y-1.5">
+                                <p class="text-[9px] font-bold uppercase tracking-[0.15em] text-cyan-400/60">Nota</p>
+                                <p class="text-[12px] text-neutral-400 leading-relaxed">{{ escena.nota }}</p>
+                            </div>
+                            }
+                            @if (escena.referencia) {
+                            <div class="space-y-1.5">
+                                <p class="text-[9px] font-bold uppercase tracking-[0.15em] text-purple-400/60">
+                                    Referencia</p>
+                                <p class="text-[12px] text-neutral-400 leading-relaxed">{{ escena.referencia }}</p>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        } @else if (!loadingPlan()) {
+        <!-- No Plan Exists -->
+        <div
+            class="py-16 flex flex-col items-center gap-5 rounded-2xl bg-white/[0.012] border border-dashed border-white/10 det-grain">
+            <div
+                class="w-16 h-16 rounded-2xl bg-amber-500/[0.06] border border-amber-500/10 flex items-center justify-center">
+                <iconify-icon icon="lucide:clapperboard" width="32" class="text-amber-500/40"></iconify-icon>
+            </div>
+            <div class="text-center space-y-1.5">
+                <h3 class="det-display-font text-base font-bold text-neutral-400">Sin plan de grabación</h3>
+                <p class="text-[13px] text-neutral-600 max-w-sm leading-relaxed">Crea un plan con las escenas,
+                    planos y guion técnico para la producción del proyecto.</p>
+            </div>
+            <button (click)="openPlanModal()"
+                class="px-6 py-2.5 bg-amber-600/10 hover:bg-amber-600/20 text-amber-400 rounded-xl text-xs font-bold uppercase tracking-widest border border-amber-600/20 transition-all">
+                Crear mi primer plan
+            </button>
+        </div>
+        }
+    </div>
+
     <!-- ═══════════════════════ FOLDERS SECTION ═══════════════════════ -->
     <div class="det-entrance det-entrance-delay-2 space-y-8">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -359,5 +522,221 @@
     </div>
     }
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PLAN DE GRABACIÓN — Fullscreen Modal
+     ═══════════════════════════════════════════════════════════════════ -->
+@if (showPlanModal()) {
+<div class="plan-modal-overlay fixed inset-0 z-[999] flex items-center justify-center">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" (click)="closePlanModal()"></div>
+
+    <!-- Modal Container -->
+    <div
+        class="plan-modal-content relative w-full max-w-4xl max-h-[92vh] mx-4 bg-[#0a0b10] border border-white/[0.08] rounded-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/60">
+
+        <!-- ── Modal Header ── -->
+        <div class="shrink-0 px-8 py-6 border-b border-white/[0.06] bg-white/[0.01]">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                        <iconify-icon icon="lucide:clapperboard" width="22"></iconify-icon>
+                    </div>
+                    <div>
+                        <h2 class="det-display-font text-lg font-bold text-white">
+                            {{ planGrabacion() ? 'Editar Plan de Grabación' : 'Nuevo Plan de Grabación' }}
+                        </h2>
+                        <p class="text-[10px] text-neutral-600 uppercase tracking-widest mt-0.5">
+                            Proyecto: {{ proyect()!.nombre }}
+                        </p>
+                    </div>
+                </div>
+                <button (click)="closePlanModal()"
+                    class="p-2 bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] rounded-xl text-neutral-500 hover:text-white transition-all">
+                    <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Modal Body (scrollable) ── -->
+        <div class="flex-1 overflow-y-auto det-scrollbar px-8 py-6 space-y-8">
+            <form [formGroup]="planForm">
+
+                <!-- Observation Field -->
+                <div class="space-y-2 mb-8">
+                    <label
+                        class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1 flex items-center gap-2">
+                        <iconify-icon icon="lucide:message-circle" width="12"></iconify-icon>
+                        Observación del Cliente (Opcional)
+                    </label>
+                    <textarea formControlName="observacion_cliente"
+                        placeholder="Indicaciones generales o comentarios del cliente sobre el proyecto..."
+                        class="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-amber-500/30 focus:border-amber-500/30 transition-all outline-none resize-none min-h-[80px]">
+                    </textarea>
+                </div>
+
+                <!-- ── Scenes Section ── -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="lucide:layers" width="16" class="text-amber-400/70"></iconify-icon>
+                            <h3 class="det-display-font text-sm font-bold text-white uppercase tracking-wider">Escenas
+                            </h3>
+                            <span
+                                class="ml-2 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-md text-[10px] font-bold text-amber-400 tabular-nums">
+                                {{ escenasFormArray.length }}
+                            </span>
+                        </div>
+                        <button type="button" (click)="addEscenaForm()"
+                            class="px-3 py-1.5 bg-amber-600/10 hover:bg-amber-600/20 border border-amber-600/20 text-amber-400 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5">
+                            <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+                            Agregar Escena
+                        </button>
+                    </div>
+
+                    <!-- Scene Cards -->
+                    <div formArrayName="escenas" class="space-y-4">
+                        @for (escena of escenasFormArray.controls; track $index; let i = $index) {
+                        <div [formGroupName]="i"
+                            class="plan-scene-card relative bg-white/[0.015] border border-white/[0.06] rounded-2xl overflow-hidden transition-all hover:border-white/[0.1]">
+
+                            <!-- Scene card header -->
+                            <div
+                                class="px-5 py-3 border-b border-white/[0.04] bg-white/[0.01] flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                                        <span class="text-[10px] font-bold text-indigo-400 tabular-nums">{{ i + 1
+                                            }}</span>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Escena
+                                        {{ i + 1 }}</span>
+                                </div>
+                                @if (escenasFormArray.length > 1) {
+                                <button type="button" (click)="removeEscenaForm(i)"
+                                    class="p-1.5 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 rounded-lg text-neutral-600 hover:text-red-400 transition-all">
+                                    <iconify-icon icon="lucide:trash-2" width="14"></iconify-icon>
+                                </button>
+                                }
+                            </div>
+
+                            <!-- Scene form fields -->
+                            <div class="p-5 space-y-4">
+                                <!-- Row 1: Tema -->
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500 ml-1">Tema
+                                        / Título *</label>
+                                    <input formControlName="tema" type="text" placeholder='Ej: "MODALIDAD SELECTIVA"'
+                                        class="w-full px-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none" />
+                                </div>
+
+                                <!-- Row 2: Valor Plano + Movimiento Cámara -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label
+                                            class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500 ml-1">Valor
+                                            de Plano *</label>
+                                        <input formControlName="valor_plano" type="text"
+                                            placeholder='Ej: "ENTERO / PRIMER PLANO"'
+                                            class="w-full px-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none" />
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label
+                                            class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500 ml-1">Movimiento
+                                            de Cámara *</label>
+                                        <input formControlName="movimiento_camara" type="text"
+                                            placeholder='Ej: "ESTÁTICO" o "CÁMARA EN MANO"'
+                                            class="w-full px-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none" />
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Speech -->
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-400/70 ml-1 flex items-center gap-1.5">
+                                        <iconify-icon icon="lucide:mic" width="11"></iconify-icon>
+                                        Speech / Guion *
+                                    </label>
+                                    <textarea formControlName="speech"
+                                        placeholder="Escribe el guion o speech que se dirá en esta escena..."
+                                        class="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-amber-500/30 focus:border-amber-500/30 transition-all outline-none resize-none min-h-[90px]">
+                                    </textarea>
+                                </div>
+
+                                <!-- Row 4: Requerimientos -->
+                                <div class="space-y-1.5">
+                                    <label
+                                        class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500 ml-1">Requerimientos
+                                        (Opcional)</label>
+                                    <textarea formControlName="requerimientos"
+                                        placeholder="Props, vestuario, locación o elementos necesarios..."
+                                        class="w-full px-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none resize-none min-h-[60px]">
+                                    </textarea>
+                                </div>
+
+                                <!-- Row 5: Nota + Referencia -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label
+                                            class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500 ml-1">Nota
+                                            (Opcional)</label>
+                                        <textarea formControlName="nota"
+                                            placeholder="Notas adicionales para el equipo..."
+                                            class="w-full px-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none resize-none min-h-[60px]">
+                                        </textarea>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label
+                                            class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500 ml-1">Referencia
+                                            (Opcional)</label>
+                                        <textarea formControlName="referencia"
+                                            placeholder="URL o descripción de referencia visual..."
+                                            class="w-full px-4 py-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-indigo-500/30 focus:border-indigo-500/30 transition-all outline-none resize-none min-h-[60px]">
+                                        </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Add scene inline button -->
+                    <button type="button" (click)="addEscenaForm()"
+                        class="w-full py-4 border-2 border-dashed border-white/[0.06] hover:border-amber-500/20 rounded-2xl flex items-center justify-center gap-2 text-neutral-600 hover:text-amber-400 transition-all group">
+                        <iconify-icon icon="lucide:plus-circle" width="18"
+                            class="group-hover:scale-110 transition-transform"></iconify-icon>
+                        <span class="text-[11px] font-bold uppercase tracking-widest">Agregar otra escena</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── Modal Footer ── -->
+        <div class="shrink-0 px-8 py-5 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
+            <div class="text-[11px] text-neutral-600">
+                {{ escenasFormArray.length }} escena{{ escenasFormArray.length !== 1 ? 's' : '' }} en el plan
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="button" (click)="closePlanModal()"
+                    class="px-5 py-2.5 text-sm font-medium text-neutral-500 hover:text-white transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" (click)="onSubmitPlan()" [disabled]="savingPlan()"
+                    class="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-amber-600/20 transition-all flex items-center gap-2">
+                    @if (savingPlan()) {
+                    <iconify-icon icon="lucide:loader-2" width="16" class="animate-spin"></iconify-icon>
+                    Guardando...
+                    } @else {
+                    <iconify-icon icon="lucide:save" width="16"></iconify-icon>
+                    {{ planGrabacion() ? 'Actualizar Plan' : 'Crear Plan' }}
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}
 
 <hlm-toaster />

@@ -224,8 +224,16 @@
                             </span>
                         </div>
                         <p class="text-[11px] text-neutral-600 line-clamp-2 min-h-[2rem] leading-relaxed">
-                            {{ task.descripcion || 'Sin descripciÃ³n adicional.' }}
+                            {{ task.descripcion || 'Sin descripción adicional.' }}
                         </p>
+                        @if (task.escena) {
+                        <div class="flex items-center gap-1.5 mt-1">
+                            <iconify-icon icon="lucide:clapperboard" width="11"
+                                class="text-amber-400/70"></iconify-icon>
+                            <span class="text-[10px] text-amber-400/80 font-semibold truncate">{{ task.escena.tema
+                                }}</span>
+                        </div>
+                        }
                     </div>
 
                     <!-- Meta Row: Worker + Priority + Date -->
@@ -325,62 +333,65 @@
 <!-- SUBIR MATERIAL -->
 
 @if (showUploadModal()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" (click)="closeUploadModal()">
-    <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-lg shadow-2xl"
+<div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm"
+    (click)="closeUploadModal()">
+    <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[95vh]"
         (click)="$event.stopPropagation()">
-        <div class="px-6 py-5 border-b border-white/[0.06] flex items-center justify-between">
+
+        <div class="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                     <iconify-icon icon="lucide:cloud-upload" width="18"></iconify-icon>
                 </div>
                 <div>
-                    <h2 class="fold-display-font text-lg font-bold text-white">Subir Material</h2>
-                    <p class="text-[10px] text-neutral-500 uppercase tracking-widest mt-0.5">
-                        {{ uploadForTaskId() ? 'Entregable para tarea' : 'Nuevos archivos para ' + folder()!.nombre }}
+                    <h2 class="fold-display-font text-base sm:text-lg font-bold text-white leading-tight">Subir Material
+                    </h2>
+                    <p class="text-[9px] text-neutral-500 uppercase tracking-widest mt-0.5">
+                        {{ uploadForTaskId() ? 'Entregable para tarea' : 'Archivos para ' + folder()?.nombre }}
                     </p>
                 </div>
             </div>
-            <button (click)="closeUploadModal()" class="text-neutral-600 hover:text-white transition-colors">
+            <button (click)="closeUploadModal()" class="text-neutral-600 hover:text-white transition-colors p-1">
                 <iconify-icon icon="lucide:x" width="20"></iconify-icon>
             </button>
         </div>
 
-        <div class="p-6 space-y-6">
-            <!-- Drag & Drop Zone -->
+        <div class="p-4 sm:p-6 space-y-5 overflow-y-auto custom-scrollbar">
+
             <div class="relative" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
                 (drop)="onDrop($event)">
                 @if (!selectedFile()) {
                 <label for="file-upload"
-                    class="flex flex-col items-center justify-center py-10 px-6 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer"
+                    class="flex flex-col items-center justify-center py-6 sm:py-10 px-6 rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer"
                     [ngClass]="isDragging() ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-white/10 bg-white/[0.015] hover:border-white/20 hover:bg-white/[0.03]'">
-                    <iconify-icon icon="lucide:file-up" width="32" class="mb-4"
+                    <iconify-icon icon="lucide:file-up" width="32" class="mb-3"
                         [ngClass]="isDragging() ? 'text-indigo-400' : 'text-neutral-700'"></iconify-icon>
-                    <p class="text-[14px] text-neutral-300 font-bold tracking-tight mb-1">
-                        {{ isDragging() ? 'Â¡Suelta para subir!' : 'Arrastra y suelta aquí'}}
+                    <p class="text-sm text-neutral-300 font-bold tracking-tight mb-1 text-center">
+                        {{ isDragging() ? '¡Suelta para subir!' : 'Arrastra y suelta aquí'}}
                     </p>
-                    <p class="text-xs text-neutral-600 tracking-wide font-medium">o selecciona desde tu dispositivo</p>
+                    <p class="text-[11px] text-neutral-600 tracking-wide font-medium">o selecciona un archivo</p>
                     <input id="file-upload" type="file" class="hidden" (change)="onFileSelected($event)"
                         accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
                 </label>
                 } @else {
-                <div class="rounded-2xl border border-white/10 bg-white/[0.015] p-5 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4">
+                <div class="rounded-2xl border border-white/10 bg-white/[0.015] p-4 space-y-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
                             <div
-                                [class]="'w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ' + getFileBgColor(getSelectedFileType())">
-                                <iconify-icon [icon]="getFileIcon(getSelectedFileType())" width="22"
+                                [class]="'w-10 h-10 shrink-0 rounded-xl flex items-center justify-center shadow-lg ' + getFileBgColor(getSelectedFileType())">
+                                <iconify-icon [icon]="getFileIcon(getSelectedFileType())" width="20"
                                     [ngClass]="getFileIconColor(getSelectedFileType())"></iconify-icon>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-white font-bold text-sm truncate max-w-[240px]">{{ selectedFile()!.name
-                                    }}</p>
-                                <p class="text-neutral-600 text-[10px] font-black uppercase tracking-widest">
+                                <p class="text-white font-bold text-xs sm:text-sm truncate">{{ selectedFile()!.name }}
+                                </p>
+                                <p class="text-neutral-600 text-[9px] font-black uppercase tracking-widest">
                                     {{ (selectedFile()!.size / 1024 / 1024 | number:'1.2-2') }} MB
                                 </p>
                             </div>
                         </div>
                         <button (click)="resetContentForm()"
-                            class="p-2 text-neutral-600 hover:text-red-400 transition-colors">
+                            class="p-2 text-neutral-600 hover:text-red-400 transition-colors shrink-0">
                             <iconify-icon icon="lucide:x" width="18"></iconify-icon>
                         </button>
                     </div>
@@ -388,9 +399,9 @@
                     @if (previewUrl()) {
                     <div class="rounded-xl overflow-hidden border border-white/5 ring-1 ring-white/10">
                         @if (getSelectedFileType() === 'imagen') {
-                        <img [src]="previewUrl()" alt="Preview" class="w-full h-40 object-cover" />
+                        <img [src]="previewUrl()" alt="Preview" class="w-full h-32 sm:h-40 object-cover" />
                         } @else if (getSelectedFileType() === 'video') {
-                        <video [src]="previewUrl()" class="w-full h-40 object-cover" controls></video>
+                        <video [src]="previewUrl()" class="w-full h-32 sm:h-40 object-cover" controls></video>
                         }
                     </div>
                     }
@@ -398,7 +409,6 @@
                 }
             </div>
 
-            <!-- Metadata Form -->
             <form [formGroup]="contentForm" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Nombre
@@ -410,16 +420,43 @@
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1">Observación
                         (Opcional)</label>
-                    <textarea formControlName="descripcion" placeholder="Explica brevemente quÃ© es este archivo..."
-                        class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 outline-none resize-none min-h-[80px] focus:border-indigo-500/30"></textarea>
+                    <textarea formControlName="descripcion" placeholder="Explica brevemente..."
+                        class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 outline-none resize-none min-h-[60px] focus:border-indigo-500/30"></textarea>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label
+                        class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1 flex items-center gap-1.5">
+                        <iconify-icon icon="lucide:calendar-check" width="11" class="text-emerald-400"></iconify-icon>
+                        Fecha de Publicación <span
+                            class="text-neutral-700 normal-case tracking-normal">(opcional)</span>
+                    </label>
+                    <input formControlName="fecha_publicacion" type="date"
+                        class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-300 outline-none focus:border-emerald-500/30" />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label
+                        class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 ml-1 flex items-center gap-1.5">
+                        <iconify-icon icon="lucide:text-cursor-input" width="11" class="text-cyan-400"></iconify-icon>
+                        Copy / Texto Publicación
+                        <span class="text-neutral-700 normal-case tracking-normal">(opcional)</span>
+                    </label>
+                    <textarea formControlName="copy" placeholder="Escribe el copy o texto para redes sociales..."
+                        class="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 outline-none min-h-[120px] focus:border-cyan-500/30 transition-all resize-y"
+                        style="field-sizing: content;">
+        </textarea>
+                    <p class="text-[9px] text-neutral-600 ml-1 italic">* Puedes arrastrar la esquina inferior derecha
+                        para ampliar el cuadro.</p>
                 </div>
             </form>
         </div>
 
-        <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
-            <button (click)="closeUploadModal()" class="text-neutral-500 hover:text-white px-4 py-2">Cancelar</button>
+        <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3 shrink-0">
+            <button (click)="closeUploadModal()"
+                class="text-xs sm:text-sm text-neutral-500 hover:text-white px-3 py-2">Cancelar</button>
             <button (click)="onSubmitContent(null)" [disabled]="contentForm.invalid || isUploading() || !selectedFile()"
-                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2">
+                class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white rounded-xl font-bold text-xs sm:text-sm shadow-lg transition-all flex items-center gap-2">
                 @if (isUploading()) {
                 <iconify-icon icon="lucide:loader-2" class="animate-spin" width="16"></iconify-icon> Subiendo...
                 } @else {
@@ -431,9 +468,9 @@
 </div>
 }
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      PREVIEW MODAL
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 @if (previewContent()) {
 <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-in fade-in duration-300"
     (click)="closePreview()">
@@ -627,9 +664,9 @@
 </div>
 }
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      MODAL: CREAR TAREA (Admin)
-     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 @if (showCreateTaskModal()) {
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" (click)="closeCreateTaskModal()">
     <div class="bg-[#0c0d14] border border-white/[0.08] rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50"
@@ -708,6 +745,38 @@
                 <input type="date" [ngModel]="newTask().fecha_limite" (ngModelChange)="updateTaskFechaLimite($event)"
                     class="w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-neutral-300 focus:ring-1 focus:ring-violet-500/30 focus:border-violet-500/30 transition-all outline-none" />
             </div>
+
+            <!-- Scene Selector -->
+            @if (planEscenas().length > 0) {
+            <div class="space-y-1.5">
+                <label
+                    class="text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500 flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:clapperboard" width="11" class="text-amber-400"></iconify-icon>
+                    Escena del Plan
+                    <span class="text-neutral-700 normal-case tracking-normal">(opcional)</span>
+                </label>
+                <brn-select class="inline-block w-full" placeholder="Seleccionar escena..."
+                    (valueChange)="onEscenaSelect($event)">
+                    <hlm-select-trigger
+                        class="w-full bg-white/[0.03] border-white/[0.08] rounded-xl text-sm text-neutral-300">
+                        <hlm-select-value />
+                    </hlm-select-trigger>
+                    <hlm-select-content class="border-white/10">
+                        @for (escena of planEscenas(); track escena.id_escena) {
+                        <hlm-option [value]="escena.id_escena">
+                            <span class="flex items-center gap-2">
+                                <span
+                                    class="w-5 h-5 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-[9px] font-bold text-amber-400 shrink-0">{{
+                                    $index + 1 }}</span>
+                                <span class="truncate">{{ escena.tema }}</span>
+                                <span class="text-[9px] text-neutral-600 shrink-0">{{ escena.valor_plano }}</span>
+                            </span>
+                        </hlm-option>
+                        }
+                    </hlm-select-content>
+                </brn-select>
+            </div>
+            }
         </div>
         <div class="px-6 py-4 border-t border-white/[0.06] flex items-center justify-end gap-3">
             <button (click)="closeCreateTaskModal()"
