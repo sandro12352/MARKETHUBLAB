@@ -12,6 +12,9 @@ export interface FolderContent {
     trabajador?: Trabajador;
     referencia?: string;
     observacion?: string;
+    copy?: string;
+    fecha_publicacion?: string | Date;
+    visible?: boolean;
 }
 
 export interface Trabajador {

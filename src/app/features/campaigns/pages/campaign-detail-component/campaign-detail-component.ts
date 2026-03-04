@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { Component, inject, OnInit, CUSTOM_ELEMENTS_SCHEMA, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -52,14 +52,24 @@ export class CampaignDetailComponent implements OnInit {
     // ─── Ad Set Form ──────────────────────────────────────────
     adSetForm = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
-        presupuesto_diario: [0, [Validators.required, Validators.min(1)]],
-        edad_min: [18],
-        edad_max: [65],
+        presupuesto_diario: [5, [Validators.required, Validators.min(4)]],
+        edad_min: [18, [Validators.min(13), Validators.max(65)]],
+        edad_max: [65, [Validators.min(13), Validators.max(65)]],
         genero: ['todos'],
         optimization_goal: ['REACH', [Validators.required]],
         billing_event: ['IMPRESSIONS', [Validators.required]],
+        status: ['PAUSED'],
+        bid_strategy: ['LOWEST_COST_WITHOUT_CAP'],
+        bid_amount: [null as number | null],
+        countries: [['PE']],
+        publisher_platforms: [['facebook', 'instagram']],
+        promoted_object_page_id: [''],
+        promoted_object_pixel_id: [''],
+        promoted_object_event_type: [''],
     });
     selectedAdSet = signal<AdSet | null>(null);
+    adSetStep = signal<number>(1);
+    adSetTotalSteps = 3;
 
     // ─── Ad Form ──────────────────────────────────────────────
     adForm = this.fb.group({
@@ -73,6 +83,27 @@ export class CampaignDetailComponent implements OnInit {
     });
     selectedAd = signal<Ad | null>(null);
     activeAdSetForAd = signal<number | null>(null);
+
+    // ─── Countries available ──────────────────────────────────
+    availableCountries = [
+        { code: 'PE', name: 'Perú' },
+        { code: 'CO', name: 'Colombia' },
+        { code: 'MX', name: 'México' },
+        { code: 'AR', name: 'Argentina' },
+        { code: 'CL', name: 'Chile' },
+        { code: 'EC', name: 'Ecuador' },
+        { code: 'BR', name: 'Brasil' },
+        { code: 'US', name: 'Estados Unidos' },
+        { code: 'ES', name: 'España' },
+        { code: 'BO', name: 'Bolivia' },
+    ];
+
+    availablePlatforms = [
+        { id: 'facebook', name: 'Facebook', icon: 'logos:facebook' },
+        { id: 'instagram', name: 'Instagram', icon: 'logos:instagram-icon' },
+        { id: 'messenger', name: 'Messenger', icon: 'logos:messenger' },
+        { id: 'audience_network', name: 'Audience Network', icon: 'lucide:network' },
+    ];
 
     ngOnInit(): void {
         const id = this.route.snapshot.params['id_campaign'];
@@ -134,29 +165,95 @@ export class CampaignDetailComponent implements OnInit {
     }
 
     // ─── Ad Set CRUD ──────────────────────────────────────────
+    nextAdSetStep() {
+        if (this.adSetStep() < this.adSetTotalSteps) {
+            this.adSetStep.update(s => s + 1);
+        }
+    }
+
+    prevAdSetStep() {
+        if (this.adSetStep() > 1) {
+            this.adSetStep.update(s => s - 1);
+        }
+    }
+
+    isCountrySelected(code: string): boolean {
+        const countries = this.adSetForm.value.countries || [];
+        return countries.includes(code);
+    }
+
+    toggleCountry(code: string) {
+        const current = this.adSetForm.value.countries || [];
+        if (current.includes(code)) {
+            this.adSetForm.patchValue({ countries: current.filter((c: string) => c !== code) });
+        } else {
+            this.adSetForm.patchValue({ countries: [...current, code] });
+        }
+    }
+
+    isPlatformSelected(id: string): boolean {
+        const platforms = this.adSetForm.value.publisher_platforms || [];
+        return platforms.includes(id);
+    }
+
+    togglePlatform(id: string) {
+        const current = this.adSetForm.value.publisher_platforms || [];
+        if (current.includes(id)) {
+            if (current.length > 1) {
+                this.adSetForm.patchValue({ publisher_platforms: current.filter((p: string) => p !== id) });
+            }
+        } else {
+            this.adSetForm.patchValue({ publisher_platforms: [...current, id] });
+        }
+    }
+
     onSubmitAdSet(ctx: any) {
         if (this.adSetForm.invalid) {
             this.adSetForm.markAllAsTouched();
             return;
         }
 
+        const formVal = this.adSetForm.value;
+        // Meta API requires daily_budget in cents
+        const dailyBudgetCents = Math.round((formVal.presupuesto_diario || 5) * 100);
+
+        const genderMap: Record<string, number[]> = {
+            'todos': [1, 2],
+            'masculino': [1],
+            'femenino': [2],
+        };
+
         const adSetData: Partial<AdSet> = {
             id_campaign: this.campaign()?.id_campaign!,
-            name: this.adSetForm.value.nombre!,
-            daily_budget: this.adSetForm.value.presupuesto_diario!,
+            name: formVal.nombre!,
+            daily_budget: dailyBudgetCents,
             targeting: {
                 geo_locations: {
-                    countries: ['PE']
+                    countries: formVal.countries || ['PE']
                 },
-                age_min: this.adSetForm.value.edad_min || 18,
-                age_max: this.adSetForm.value.edad_max || 65,
-                genders: this.adSetForm.value.genero === 'todos' ? [1, 2] : this.adSetForm.value.genero === 'hombres' ? [1] : [2],
-                publisher_platforms: ['facebook', 'instagram', 'messenger', 'audience_network']
+                age_min: formVal.edad_min || 18,
+                age_max: formVal.edad_max || 65,
+                genders: genderMap[formVal.genero || 'todos'] || [1, 2],
+                publisher_platforms: formVal.publisher_platforms || ['facebook', 'instagram']
             },
-            status: 'ACTIVE',
-            optimization_goal: this.adSetForm.value.optimization_goal as AdSet['optimization_goal'],
-            billing_event: this.adSetForm.value.billing_event as AdSet['billing_event'],
+            status: (formVal.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED') || 'PAUSED',
+            optimization_goal: formVal.optimization_goal as AdSet['optimization_goal'],
+            billing_event: formVal.billing_event as AdSet['billing_event'],
         };
+
+        // Add promoted_object if any field is filled
+        if (formVal.promoted_object_page_id || formVal.promoted_object_pixel_id) {
+            adSetData.promoted_object = {};
+            if (formVal.promoted_object_page_id) {
+                adSetData.promoted_object.page_id = formVal.promoted_object_page_id;
+            }
+            if (formVal.promoted_object_pixel_id) {
+                adSetData.promoted_object.pixel_id = formVal.promoted_object_pixel_id;
+                if (formVal.promoted_object_event_type) {
+                    adSetData.promoted_object.custom_event_type = formVal.promoted_object_event_type as any;
+                }
+            }
+        }
 
         if (this.selectedAdSet()) {
             this.campaignsService.updateAdSet(this.selectedAdSet()!.id_conjunto!, adSetData).subscribe({
@@ -166,7 +263,10 @@ export class CampaignDetailComponent implements OnInit {
                     this.resetAdSetForm();
                     ctx.close();
                 },
-                error: () => toast.error('Error al actualizar el conjunto')
+                error: (err) => {
+                    const msg = err?.error?.message || err?.error?.error_user_msg || 'Error al actualizar el conjunto';
+                    toast.error(msg);
+                }
             });
         } else {
             this.campaignsService.createAdSet(adSetData).subscribe({
@@ -176,21 +276,33 @@ export class CampaignDetailComponent implements OnInit {
                     this.resetAdSetForm();
                     ctx.close();
                 },
-                error: () => toast.error('Error al crear el conjunto')
+                error: (err) => {
+                    const msg = err?.error?.message || err?.error?.error_user_msg || 'Error al crear el conjunto';
+                    toast.error(msg);
+                }
             });
         }
     }
 
     editAdSet(adSet: AdSet) {
         this.selectedAdSet.set(adSet);
+        this.adSetStep.set(1);
+        // daily_budget comes from API in cents, convert back to currency units for display
+        const budgetDisplay = adSet.daily_budget ? adSet.daily_budget / 100 : 5;
         this.adSetForm.patchValue({
             nombre: adSet.name,
-            presupuesto_diario: adSet.daily_budget,
+            presupuesto_diario: budgetDisplay,
             edad_min: adSet.targeting?.age_min || 18,
             edad_max: adSet.targeting?.age_max || 65,
-            genero: adSet.targeting?.genders?.length === 2 ? 'todos' : (adSet.targeting?.genders?.[0] === 1 ? 'hombres' : 'mujeres'),
+            genero: !adSet.targeting?.genders || adSet.targeting?.genders?.length === 2 ? 'todos' : (adSet.targeting?.genders?.[0] === 1 ? 'masculino' : 'femenino'),
             optimization_goal: adSet.optimization_goal,
             billing_event: adSet.billing_event,
+            status: adSet.status || 'PAUSED',
+            countries: adSet.targeting?.geo_locations?.countries || ['PE'],
+            publisher_platforms: adSet.targeting?.publisher_platforms || ['facebook', 'instagram'],
+            promoted_object_page_id: adSet.promoted_object?.page_id || '',
+            promoted_object_pixel_id: adSet.promoted_object?.pixel_id || '',
+            promoted_object_event_type: adSet.promoted_object?.custom_event_type || '',
         });
     }
 
@@ -208,13 +320,22 @@ export class CampaignDetailComponent implements OnInit {
 
     resetAdSetForm() {
         this.selectedAdSet.set(null);
+        this.adSetStep.set(1);
         this.adSetForm.reset({
-            presupuesto_diario: 0,
+            presupuesto_diario: 5,
             edad_min: 18,
             edad_max: 65,
             genero: 'todos',
             optimization_goal: 'REACH',
-            billing_event: 'IMPRESSIONS'
+            billing_event: 'IMPRESSIONS',
+            status: 'PAUSED',
+            bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+            bid_amount: null,
+            countries: ['PE'],
+            publisher_platforms: ['facebook', 'instagram'],
+            promoted_object_page_id: '',
+            promoted_object_pixel_id: '',
+            promoted_object_event_type: '',
         });
     }
 

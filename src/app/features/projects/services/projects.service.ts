@@ -170,6 +170,17 @@ export class ProjectsService {
     );
   }
 
+  updateMaterialInfo(id_proyecto_material: number, data: { copy?: string; fecha_publicacion?: string; visible?: boolean }): Observable<FolderContent> {
+    return this.http.patch<FolderContent>(`${environment.apiUrl}/api/project-material/${id_proyecto_material}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${this.autToken}`
+        }
+      }
+    );
+  }
+
   // ── Plan de Grabación ──────────────────────────────────────────
 
   getPlanByProject(id_proyecto: number): Observable<PlanGrabacion> {

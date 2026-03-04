@@ -119,6 +119,14 @@ export class FolderContentComponent implements OnInit {
     rejectingTaskId = signal<number | null>(null);
     rejectObservation = signal('');
 
+    // Edit Material modal (Admin)
+    showEditMaterialModal = signal(false);
+    editingMaterial = signal<FolderContent | null>(null);
+    editMaterialCopy = signal('');
+    editMaterialFechaPublicacion = signal('');
+    editMaterialVisibleCliente = signal(false);
+    isSavingMaterial = signal(false);
+
     openPreview(content: FolderContent) {
         this.previewContent.set(content);
         this.isPreviewOpen.set(true);
@@ -145,6 +153,9 @@ export class FolderContentComponent implements OnInit {
         }
         if (this.showRejectModal()) {
             this.closeRejectModal();
+        }
+        if (this.showEditMaterialModal()) {
+            this.closeEditMaterialModal();
         }
     }
 
@@ -295,6 +306,94 @@ export class FolderContentComponent implements OnInit {
     closeSceneDetailModal() {
         this.showSceneDetailModal.set(false);
         this.selectedTask.set(null);
+    }
+
+    // Edit Material (Admin)
+    openEditMaterialModal(material: FolderContent) {
+        this.editingMaterial.set(material);
+        this.editMaterialCopy.set(material.copy || '');
+        this.editMaterialFechaPublicacion.set(
+            material.fecha_publicacion
+                ? new Date(material.fecha_publicacion).toISOString().split('T')[0]
+                : ''
+        );
+        this.editMaterialVisibleCliente.set(material.visible || false);
+        this.showEditMaterialModal.set(true);
+    }
+
+    closeEditMaterialModal() {
+        this.showEditMaterialModal.set(false);
+        this.editingMaterial.set(null);
+    }
+
+    submitEditMaterial() {
+        const material = this.editingMaterial();
+        if (!material?.id_proyecto_material) return;
+
+        this.isSavingMaterial.set(true);
+        const data = {
+            copy: this.editMaterialCopy(),
+            fecha_publicacion: this.editMaterialFechaPublicacion() || undefined,
+            visible: this.editMaterialVisibleCliente()
+        };
+
+        this.projectService.updateMaterialInfo(material.id_proyecto_material, data).subscribe({
+            next: (updated) => {
+                // Update in folderContents
+                this.folderContents.update(contents =>
+                    contents.map(c => c.id_proyecto_material === material.id_proyecto_material ? { ...c, ...data } : c)
+                );
+                // Update in folderTasks (task.proyecto_material)
+                this.folderTasks.update(tasks =>
+                    tasks.map(t => {
+                        if (t.proyecto_material?.id_proyecto_material === material.id_proyecto_material) {
+                            return { ...t, proyecto_material: { ...t.proyecto_material, ...data } };
+                        }
+                        return t;
+                    })
+                );
+                toast.success('¡Material actualizado exitosamente!');
+                this.closeEditMaterialModal();
+                this.isSavingMaterial.set(false);
+            },
+            error: () => {
+                toast.error('Error al actualizar el material.');
+                this.isSavingMaterial.set(false);
+            }
+        });
+    }
+
+    toggleVisibleCliente(material: FolderContent) {
+        if (!material.id_proyecto_material) return;
+        const newValue = !material.visible;
+
+        // Optimistic update
+        this.folderTasks.update(tasks =>
+            tasks.map(t => {
+                if (t.proyecto_material?.id_proyecto_material === material.id_proyecto_material) {
+                    return { ...t, proyecto_material: { ...t.proyecto_material, visible: newValue } };
+                }
+                return t;
+            })
+        );
+
+        this.projectService.updateMaterialInfo(material.id_proyecto_material, { visible: newValue }).subscribe({
+            next: () => {
+                toast.success(newValue ? 'Material visible para el cliente.' : 'Material oculto para el cliente.');
+            },
+            error: () => {
+                // Revert
+                this.folderTasks.update(tasks =>
+                    tasks.map(t => {
+                        if (t.proyecto_material?.id_proyecto_material === material.id_proyecto_material) {
+                            return { ...t, proyecto_material: { ...t.proyecto_material, visible: !newValue } };
+                        }
+                        return t;
+                    })
+                );
+                toast.error('Error al cambiar visibilidad.');
+            }
+        });
     }
 
     // Approve Task

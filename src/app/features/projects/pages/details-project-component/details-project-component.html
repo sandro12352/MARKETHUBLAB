@@ -217,7 +217,7 @@
             }
 
             <!-- Scenes List -->
-            <div class="divide-y divide-white/[0.04]">
+            <div class="divide-y divide-white/[0.04] max-h-[500px] overflow-y-auto">
                 @for (escena of planGrabacion()!.escenas; track escena.id_escena; let i = $index) {
                 <div class="plan-scene-row transition-all">
                     <!-- Scene Header (clickable) -->
@@ -661,7 +661,7 @@
                                     </label>
                                     <textarea formControlName="speech"
                                         placeholder="Escribe el guion o speech que se dirá en esta escena..."
-                                        class="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-amber-500/30 focus:border-amber-500/30 transition-all outline-none resize-none min-h-[90px]">
+                                        class="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.06] rounded-xl text-sm text-neutral-200 placeholder:text-neutral-700 focus:ring-1 focus:ring-amber-500/30 focus:border-amber-500/30 transition-all outline-none resize-none min-h-[250px]">
                                     </textarea>
                                 </div>
 
