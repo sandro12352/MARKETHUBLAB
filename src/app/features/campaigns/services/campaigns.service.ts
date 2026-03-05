@@ -23,17 +23,17 @@ export class CampaignsService {
         return this.http.post<Campaign>(`${environment.apiUrl}/api/campaigns`, campaign);
     }
 
-    updateCampaign(id: number, campaign: Partial<Campaign>): Observable<Campaign> {
+    updateCampaign(id: string, campaign: Partial<Campaign>): Observable<Campaign> {
         return this.http.put<Campaign>(`${environment.apiUrl}/api/campaigns/${id}`, campaign);
     }
 
-    deleteCampaign(id: number): Observable<any> {
+    deleteCampaign(id: string): Observable<any> {
         return this.http.delete(`${environment.apiUrl}/api/campaigns/${id}`);
     }
 
     // ─── Conjuntos de Anuncios ────────────────────────────────
-    getAdSetsByCampaign(campaignId: number): Observable<AdSet[]> {
-        return this.http.get<AdSet[]>(`${environment.apiUrl}/api/campaigns/${campaignId}/adsets`);
+    getAdSetsByCampaign(campaignId: string): Observable<AdSet[]> {
+        return this.http.get<AdSet[]>(`${environment.apiUrl}/api/adsets/${campaignId}`);
     }
 
     createAdSet(adSet: Partial<AdSet>): Observable<AdSet> {

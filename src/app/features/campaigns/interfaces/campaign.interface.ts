@@ -1,8 +1,13 @@
 export interface Campaign {
-    id_campaign: number;
+    id?: string;
     id_proyecto?: number;
+    metaCampaignId?: string;
     name: string;
     objective: string;
+    createdAt?: Date,
+    updatedAt?: Date,
+    daily_budget?: number,
+    bid_strategy?: string,
     status: 'PAUSED' | 'ACTIVE' | 'DELETED' | 'FINALIZED';
     special_ad_categories: string[];
     fecha_creacion?: string;
@@ -10,8 +15,9 @@ export interface Campaign {
 }
 
 export interface AdSet {
+    id?: string;
     id_conjunto?: number;
-    id_campaign?: number;
+    id_campaign?: string;
     name: string;
     daily_budget?: number;
     status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';

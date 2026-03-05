@@ -115,9 +115,9 @@ export class CampaignDetailComponent implements OnInit {
         this.isLoading.set(true);
         this.campaignsService.getCampaignById(id).subscribe({
             next: (campaign) => {
-                console.log(campaign);
                 this.campaign.set(campaign);
-                this.loadAdSets(Number(id));
+                console.log(this.campaign());
+                this.loadAdSets(id);
             },
             error: () => {
                 this.isLoading.set(false);
@@ -126,10 +126,11 @@ export class CampaignDetailComponent implements OnInit {
         });
     }
 
-    loadAdSets(campaignId: number) {
+    loadAdSets(campaignId: string) {
         this.campaignsService.getAdSetsByCampaign(campaignId).subscribe({
             next: (adSets) => {
                 this.adSets.set(adSets);
+                console.log(adSets)
                 this.isLoading.set(false);
                 // Load ads for each set
                 adSets.forEach(set => {
@@ -224,7 +225,7 @@ export class CampaignDetailComponent implements OnInit {
         };
 
         const adSetData: Partial<AdSet> = {
-            id_campaign: this.campaign()?.id_campaign!,
+            id_campaign: this.campaign()?.metaCampaignId!,
             name: formVal.nombre!,
             daily_budget: dailyBudgetCents,
             targeting: {

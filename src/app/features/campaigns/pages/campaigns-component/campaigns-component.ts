@@ -52,6 +52,8 @@ export class CampaignsComponent implements OnInit {
     campaignForm = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
         objetivo: ['', [Validators.required]],
+        daily_budget: [null as number | null],
+        bid_strategy: ['LOWEST_COST_WITHOUT_CAP'],
     });
 
     selectedCampaign = signal<Campaign | null>(null);
@@ -112,17 +114,21 @@ export class CampaignsComponent implements OnInit {
             return;
         }
 
+        const rawBudget = this.campaignForm.value.daily_budget;
         const campaignData: Partial<Campaign> = {
             name: this.campaignForm.value.nombre!,
             objective: this.campaignForm.value.objetivo!,
             status: this.selectedCampaign()?.status || 'PAUSED',
+            daily_budget: rawBudget ? Math.round(Number(rawBudget) * 100) : undefined,
+            bid_strategy: this.campaignForm.value.bid_strategy || 'LOWEST_COST_WITHOUT_CAP',
         };
+        console.log(campaignData)
 
         this.isSubmitting.set(true);
         if (this.selectedCampaign()) {
-            this.campaignsService.updateCampaign(this.selectedCampaign()!.id_campaign!, campaignData).subscribe({
+            this.campaignsService.updateCampaign(this.selectedCampaign()!.metaCampaignId!, campaignData).subscribe({
                 next: (updated) => {
-                    this.campaigns.update(list => list.map(c => c.id_campaign === updated.id_campaign ? updated : c));
+                    this.campaigns.update(list => list.map(c => c.metaCampaignId === updated.metaCampaignId ? updated : c));
                     this.applyFilters();
                     toast.success('¡Campaña actualizada con éxito!');
                     this.resetForm();
@@ -155,14 +161,16 @@ export class CampaignsComponent implements OnInit {
         this.campaignForm.patchValue({
             nombre: campaign.name,
             objetivo: campaign.objective,
+            daily_budget: campaign.daily_budget ? campaign.daily_budget / 100 : null,
+            bid_strategy: campaign.bid_strategy || 'LOWEST_COST_WITHOUT_CAP',
         });
     }
 
-    deleteCampaign(id: number) {
+    deleteCampaign(id: string) {
         if (confirm('¿Estás seguro de que deseas eliminar esta campaña?')) {
             this.campaignsService.deleteCampaign(id).subscribe({
                 next: () => {
-                    this.campaigns.update(list => list.filter(c => c.id_campaign !== id));
+                    this.campaigns.update(list => list.filter(c => c.metaCampaignId !== id));
                     this.applyFilters();
                     toast.success('Campaña eliminada con éxito');
                 },
