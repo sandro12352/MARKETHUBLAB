@@ -64,12 +64,13 @@
                 </button>
 
                 <!-- AdSet Dialog — Multi-Step Wizard -->
-                <hlm-alert-dialog-content class="sm:max-w-[680px] !p-0 !rounded-2xl overflow-hidden border-white/10"
+                <hlm-alert-dialog-content
+                    class="sm:max-w-[680px] !p-0 !rounded-2xl overflow-hidden border-white/10 max-h-[90vh] flex flex-col"
                     *brnAlertDialogContent="let ctx">
 
                     <!-- Wizard Header with gradient accent -->
                     <div
-                        class="relative px-8 pt-8 pb-6 bg-linear-to-br from-indigo-600/15 via-purple-600/10 to-transparent border-b border-white/5">
+                        class="relative px-8 pt-8 pb-6 bg-linear-to-br from-indigo-600/15 via-purple-600/10 to-transparent border-b border-white/5 shrink-0">
                         <div
                             class="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
                         </div>
@@ -127,7 +128,7 @@
                     </div>
         </div>
 
-        <form [formGroup]="adSetForm" class="px-8 py-6">
+        <form [formGroup]="adSetForm" class="px-8 py-6 overflow-y-auto flex-1">
 
             <!-- ══════ STEP 1: Básico ══════ -->
             @if (adSetStep() === 1) {
@@ -148,7 +149,20 @@
                     }
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Presupuesto + Estado -->
+                @if (hasCampaignBudget()) {
+                <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/8 border border-emerald-500/20">
+                    <iconify-icon icon="lucide:info" width="16" class="text-emerald-400 shrink-0"></iconify-icon>
+                    <p class="text-emerald-300/80 text-xs leading-relaxed">
+                        El presupuesto se gestiona a <span class="font-semibold text-emerald-300">nivel de
+                            campaña</span>
+                        y se distribuirá automáticamente entre los conjuntos.
+                    </p>
+                </div>
+                }
+
+                <div class="grid grid-cols-1 gap-4" [ngClass]="{'md:grid-cols-2': !hasCampaignBudget()}">
+                    @if (!hasCampaignBudget()) {
                     <div class="space-y-2">
                         <label hlmLabel class="text-neutral-300 text-sm font-semibold flex items-center gap-2">
                             <iconify-icon icon="lucide:wallet" width="14" class="text-emerald-400"></iconify-icon>
@@ -172,6 +186,7 @@
                         </p>
                         }
                     </div>
+                    }
                     <div class="space-y-2">
                         <label hlmLabel class="text-neutral-300 text-sm font-semibold flex items-center gap-2">
                             <iconify-icon icon="lucide:toggle-left" width="14" class="text-amber-400"></iconify-icon>
@@ -203,48 +218,139 @@
                     </div>
                 </div>
 
+                <!-- Fecha y hora de inicio / finalización -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
                         <label hlmLabel class="text-neutral-300 text-sm font-semibold flex items-center gap-2">
-                            <iconify-icon icon="lucide:target" width="14" class="text-purple-400"></iconify-icon>
-                            Meta de Optimización
+                            <iconify-icon icon="lucide:calendar-clock" width="14" class="text-sky-400"></iconify-icon>
+                            Fecha y hora de inicio
                         </label>
-                        <brn-select formControlName="optimization_goal" placeholder="Seleccionar meta">
-                            <hlm-select-trigger class="w-full bg-white/5 border-white/10 text-white h-11 rounded-xl">
-                                <hlm-select-value />
-                            </hlm-select-trigger>
-                            <hlm-select-content class="bg-neutral-900 border-white/10">
-                                <hlm-option value="REACH" class="text-neutral-300 focus:bg-white/10">Alcance
-                                    (REACH)</hlm-option>
-                                <hlm-option value="IMPRESSIONS"
-                                    class="text-neutral-300 focus:bg-white/10">Impresiones</hlm-option>
-                                <hlm-option value="LINK_CLICKS" class="text-neutral-300 focus:bg-white/10">Clics en el
-                                    enlace</hlm-option>
-                                <hlm-option value="CONVERSIONS"
-                                    class="text-neutral-300 focus:bg-white/10">Conversiones</hlm-option>
-                                <hlm-option value="POST_ENGAGEMENT"
-                                    class="text-neutral-300 focus:bg-white/10">Interacción</hlm-option>
-                            </hlm-select-content>
-                        </brn-select>
+                        <input hlmInput formControlName="start_time" type="datetime-local" [min]="getMinStartTime()"
+                            class="w-full bg-white/5 border-white/10 h-11 rounded-xl text-white scheme-dark" />
+                        @if (adSetForm.get('start_time')?.touched && adSetForm.get('start_time')?.invalid) {
+                        <p class="text-red-400 text-xs flex items-center gap-1">
+                            <iconify-icon icon="lucide:alert-circle" width="12"></iconify-icon>
+                            La fecha de inicio es requerida.
+                        </p>
+                        }
                     </div>
                     <div class="space-y-2">
                         <label hlmLabel class="text-neutral-300 text-sm font-semibold flex items-center gap-2">
-                            <iconify-icon icon="lucide:receipt" width="14" class="text-cyan-400"></iconify-icon>
-                            Evento de Facturación
+                            <iconify-icon icon="lucide:calendar-x" width="14" class="text-rose-400"></iconify-icon>
+                            Fecha de finalización
+                            <span
+                                class="text-neutral-600 text-[10px] bg-white/5 px-2 py-0.5 rounded-full ml-1">Opcional</span>
                         </label>
-                        <brn-select formControlName="billing_event" placeholder="Seleccionar evento">
-                            <hlm-select-trigger class="w-full bg-white/5 border-white/10 text-white h-11 rounded-xl">
-                                <hlm-select-value />
-                            </hlm-select-trigger>
-                            <hlm-select-content class="bg-neutral-900 border-white/10">
-                                <hlm-option value="IMPRESSIONS" class="text-neutral-300 focus:bg-white/10">Impresiones
-                                    (CPM)</hlm-option>
-                                <hlm-option value="LINK_CLICKS" class="text-neutral-300 focus:bg-white/10">Clics en el
-                                    enlace (CPC)</hlm-option>
-                            </hlm-select-content>
-                        </brn-select>
+                        <input hlmInput formControlName="end_time" type="datetime-local"
+                            [min]="adSetForm.value.start_time || getMinStartTime()"
+                            class="w-full bg-white/5 border-white/10 h-11 rounded-xl text-white scheme-dark" />
+                        <p class="text-neutral-600 text-[11px] flex items-center gap-1">
+                            <iconify-icon icon="lucide:info" width="11"></iconify-icon>
+                            Déjalo vacío para que se ejecute indefinidamente.
+                        </p>
                     </div>
                 </div>
+
+                <!-- ═══ Destino de Conversión ═══ -->
+                @if (showDestinoConversion()) {
+                <div class="space-y-4 p-5 rounded-xl bg-white/3 border border-white/5">
+                    <div class="flex items-center gap-2.5">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/25 flex items-center justify-center">
+                            <iconify-icon icon="lucide:compass" width="16" class="text-purple-400"></iconify-icon>
+                        </div>
+                        <div>
+                            <span class="text-neutral-200 text-sm font-semibold">Destino de conversión</span>
+                            <p class="text-neutral-500 text-[11px]">¿A dónde quieres enviar a los usuarios?</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabs Única / Varias (solo para Ventas) -->
+                    @if (isSalesCampaign()) {
+                    <div class="flex rounded-xl bg-white/5 border border-white/8 p-1 gap-1">
+                        <button type="button" (click)="setTipoConversion('varias')"
+                            class="flex-1 px-4 py-2.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
+                            [ngClass]="{
+                                'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-sm': currentTipoConversion() === 'varias',
+                                'text-neutral-500 hover:text-neutral-400 border border-transparent hover:bg-white/5': currentTipoConversion() !== 'varias'
+                            }">
+                            <span class="flex flex-col items-center gap-1">
+                                <iconify-icon icon="lucide:layers" width="16"></iconify-icon>
+                                <span class="font-semibold">Varias</span>
+                                <span class="text-[10px] opacity-70 leading-tight text-center">Dirigiremos
+                                    automáticamente al mejor destino</span>
+                            </span>
+                        </button>
+                        <button type="button" (click)="setTipoConversion('unica')"
+                            class="flex-1 px-4 py-2.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
+                            [ngClass]="{
+                                'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-sm': currentTipoConversion() === 'unica',
+                                'text-neutral-500 hover:text-neutral-400 border border-transparent hover:bg-white/5': currentTipoConversion() !== 'unica'
+                            }">
+                            <span class="flex flex-col items-center gap-1">
+                                <iconify-icon icon="lucide:locate-fixed" width="16"></iconify-icon>
+                                <span class="font-semibold">Única</span>
+                                <span class="text-[10px] opacity-70 leading-tight text-center">Envía a un destino
+                                    específico</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Descripción del tipo seleccionado -->
+                    <p class="text-neutral-500 text-[11px] flex items-center gap-1.5 px-1">
+                        <iconify-icon icon="lucide:info" width="11" class="text-neutral-600 shrink-0"></iconify-icon>
+                        @if (currentTipoConversion() === 'varias') {
+                        Dirigiremos automáticamente a las personas al lugar donde sea más probable que realicen una
+                        conversión.
+                        } @else {
+                        Envía a las personas a la ubicación donde quieres que realicen una conversión.
+                        }
+                    </p>
+                    }
+
+                    <!-- Radio Cards de Destino -->
+                    <div class="space-y-2">
+                        @for (destino of currentDestinoOptions(); track destino.value) {
+                        <button type="button" (click)="selectDestinoConversion(destino.value)"
+                            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 cursor-pointer text-left group/dest"
+                            [ngClass]="{
+                                'bg-indigo-500/10 border-indigo-500/40 shadow-sm shadow-indigo-500/5': isDestinoSelected(destino.value),
+                                'bg-white/3 border-white/8 hover:bg-white/5 hover:border-white/15': !isDestinoSelected(destino.value)
+                            }">
+                            <!-- Radio indicator -->
+                            <div class="w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200"
+                                [ngClass]="{
+                                    'border-indigo-400 bg-indigo-500/20': isDestinoSelected(destino.value),
+                                    'border-neutral-600 bg-transparent group-hover/dest:border-neutral-500': !isDestinoSelected(destino.value)
+                                }">
+                                @if (isDestinoSelected(destino.value)) {
+                                <div class="w-2 h-2 rounded-full bg-indigo-400"></div>
+                                }
+                            </div>
+                            <!-- Icon -->
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+                                [ngClass]="{
+                                    'bg-indigo-500/15 text-indigo-400': isDestinoSelected(destino.value),
+                                    'bg-white/5 text-neutral-500 group-hover/dest:text-neutral-400': !isDestinoSelected(destino.value)
+                                }">
+                                <iconify-icon [icon]="destino.icon" width="16"></iconify-icon>
+                            </div>
+                            <!-- Text -->
+                            <div class="min-w-0 flex-1">
+                                <span class="text-xs font-semibold block transition-colors"
+                                    [ngClass]="isDestinoSelected(destino.value) ? 'text-indigo-300' : 'text-neutral-300'">
+                                    {{ destino.label }}
+                                </span>
+                                <span class="text-[11px] block leading-snug mt-0.5 transition-colors"
+                                    [ngClass]="isDestinoSelected(destino.value) ? 'text-indigo-400/60' : 'text-neutral-600'">
+                                    {{ destino.description }}
+                                </span>
+                            </div>
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
             </div>
             }
 
@@ -399,7 +505,7 @@
         </form>
 
         <!-- Footer with step navigation -->
-        <div class="px-8 pb-6 flex items-center justify-between">
+        <div class="px-8 pb-6 pt-4 flex items-center justify-between shrink-0 border-t border-white/5">
             <div>
                 @if (adSetStep() > 1) {
                 <button hlmBtn variant="ghost" (click)="prevAdSetStep()"
@@ -515,45 +621,78 @@
                                                             type="number" class="w-full bg-white/5 border-white/10" />
                                                     </div>
                                                     <div class="space-y-2">
-                                                        <label hlmLabel class="text-neutral-300">Meta de
-                                                            Optimización</label>
-                                                        <brn-select formControlName="optimization_goal"
-                                                            placeholder="Meta">
+                                                        <label hlmLabel class="text-neutral-300">Estado</label>
+                                                        <brn-select formControlName="status" placeholder="Estado">
                                                             <hlm-select-trigger
                                                                 class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
                                                                 <hlm-select-value />
                                                             </hlm-select-trigger>
                                                             <hlm-select-content class="bg-neutral-900 border-white/10">
-                                                                <hlm-option value="REACH"
-                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">REACH</hlm-option>
-                                                                <hlm-option value="IMPRESSIONS"
-                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">IMPRESSIONS</hlm-option>
-                                                                <hlm-option value="LINK_CLICKS"
-                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">LINK_CLICKS</hlm-option>
-                                                                <hlm-option value="CONVERSIONS"
-                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">CONVERSIONS</hlm-option>
-                                                                <hlm-option value="POST_ENGAGEMENT"
-                                                                    class="text-neutral-300 focus:bg-white/10 uppercase text-xs">ENGAGEMENT</hlm-option>
+                                                                <hlm-option value="PAUSED"
+                                                                    class="text-neutral-300 focus:bg-white/10 text-xs">Pausado</hlm-option>
+                                                                <hlm-option value="ACTIVE"
+                                                                    class="text-neutral-300 focus:bg-white/10 text-xs">Activo</hlm-option>
                                                             </hlm-select-content>
                                                         </brn-select>
                                                     </div>
                                                 </div>
-                                                <div class="space-y-2">
-                                                    <label hlmLabel class="text-neutral-300">Evento de
-                                                        Facturación</label>
-                                                    <brn-select formControlName="billing_event" placeholder="Evento">
-                                                        <hlm-select-trigger
-                                                            class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
-                                                            <hlm-select-value />
-                                                        </hlm-select-trigger>
-                                                        <hlm-select-content class="bg-neutral-900 border-white/10">
-                                                            <hlm-option value="IMPRESSIONS"
-                                                                class="text-neutral-300 focus:bg-white/10 uppercase text-xs">IMPRESSIONS</hlm-option>
-                                                            <hlm-option value="LINK_CLICKS"
-                                                                class="text-neutral-300 focus:bg-white/10 uppercase text-xs">LINK_CLICKS</hlm-option>
-                                                        </hlm-select-content>
-                                                    </brn-select>
+
+                                                <!-- Destino de Conversión en edición -->
+                                                @if (showDestinoConversion()) {
+                                                <div class="space-y-3 p-3 rounded-xl bg-white/3 border border-white/5">
+                                                    <span
+                                                        class="text-neutral-300 text-xs font-semibold flex items-center gap-2">
+                                                        <iconify-icon icon="lucide:compass" width="13"
+                                                            class="text-purple-400"></iconify-icon>
+                                                        Destino de conversión
+                                                    </span>
+
+                                                    @if (isSalesCampaign()) {
+                                                    <div class="flex rounded-lg bg-white/5 p-0.5 gap-0.5">
+                                                        <button type="button" (click)="setTipoConversion('varias')"
+                                                            class="flex-1 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all cursor-pointer"
+                                                            [ngClass]="{
+                                                                'bg-indigo-500/20 text-indigo-300': currentTipoConversion() === 'varias',
+                                                                'text-neutral-500 hover:text-neutral-400': currentTipoConversion() !== 'varias'
+                                                            }">Varias</button>
+                                                        <button type="button" (click)="setTipoConversion('unica')"
+                                                            class="flex-1 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all cursor-pointer"
+                                                            [ngClass]="{
+                                                                'bg-indigo-500/20 text-indigo-300': currentTipoConversion() === 'unica',
+                                                                'text-neutral-500 hover:text-neutral-400': currentTipoConversion() !== 'unica'
+                                                            }">Única</button>
+                                                    </div>
+                                                    }
+
+                                                    <div class="space-y-1.5 max-h-[180px] overflow-y-auto pr-1">
+                                                        @for (destino of currentDestinoOptions(); track destino.value) {
+                                                        <button type="button"
+                                                            (click)="selectDestinoConversion(destino.value)"
+                                                            class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-all cursor-pointer text-left"
+                                                            [ngClass]="{
+                                                                'bg-indigo-500/10 border-indigo-500/30': isDestinoSelected(destino.value),
+                                                                'bg-white/3 border-white/8 hover:bg-white/5': !isDestinoSelected(destino.value)
+                                                            }">
+                                                            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                                                                [ngClass]="{
+                                                                    'border-indigo-400': isDestinoSelected(destino.value),
+                                                                    'border-neutral-600': !isDestinoSelected(destino.value)
+                                                                }">
+                                                                @if (isDestinoSelected(destino.value)) {
+                                                                <div class="w-1.5 h-1.5 rounded-full bg-indigo-400">
+                                                                </div>
+                                                                }
+                                                            </div>
+                                                            <iconify-icon [icon]="destino.icon" width="14"
+                                                                [ngClass]="isDestinoSelected(destino.value) ? 'text-indigo-400' : 'text-neutral-500'"></iconify-icon>
+                                                            <span class="text-[11px] font-medium"
+                                                                [ngClass]="isDestinoSelected(destino.value) ? 'text-indigo-300' : 'text-neutral-400'">{{
+                                                                destino.label }}</span>
+                                                        </button>
+                                                        }
+                                                    </div>
                                                 </div>
+                                                }
                                             </form>
                                             <hlm-alert-dialog-footer>
                                                 <button hlmBtn variant="ghost" (click)="ctx.close(); resetAdSetForm()"

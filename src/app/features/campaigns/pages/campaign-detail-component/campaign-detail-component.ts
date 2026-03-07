@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, CUSTOM_ELEMENTS_SCHEMA, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, CUSTOM_ELEMENTS_SCHEMA, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -52,12 +52,16 @@ export class CampaignDetailComponent implements OnInit {
     // ─── Ad Set Form ──────────────────────────────────────────
     adSetForm = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
-        presupuesto_diario: [5, [Validators.required, Validators.min(4)]],
+        presupuesto_diario: [5 as number | null],
         edad_min: [18, [Validators.min(13), Validators.max(65)]],
         edad_max: [65, [Validators.min(13), Validators.max(65)]],
         genero: ['todos'],
         optimization_goal: ['REACH', [Validators.required]],
         billing_event: ['IMPRESSIONS', [Validators.required]],
+        destino_conversion: ['WEBSITE'],
+        tipo_conversion: ['unica' as 'unica' | 'varias'],
+        start_time: ['', [Validators.required]],
+        end_time: [''],
         status: ['PAUSED'],
         bid_strategy: ['LOWEST_COST_WITHOUT_CAP'],
         bid_amount: [null as number | null],
@@ -70,6 +74,56 @@ export class CampaignDetailComponent implements OnInit {
     selectedAdSet = signal<AdSet | null>(null);
     adSetStep = signal<number>(1);
     adSetTotalSteps = 3;
+
+    // ─── Destino de Conversión: Opciones según objetivo ──────
+    destinosInteraccion = [
+        { value: 'WEBSITE', label: 'Sitio web', description: 'Envía el tráfico a tu sitio web.', icon: 'lucide:globe' },
+        { value: 'APP', label: 'App', description: 'Envía el tráfico a tu app.', icon: 'lucide:smartphone' },
+        { value: 'MESSAGING_TOUCHPOINT', label: 'Destinos de mensajes', description: 'Envía el tráfico a Messenger, Instagram y WhatsApp.', icon: 'lucide:message-circle' },
+        { value: 'ON_AD', label: 'Instagram o Facebook', description: 'Envía el tráfico a un perfil de Instagram, una página de Facebook o ambos.', icon: 'lucide:share-2' },
+        { value: 'CALLS', label: 'Llamadas', description: 'Solicítales a las personas que te llamen por Messenger, WhatsApp o con tu número de teléfono.', icon: 'lucide:phone' },
+    ];
+
+    destinosVentasVarias = [
+        { value: 'MIXED', label: 'Sitio web y app', description: 'Dirigiremos automáticamente a las personas al lugar donde sea más probable que realicen una conversión.', icon: 'lucide:globe' },
+        { value: 'WEBSITE_BUSINESS', label: 'Sitio web y negocio', description: 'Combina tu sitio web con presencia de negocio.', icon: 'lucide:store' },
+        { value: 'WEBSITE_APP_BUSINESS', label: 'Sitio web, app y negocio', description: 'Combina múltiples destinos para maximizar conversiones.', icon: 'lucide:layout-grid' },
+        { value: 'WEBSITE_CALLS', label: 'Sitio web y llamadas', description: 'Permite el tráfico tanto a tu sitio web como llamadas directas.', icon: 'lucide:phone-forwarded' },
+    ];
+
+    destinosVentasUnica = [
+        { value: 'WEBSITE', label: 'Sitio web', description: 'Envía las personas a la ubicación donde quieres que realicen una conversión.', icon: 'lucide:globe' },
+        { value: 'APP', label: 'App', description: 'Envía el tráfico a tu app.', icon: 'lucide:smartphone' },
+        { value: 'MESSAGING_TOUCHPOINT', label: 'Destinos de mensajes', description: 'Envía el tráfico a Messenger, Instagram y WhatsApp.', icon: 'lucide:message-circle' },
+        { value: 'CALLS', label: 'Llamadas', description: 'Solicítales a las personas que te llamen.', icon: 'lucide:phone' },
+    ];
+
+    // Computed: ¿Es campaña de ventas?
+    isSalesCampaign = computed(() => this.campaign()?.objective === 'OUTCOME_SALES');
+    isEngagementCampaign = computed(() => this.campaign()?.objective === 'OUTCOME_ENGAGEMENT');
+    showDestinoConversion = computed(() => this.isSalesCampaign() || this.isEngagementCampaign());
+
+    // Computed: ¿La campaña tiene presupuesto a nivel campaña?
+    hasCampaignBudget = computed(() => {
+        const camp = this.campaign();
+        return camp?.daily_budget != null && camp.daily_budget > 0;
+    });
+
+    // Signal para tipo_conversion actual (controlado desde el form)
+    currentTipoConversion = signal<'unica' | 'varias'>('unica');
+
+    // Opciones actuales del destino de conversión
+    currentDestinoOptions = computed(() => {
+        if (this.isEngagementCampaign()) {
+            return this.destinosInteraccion;
+        }
+        if (this.isSalesCampaign()) {
+            return this.currentTipoConversion() === 'varias'
+                ? this.destinosVentasVarias
+                : this.destinosVentasUnica;
+        }
+        return [];
+    });
 
     // ─── Ad Form ──────────────────────────────────────────────
     adForm = this.fb.group({
@@ -215,8 +269,10 @@ export class CampaignDetailComponent implements OnInit {
         }
 
         const formVal = this.adSetForm.value;
-        // Meta API requires daily_budget in cents
-        const dailyBudgetCents = Math.round((formVal.presupuesto_diario || 5) * 100);
+        // Meta API requires daily_budget in cents (only if no campaign-level budget)
+        const dailyBudgetCents = this.hasCampaignBudget()
+            ? undefined
+            : Math.round((formVal.presupuesto_diario || 5) * 100);
 
         const genderMap: Record<string, number[]> = {
             'todos': [1, 2],
@@ -227,7 +283,7 @@ export class CampaignDetailComponent implements OnInit {
         const adSetData: Partial<AdSet> = {
             id_campaign: this.campaign()?.metaCampaignId!,
             name: formVal.nombre!,
-            daily_budget: dailyBudgetCents,
+            ...(dailyBudgetCents != null ? { daily_budget: dailyBudgetCents } : {}),
             targeting: {
                 geo_locations: {
                     countries: formVal.countries || ['PE']
@@ -240,6 +296,10 @@ export class CampaignDetailComponent implements OnInit {
             status: (formVal.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED') || 'PAUSED',
             optimization_goal: formVal.optimization_goal as AdSet['optimization_goal'],
             billing_event: formVal.billing_event as AdSet['billing_event'],
+            destino_conversion: formVal.destino_conversion as AdSet['destino_conversion'],
+            tipo_conversion: formVal.tipo_conversion as AdSet['tipo_conversion'],
+            start_time: formVal.start_time ? new Date(formVal.start_time).toISOString() : undefined,
+            end_time: formVal.end_time ? new Date(formVal.end_time).toISOString() : undefined,
         };
 
         // Add promoted_object if any field is filled
@@ -255,6 +315,7 @@ export class CampaignDetailComponent implements OnInit {
                 }
             }
         }
+        console.log(adSetData);
 
         if (this.selectedAdSet()) {
             this.campaignsService.updateAdSet(this.selectedAdSet()!.id_conjunto!, adSetData).subscribe({
@@ -290,6 +351,9 @@ export class CampaignDetailComponent implements OnInit {
         this.adSetStep.set(1);
         // daily_budget comes from API in cents, convert back to currency units for display
         const budgetDisplay = adSet.daily_budget ? adSet.daily_budget / 100 : 5;
+        if (adSet.tipo_conversion) {
+            this.currentTipoConversion.set(adSet.tipo_conversion);
+        }
         this.adSetForm.patchValue({
             nombre: adSet.name,
             presupuesto_diario: budgetDisplay,
@@ -298,6 +362,10 @@ export class CampaignDetailComponent implements OnInit {
             genero: !adSet.targeting?.genders || adSet.targeting?.genders?.length === 2 ? 'todos' : (adSet.targeting?.genders?.[0] === 1 ? 'masculino' : 'femenino'),
             optimization_goal: adSet.optimization_goal,
             billing_event: adSet.billing_event,
+            destino_conversion: adSet.destino_conversion || 'WEBSITE',
+            tipo_conversion: adSet.tipo_conversion || 'unica',
+            start_time: adSet.start_time ? this.toLocalDatetime(adSet.start_time) : '',
+            end_time: adSet.end_time ? this.toLocalDatetime(adSet.end_time) : '',
             status: adSet.status || 'PAUSED',
             countries: adSet.targeting?.geo_locations?.countries || ['PE'],
             publisher_platforms: adSet.targeting?.publisher_platforms || ['facebook', 'instagram'],
@@ -322,6 +390,7 @@ export class CampaignDetailComponent implements OnInit {
     resetAdSetForm() {
         this.selectedAdSet.set(null);
         this.adSetStep.set(1);
+        this.currentTipoConversion.set('unica');
         this.adSetForm.reset({
             presupuesto_diario: 5,
             edad_min: 18,
@@ -329,6 +398,10 @@ export class CampaignDetailComponent implements OnInit {
             genero: 'todos',
             optimization_goal: 'REACH',
             billing_event: 'IMPRESSIONS',
+            destino_conversion: 'WEBSITE',
+            tipo_conversion: 'unica',
+            start_time: '',
+            end_time: '',
             status: 'PAUSED',
             bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
             bid_amount: null,
@@ -338,6 +411,37 @@ export class CampaignDetailComponent implements OnInit {
             promoted_object_pixel_id: '',
             promoted_object_event_type: '',
         });
+    }
+
+    // ─── Helpers: Tipo Conversión (Ventas) ────────────────────
+    setTipoConversion(tipo: 'unica' | 'varias') {
+        this.currentTipoConversion.set(tipo);
+        this.adSetForm.patchValue({ tipo_conversion: tipo });
+        // Reset destino al cambiar tipo
+        const firstOption = this.currentDestinoOptions()[0];
+        if (firstOption) {
+            this.adSetForm.patchValue({ destino_conversion: firstOption.value });
+        }
+    }
+
+    selectDestinoConversion(value: string) {
+        this.adSetForm.patchValue({ destino_conversion: value });
+    }
+
+    isDestinoSelected(value: string): boolean {
+        return this.adSetForm.value.destino_conversion === value;
+    }
+
+    // Convierte ISO a formato datetime-local para input
+    private toLocalDatetime(isoStr: string): string {
+        const d = new Date(isoStr);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // Obtiene la fecha mínima (ahora) para el input datetime-local
+    getMinStartTime(): string {
+        return this.toLocalDatetime(new Date().toISOString());
     }
 
     // ─── Ad CRUD ──────────────────────────────────────────────

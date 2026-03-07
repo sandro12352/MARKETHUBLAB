@@ -23,6 +23,13 @@ export interface AdSet {
     status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
     optimization_goal: 'REACH' | 'IMPRESSIONS' | 'LINK_CLICKS' | 'CONVERSIONS' | 'POST_ENGAGEMENT';
     billing_event: 'IMPRESSIONS' | 'LINK_CLICKS';
+    // Destino de conversión — a dónde se envía el tráfico
+    destino_conversion?: 'WEBSITE' | 'APP' | 'MESSAGING_TOUCHPOINT' | 'ON_AD' | 'CALLS' | 'MIXED' | 'WEBSITE_BUSINESS' | 'WEBSITE_APP_BUSINESS' | 'WEBSITE_CALLS';
+    // Tipo de conversión (solo aplica para campañas de Ventas): 'unica' o 'varias'
+    tipo_conversion?: 'unica' | 'varias';
+    // Programación
+    start_time?: string; // ISO datetime
+    end_time?: string;   // ISO datetime (opcional)
     // El objeto de segmentación (Targeting)
     // Aquí es donde se mete la edad, género y ubicación
     targeting: {

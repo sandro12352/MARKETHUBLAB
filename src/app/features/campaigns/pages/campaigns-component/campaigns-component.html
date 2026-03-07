@@ -85,20 +85,27 @@
 
                         <!-- Estrategia de Puja -->
                         <div class="space-y-2">
-                            <label hlmLabel for="campaign-bid" class="text-neutral-300">Estrategia de puja</label>
+                            <label hlmLabel for="campaign-bid" class="text-neutral-300">Estrategia de puja de la
+                                campaña</label>
                             <brn-select formControlName="bid_strategy" placeholder="Selecciona estrategia">
                                 <hlm-select-trigger
                                     class="w-full bg-white/5 border-white/10 text-white h-10 rounded-lg">
                                     <hlm-select-value />
                                 </hlm-select-trigger>
+
                                 <hlm-select-content class="bg-neutral-900 border-white/10">
                                     <hlm-option value="LOWEST_COST_WITHOUT_CAP"
-                                        class="text-neutral-300 focus:bg-white/10">Menor costo</hlm-option>
-                                    <hlm-option value="LOWEST_COST_WITH_BID_CAP"
-                                        class="text-neutral-300 focus:bg-white/10">Costo más bajo con
-                                        límite</hlm-option>
-                                    <hlm-option value="COST_CAP" class="text-neutral-300 focus:bg-white/10">Límite de
-                                        costo</hlm-option>
+                                        class="text-neutral-300 focus:bg-white/10">
+                                        Volumen más alto
+                                    </hlm-option>
+
+                                    <hlm-option value="COST_CAP" class="text-neutral-300 focus:bg-white/10">
+                                        Objetivo de costo por resultado
+                                    </hlm-option>
+
+                                    <hlm-option value="BID_CAP" class="text-neutral-300 focus:bg-white/10">
+                                        Límite de puja
+                                    </hlm-option>
                                 </hlm-select-content>
                             </brn-select>
                         </div>
